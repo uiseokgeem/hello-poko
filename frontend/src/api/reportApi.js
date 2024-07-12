@@ -19,3 +19,7 @@ export const submitCheck = async (data) => {
     throw error;
   }
 };
+
+export const fetchStudents = async () => {
+  return axios.get('/api/students');
+};
