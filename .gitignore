@@ -1,0 +1,33 @@
+.env.dev
+.env.prod
+.env.prod.db
+letsencrypt.sh
+backup
+backup.sh
+blog
+data
+.DS_Store
+.env.dev.db
+.env.dev
+docker-compose.dev.yml
+db.sqlite3
+backup.sh
+identifier.sqlite
+
+# Ignore Python byte-compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Node.js dependencies
+frontend/node_modules/
+
+# Operating system files
+.DS_Store
+
+# Docker compose files
+docker-compose.dev.yml
+
+# Other
+.idea/
+.vscode/

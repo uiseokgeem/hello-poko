@@ -1,0 +1,59 @@
+.page-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.user-check-section,
+.member-check-section {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.form-item {
+  margin-bottom: 16px;
+}
+
+.form-item-input {
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.submit-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.submit-button {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
