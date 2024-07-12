@@ -1,0 +1,97 @@
+# api-test.http
+
+@BASE_URL = http://localhost:8000
+
+GET https://naver.com
+
+
+
+### 실패하는 form-urlencoded 요청
+
+POST {{BASE_URL}}/blog/api/new/
+Authorization: Basic 유저명 암호
+Content-Type: application/x-www-form-urlencoded
+
+title=샘플+제목&content=
+
+
+### 성공하는 form-urlencoded 요청
+
+POST {{BASE_URL}}/blog/api/new/
+Authorization: Basic 유저명 암호
+Content-Type: application/x-www-form-urlencoded
+
+title=샘플+제목&content=샘플+내용
+
+
+### 실패하는 json 요청
+
+POST {{BASE_URL}}/blog/api/new/
+Authorization: Basic 유저명 암호
+Content-Type: application/json
+
+{
+  "title": "샘플 제목",
+  "content": ""
+}
+
+
+### 성공하는 json 요청
+
+POST {{BASE_URL}}/blog/api/new/
+Authorization: Basic 유저명 암호
+Content-Type: application/json
+
+{
+  "title": "샘플 제목",
+  "content": "샘플 내용"
+}
+
+
+
+### (수정/PUT) 성공하는 form-urlencoded (모든 필드 지정)
+
+PUT {{BASE_URL}}/blog/api/101/edit/
+Authorization: Basic 유저명 암호
+Content-Type: application/x-www-form-urlencoded
+
+title=샘플+제목+수정&content=샘플+내용
+
+
+### (수정/PATCH) 성공하는 form-urlencoded (업데이트할 필드만 지정)
+
+PATCH {{BASE_URL}}/blog/api/101/edit/
+Authorization: Basic 유저명 암호
+Content-Type: application/x-www-form-urlencoded
+
+title=샘플+제목+수정2
+
+### 이메일 전송을 테스트하는 POST 요청
+
+# @no-cookie-jar
+POST {{BASE_URL}}/api/send_email/
+Content-Type: application/json
+
+{
+  "email": "es468@naver.com"
+}
+
+###  회원가입을 테스트하는 POST 요청
+
+POST {{BASE_URL}}/api/register/
+Content-Type: application/json
+
+{
+    "username": "박홍수",
+    "email": "arounderseoul@gamil.com",
+    "password1": "rla468462!",
+    "password2": "rla468462!"
+}
+
+###  인증코드 확인을 테스트하는 POST 요청
+POST {{BASE_URL}}/api/confirm_email/SU41SUVG/
+Content-Type: application/json
+
+{
+    "user_input_code": "IN5IEF"
+}

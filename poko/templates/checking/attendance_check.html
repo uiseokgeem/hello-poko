@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang='ko'>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--모바일 장치에서 웹페이지가 올바르게 표시되게 함-->
+    <title>Hello! POKO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+   <style>
+        .regibox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .regi-page {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%; /* 테이블의 전체 너비 설정 */
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 10px; /* 셀의 내부 여백 조정 */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+         .quote-box {
+            max-width: 380px;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            margin: 10px auto;
+        }
+        .quote-box h4 {
+            color: #1E90FF;
+        }
+        .quote-box p {
+            color: #555;
+        }
+        </style>
+</head>
+<body>
+<!-- 네비게이션 바 -->
+{% include 'common/navigation_bar.html' %}
+
+<div class="quote-box">
+    <h4>알림</h4>
+    <p>
+        짜잔! 이번 주일 {{ date }} 출석부 입니다.
+    </p>
+</div>
+<div class="regibox" align="center">
+    <br class="regi-page" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+    <form method="POST" action="/checking/check/">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>출석 여부</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for user_student in user_students %}
+                    <tr>
+                    <td><strong>{{ user_student.name }}</strong></td>
+                    <td>
+                        {% csrf_token %}
+                            <input type="hidden" id="date" name="date" value={{ date }}>
+                            <input type="hidden" id="name" name="name" value={{ user_student.name }}>
+                            <!-- ID를 개별적으로 맞춰야 함. -->
+                            <label><input type="radio" name = "attendance_action_{{ user_student.id }}" value="출석">출석</label>
+                            <label><input type="radio" name = "attendance_action_{{ user_student.id }}" value="결석">결석</label>
+
+                    </td>
+
+                    {% if finisehd_text %}
+                        <td>{{ finisehd_text }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Check</button>
+    </form>
+        <br><br>
+        <a href="/common/user/" class="btn btn-primary">Home</a>
+    </div>
+</body>
+</html>

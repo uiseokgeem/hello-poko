@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--모바일 장치에서 웹페이지가 올바르게 표시되게 함-->
+    <title>Hello! POKO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .tab-content {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .tab-button {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f2f2f2;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .tab-button-container {
+            text-align: center;
+            margin-bottom: 20px; /* 탭 아래 여백 추가 */
+        }
+
+        .table-container {
+            text-align: center;
+            max-width: 50%;
+            margin: 0 auto; /* 테이블 중앙 정렬 */
+        }
+
+        .table-responsive {
+            overflow-x: auto; /* 테이블이 화면을 넘어가는 경우 가로 스크롤을 허용 */
+        }
+
+        .table {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 네비게이션 바 -->
+{% include 'common/navigation_bar.html' %}
+
+<div class="container">
+    <div class="row my-5">
+        <div class="col-12">
+            <h2>관리자 Dashboard</h2>
+        </div>
+        <p class="card-text">등록 된 출석데이터 기반으로 <strong>종합/상태 정보</strong>를 확인합니다.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        {{ graph_6w|safe }}
+    </div>
+
+    <div class="card">
+        <h4 class="card-header">Information</h4>
+        <div class="card-body">
+            <div class="container">
+                <div class="row align-items-start">
+                    <div class="col-lg-8">
+                        <h6 class="card-title">{{ count_text1 }}</h6>
+                        <p class="card-text">
+                            {{ count_text2 }}
+                            <strong>
+                                {{ count_text3 }}
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="col-lg-4">
+{#                        <a href="/checking/" class="btn btn-outline-primary">Go! Attendance</a>#}
+                    </div>
+                </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="container">
+    <div class="row my-5">
+        <div class="col-12">
+            <h5>More Information</h5>
+        </div>
+
+        <form method="POST" action="/">
+            {% csrf_token %}
+            <input type="date" id="date" name="date">
+            <p>주간으로 출결을 확인합니다.</p>
+            <button class="btn btn-outline-primary" type="submit" value="submit">Weekly Attendance</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <h5>{{ count_text5 }}</h5><br>
+        <h4><strong>{{ count_text6 }}</strong></h4>
+    </div>
+    <div class="row">
+        {% if graph_week %}
+            {{ graph_week|safe }}
+            </div>
+
+            <div class="row">
+                <div id="tabs" class="tab-button-container">
+                    {% for user in users %}
+                        <div class="tab-button" onclick="showTab('{{ user.username }}')">
+                            {{ user.first_name }}{{ user.last_name }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% for user in users %}
+                    <div id="{{ user.username }}" class="tab-content {% if forloop.first %}active{% endif %}">
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <h3>{{ user.first_name }}{{ user.last_name }} 선생님</h3>
+                                    <p>{{ count_text5 }}</p>
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>출결</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for student in tabel_student %}
+                                        {% if user.username == student.name__teacher__username %}
+                                            <tr>
+                                                <td>{{ student.name__name }}</td>
+                                                {% if student.attendance == '결석' %}
+                                                    <td style="color:#F08080;">{{ student.attendance }}</td>
+                                                {% else %}
+                                                    <td>{{ student.attendance }}</td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+{% endif %}
+
+</div>
+
+
+
+
+
+
+<!-- 부트스트랩 및 팝퍼, 제이쿼리 CDN 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtuRU5mgxhX46XBgVZcDIvT8xUn1AKqN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-eMN3A/EqCO9MDiMbyt9JLMBRVo/bap1P0M8zS1oA2bQKmN8ib80zNEcVTtKc6I8" crossorigin="anonymous"></script>
+
+</body>
+
+<script>
+    // JavaScript를 사용하여 현재 날짜를 가져오기
+    const currentDate = new Date();
+
+    // 날짜를 "YYYY-MM-DD" 형식의 문자열로 변환
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    // input 요소의 value 속성에 현재 날짜를 설정
+    document.getElementById('date').value = formattedDate;
+</script>
+
+<script>
+    function showTab(tabId) {
+        // Hide all tabs
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function(tab) {
+            tab.classList.remove('active');
+        });
+
+        // Show the selected tab
+        var selectedTab = document.getElementById(tabId);
+        selectedTab.classList.add('active');
+    }
+</script>
+
+</html>
