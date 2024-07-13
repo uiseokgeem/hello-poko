@@ -3,7 +3,7 @@ import { Form, Input, Button, Radio, Checkbox, Tabs } from 'antd';
 import { saveDraft, submitCheck } from '../../../api/reportApi';
 import './MemberCheck.css';
 
-const { TabPane } = Tabs;
+// const { TabPane } = Tabs;
 
 const testStudents = [
   { id: '1', name: '김사랑' },
@@ -18,12 +18,8 @@ const testStudents = [
 ];
 
 const MemberCheck = () => {
-  const [form] = Form.useForm();
   const [selectedStudent, setSelectedStudent] = useState(testStudents[0].id);
-
-  useEffect(() => {
-    form.resetFields();
-  }, [selectedStudent, form]);
+  const [studentData, setStudentData] = useState({});
 
   const handleSaveDraft = async (values) => {
     try {
@@ -43,49 +39,83 @@ const MemberCheck = () => {
     }
   };
 
+  const handleValuesChange = (changedValues, allValues) => {
+    setStudentData({
+      ...studentData,
+      [selectedStudent]: allValues,
+    });
+  };
+
+  const items = testStudents.map(student => ({
+    key: student.id,
+    label: student.name,
+    children: (
+      <StudentForm
+        key={student.id}
+        studentId={student.id}
+        initialValues={studentData[student.id] || {}}
+        handleSaveDraft={handleSaveDraft}
+        handleSubmit={handleSubmit}
+        handleValuesChange={handleValuesChange}
+      />
+    ),
+  }));
+
   return (
     <div className="member-check-section">
       <h2 className="section-title">학생 양육일지</h2>
-      <Tabs activeKey={selectedStudent} onChange={setSelectedStudent}>
-        {testStudents.map(student => (
-          <TabPane tab={student.name} key={student.id}>
-            <Form form={form} onFinish={handleSubmit} layout="vertical">
-              <Form.Item label="주일예배는 얼마나 참석했나요?" name="worship_attendance">
-                <Radio.Group>
-                  <Radio value="1부 예배">1부 예배</Radio>
-                  <Radio value="2부 예배">2부 예배</Radio>
-                  <Radio value="3부 예배">3부 예배</Radio>
-                  <Radio value="불참">불참</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item label="GQS 참석 여부" name="gqs" valuePropName="checked">
-                <Checkbox>GQS 참석 여부</Checkbox>
-              </Form.Item>
-              <Form.Item label="양육 내용" name="training_content">
-                <Input.TextArea className="form-item-input" />
-              </Form.Item>
-              <Form.Item label="기도 내용" name="pray_member">
-                <Input.TextArea className="form-item-input" />
-              </Form.Item>
-              <Form.Item label="기타 내용" name="additional_issues">
-                <Input.TextArea className="form-item-input" />
-              </Form.Item>
-              <Form.Item className="button-group">
-                <Button onClick={() => form.submit(handleSaveDraft)}>임시 저장</Button>
-                <Button type="primary" htmlType="submit">제출</Button>
-              </Form.Item>
-            </Form>
-          </TabPane>
-        ))}
-      </Tabs>
+      <Tabs activeKey={selectedStudent} onChange={setSelectedStudent} items={items} />
     </div>
+  );
+};
+
+const StudentForm = ({ studentId, initialValues, handleSaveDraft, handleSubmit, handleValuesChange }) => {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [initialValues, form]);
+
+  return (
+    <Form
+      form={form}
+      onFinish={handleSubmit}
+      layout="vertical"
+      onValuesChange={handleValuesChange}
+      initialValues={initialValues}
+    >
+      <Form.Item label="주일예배는 얼마나 참석했나요?" name="worship_attendance">
+        <Radio.Group>
+          <Radio value="1부 예배">1부 예배</Radio>
+          <Radio value="2부 예배">2부 예배</Radio>
+          <Radio value="3부 예배">3부 예배</Radio>
+          <Radio value="불참">불참</Radio>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item label="GQS 참석 여부" name="gqs" valuePropName="checked">
+        <Checkbox>GQS 참석 여부</Checkbox>
+      </Form.Item>
+      <Form.Item label="양육 내용" name="training_content">
+        <Input.TextArea className="form-item-input" />
+      </Form.Item>
+      <Form.Item label="기도 내용" name="pray_member">
+        <Input.TextArea className="form-item-input" />
+      </Form.Item>
+      <Form.Item label="기타 내용" name="additional_issues">
+        <Input.TextArea className="form-item-input" />
+      </Form.Item>
+      <Form.Item className="button-group">
+        <Button onClick={() => handleSaveDraft(form.getFieldsValue())}>임시 저장</Button>
+        <Button type="primary" htmlType="submit">제출</Button>
+      </Form.Item>
+    </Form>
   );
 };
 
 export default MemberCheck;
 
 
-// 학생 목록 데이터 가져오기
+// 학생 목록 데이터  동적으로ㅗ 가져오기
 // useEffect(() => {
   //   const loadStudents = async () => {
   //     try {
