@@ -84,13 +84,25 @@ const UserCheck = () => {
 
         <h3 className="subsection-title">이번 주 기도제목을 알려주세요</h3>
         <Form.Item label="사귐의교회 청소년부" name="pray_youth">
-          <Input.TextArea className="text-input form-item-input" />
+          <Input.TextArea 
+          className="text-input form-item-input" 
+          placeholder='사귐의 교회, 청소년부를 위한 기도제목을 작성하세요.'
+          rows={4}// 높이를 설정하는 속성 추가
+          />
         </Form.Item>
         <Form.Item label="GQS/새소식반" name="pray_group">
-          <Input.TextArea className="text-input form-item-input" />
+          <Input.TextArea 
+          className="text-input form-item-input"
+          placeholder='담당 반을 위한 기도제목을 작성하세요.'
+          rows={4}
+           />
         </Form.Item>
         <Form.Item label="교사 본인" name="pray_user">
-          <Input.TextArea className="text-input form-item-input" />
+          <Input.TextArea 
+          className="text-input form-item-input"
+          placeholder='본인에게 필요한 기도제목을 작성하세요.'
+          rows={4}
+          />
         </Form.Item>
         <Form.Item className="button-group">
           <Button className="draft-button" onClick={() => form.validateFields().then(handleSaveDraft)}>임시 저장</Button>

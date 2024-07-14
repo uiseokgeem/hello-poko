@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Radio, Checkbox, Tabs } from 'antd';
+import { Form, Input, Button, Radio, Tabs } from 'antd';
 import { saveDraft, submitCheck } from '../../../api/reportApi';
 import './MemberCheck.css';
 
@@ -84,25 +84,31 @@ const StudentForm = ({ studentId, initialValues, handleSaveDraft, handleSubmit, 
       onValuesChange={handleValuesChange}
       initialValues={initialValues}
     >
-      <Form.Item label="주일예배는 얼마나 참석했나요?" name="worship_attendance">
+      <Form.Item label={<strong>주일예배를 참석했나요?(참조 값)</strong>} name="attendance"> 
         <Radio.Group>
-          <Radio value="1부 예배">1부 예배</Radio>
-          <Radio value="2부 예배">2부 예배</Radio>
-          <Radio value="3부 예배">3부 예배</Radio>
-          <Radio value="불참">불참</Radio>
+          <Radio value="1">출석</Radio>
+          <Radio value="0">결석</Radio>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label="GQS 참석 여부" name="gqs" valuePropName="checked">
-        <Checkbox>GQS 참석 여부</Checkbox>
+      <Form.Item label={<strong>GQS에 참석했나요?</strong>}  name="gqs" >
+        <Radio.Group>
+          <Radio value="출석">출석</Radio>
+          <Radio value="불참 ">결석</Radio>
+        </Radio.Group>
       </Form.Item>
-      <Form.Item label="양육 내용" name="training_content">
-        <Input.TextArea className="form-item-input" />
+      <Form.Item label={<strong>양육 내용</strong>} name="training_content">
+        <Input.TextArea 
+        className="form-item-input" 
+        rows={3}
+        placeholder='한 주간 양육 내용을 작성해주세요.'
+        />
       </Form.Item>
-      <Form.Item label="기도 내용" name="pray_member">
-        <Input.TextArea className="form-item-input" />
-      </Form.Item>
-      <Form.Item label="기타 내용" name="additional_issues">
-        <Input.TextArea className="form-item-input" />
+      <Form.Item label={<strong>기도 내용</strong>} name="pray_member">
+        <Input.TextArea 
+        className="form-item-input" 
+        rows={3}
+        placeholder='해당 학생의 기도제목을 작성하세요.'
+        />
       </Form.Item>
       <Form.Item className="button-group">
         <Button onClick={() => handleSaveDraft(form.getFieldsValue())}>임시 저장</Button>
@@ -115,7 +121,7 @@ const StudentForm = ({ studentId, initialValues, handleSaveDraft, handleSubmit, 
 export default MemberCheck;
 
 
-// 학생 목록 데이터  동적으로ㅗ 가져오기
+// 학생 목록 데이터  동적으로 가져오기
 // useEffect(() => {
   //   const loadStudents = async () => {
   //     try {

@@ -1,0 +1,32 @@
+.issue-section {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 100%;
+}
+  
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.form-item {
+    margin-bottom: 16px;
+}
+
+.form-item-input {
+    width: 100%;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.text-input.form-item-input {
+    height: auto; /* 기본 높이를 설정하거나 필요에 따라 조정합니다 */
+  }

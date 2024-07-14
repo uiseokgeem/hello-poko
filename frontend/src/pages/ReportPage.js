@@ -3,6 +3,7 @@ import { Layout, Tabs } from 'antd';
 import AppHeader from '../components/Header/Header';
 import UserCheck from '../components/Report/UserCheck/UserCheck';
 import MemberCheck from '../components/Report/MemberCheck/MemberCheck';
+import Issue from '../components/Report/Issue/Issue';
 import './ReportPage.css';
 
 const { Content } = Layout;
@@ -17,6 +18,13 @@ const items = [
     key: '2',
     label: '학생 양육일지',
     children: <MemberCheck />,
+  },
+  {
+    key: '3',
+    label: '문의사항',
+    children: <Issue />,
+    
+
   },
 ];
 
