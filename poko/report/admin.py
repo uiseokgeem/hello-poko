@@ -10,6 +10,7 @@ class MemberCheckAdmin(admin.ModelAdmin):
         "status",
         "pray_member",
         "date",
+        "status",
     ]
 
 
@@ -22,11 +23,12 @@ class UserCheckAdmin(admin.ModelAdmin):
         "worship",
         "meeting",
         "qt",
-        "pray_youth",
+        "pray_Dept",
         "pray_group",
         "pray_user",
         "pray_emergency",
         "date",
+        "status",
     ]
 
 

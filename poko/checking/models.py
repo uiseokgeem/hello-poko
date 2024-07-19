@@ -34,13 +34,13 @@ class Attendance(models.Model):
         # return self.name 시 오류
 
 
-class GetImage(models.Model):
-    name = models.CharField(max_length=50)
-    image = models.ImageField(blank=True)  # upload_to="checking/getimage/%Y/%m/%d"
-    description = models.TextField()
-
-    def __str__(self):
-        return self.name
+# class GetImage(models.Model):
+#     name = models.CharField(max_length=50)
+#     image = models.ImageField(blank=True)  # upload_to="checking/getimage/%Y/%m/%d"
+#     description = models.TextField()
+#
+#     def __str__(self):
+#         return self.name
 
 
 # 기획서 매핑 후 모델 반영

@@ -13,13 +13,15 @@ class MemberCheck(models.Model):
         (1, "작성완료"),
     ]
 
+    gqs_choice = [(False, "불참"), (True, "참석")]
+
     name = models.ForeignKey(
         Member,
         related_name="membercheck",
         on_delete=models.CASCADE,
         to_field="name",
     )
-    gqs = models.BooleanField(default=True)  # GQS 참석 여부
+    gqs = models.BooleanField(default=True, choices=gqs_choice)  # GQS 참석 여부
     pray_member = models.CharField(max_length=300, null=True, default=None)
     date = models.DateTimeField(default=timezone.now)
     date_sunday = models.DateField(null=True, blank=True)
@@ -52,6 +54,17 @@ class UserCheck(models.Model):
         (7, "7회"),
     ]
 
+    pray_choice = [
+        (0, "0회"),
+        (1, "1회"),
+        (2, "2회"),
+        (3, "3회"),
+        (4, "4회"),
+        (5, "5회"),
+        (6, "6회"),
+        (7, "7회"),
+    ]
+
     meeting_choice = [(False, "불참"), (True, "참석")]
 
     teacher = models.ForeignKey(
@@ -72,10 +85,13 @@ class UserCheck(models.Model):
         default=None,
         choices=qt_choice,
     )
+    pray = models.IntegerField(
+        null=True,
+        default=None,
+        choices=pray_choice,
+    )
     meeting = models.BooleanField(default=True, choices=meeting_choice)  # 교사모임 참석 여부
-    pray_youth = models.CharField(
-        max_length=300, null=True, default=None
-    )  # 청소년부를 위한 기도
+    pray_Dept = models.CharField(max_length=300, null=True, default=None)  # 청소년부를 위한 기도
     pray_group = models.CharField(
         max_length=300, null=True, default=None
     )  # 반 모임을 위한 기도
