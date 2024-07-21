@@ -7,7 +7,7 @@ from .views import CustomLoginView
 
 # from .api import GetPasswordsAPIView
 
-app_name = "accounts"
+# app_name = "accounts", api test url reverse 사용 시 api name space와 충돌 됨.(주석처리)
 
 # View
 urlpatterns = [
@@ -27,6 +27,7 @@ urlpatterns = [
         name="ApiResetPwdConfirm",
     ),
 ]
+
 
 # DRF
 account_api_v1 = [
@@ -56,11 +57,11 @@ account_api_v1 = [
     # path("get-passwords", GetPasswordsAPIView.as_view(), name="get-passwords"),
 ]
 
-urlpatterns += [
+urlpatterns = [
     path("api/", include((account_api_v1, "accounts-v1"))),
 ]
 
-# dj_rest_auth
+# dj_rest_auth 설치 시 사용가능한 url 리스트
 # api/ password/reset/ [name='rest_password_reset']
 # api/ password/reset/confirm/ [name='rest_password_reset_confirm']
 # api/ login/ [name='rest_login']
