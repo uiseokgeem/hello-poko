@@ -200,6 +200,16 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+# CORS 허용 설정
+CORS_ALLOWED_ORIGINS = [
+    # "http://localhost:3000",  # React 앱의 주소
+    # "http://localhost:80",
+    "http://poko-dev.com",  # 도메인 이름 (http 사용)
+    "https://poko-dev.com",  # 도메인 이름 (https 사용)
+]
+CORS_ALLOW_CREDENTIALS = True
+
 # 배포시 설정(csrf 토큰 설정), 개발환경에서는 admin login issue로 사용하지 말 것
 CSRF_TRUSTED_ORIGINS = [
     "https://www.poko-dev.com",
@@ -251,14 +261,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
-
-
-# CORS 허용 설정
-CORS_ALLOWED_ORIGINS = [
-    # "http://localhost:3000",  # React 앱의 주소
-    "http://localhost:80",
-]
-CORS_ALLOW_CREDENTIALS = True
 
 # email
 EMAIL_HOST = env.str(var="EMAIL_HOST", default=None)
