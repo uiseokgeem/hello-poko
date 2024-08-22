@@ -13,7 +13,7 @@ const csrftoken = getCSRFToken();
 export const sendEmail = async (email) => {
   try {
     const response = await axios.post(
-      'http://localhost:8000/api/send-email',
+      'http://localhost/api/send-email',
       { email },
       {
          withCredentials: true,
@@ -37,7 +37,7 @@ export const sendEmail = async (email) => {
 export const verifyEmail = async (urlCode, emailCode, verificationCode) => {
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/confirm-email/${urlCode}/${emailCode}`,
+      `http://localhost/api/confirm-email/${urlCode}/${emailCode}`,
       { user_input_code: verificationCode },
       {
          withCredentials: true,
@@ -55,7 +55,7 @@ export const verifyEmail = async (urlCode, emailCode, verificationCode) => {
 
 export const validatePwd = async (urlCode, emailCode, password1, password2) => {
   try {
-    const response = await axios.post(`http://localhost:8000/api/validate-pwd/${urlCode}/${emailCode}`,
+    const response = await axios.post(`http://localhost/api/validate-pwd/${urlCode}/${emailCode}`,
       {password1, password2},
       {
          withCredentials: true,
@@ -73,7 +73,7 @@ export const validatePwd = async (urlCode, emailCode, password1, password2) => {
 
 export const register = async (urlCode, emailCode, fullName, birthDate) => {
   try {
-    const response = await axios.post(`http://localhost:8000/api/register/${urlCode}/${emailCode}`,
+    const response = await axios.post(`http://localhost/api/register/${urlCode}/${emailCode}`,
       {full_name: fullName, birth_date : birthDate},
       {
         withCredentials: true,

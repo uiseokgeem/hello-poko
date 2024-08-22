@@ -13,7 +13,7 @@ const csrftoken = getCSRFToken();
 export const login = async (id, password) => {
     try {
         const response = await axios.post(
-        'http://localhost:8000/api/login/',
+        'http://localhost/api/login/',
         {email : id, password : password},
         {
             withCredentials: true,

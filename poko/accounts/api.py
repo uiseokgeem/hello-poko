@@ -47,7 +47,7 @@ class SendEmailAPIView(APIView):
             url_code = urlsafe_base64_encode(force_bytes(code))
             email_code = urlsafe_base64_encode(force_bytes(email))
             protocol = "http"
-            domain = "localhost:3000"
+            domain = "localhost:80"
             code_confirm_url = (
                 f"{protocol}://{domain}/verify-email/{url_code}/{email_code}/"
             )

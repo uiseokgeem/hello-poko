@@ -1,32 +1,35 @@
 # tests/test_register.py
 
-# 각 API 하나씩 test해보기
 
-# import pytest
-# from django.urls import reverse
-# from django.utils.http import urlsafe_base64_decode
-# from rest_framework.test import APIClient
-# from django.core import mail
-# from accounts.models import CustomUser
-#
-#
-# @pytest.mark.django_db
-# def test_send_email():
-#     client = APIClient()
-#     url = reverse("send-email")
-#     data = {"email": "testuser@example.com"}
-#
-#     response = client.post(url, data, format="json")
-#
-#     assert response.status_code == 200
-#     assert len(mail.outbox) == 1  # 이메일이 발송되었는지 확인
-#     assert "인증코드가 발송 되었습니다." in response.data["message"]
-#
-#     email = mail.outbox[0]
-#     assert "안녕하세요. poko 입니다!" in email.subject
-#     assert "회원가입을 위한 코드입니다" in email.body
-#
-#
+import pytest
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_decode
+from rest_framework.test import APIClient
+from django.core import mail
+from accounts.models import CustomUser
+
+
+@pytest.mark.django_db
+def test_send_email():
+    client = APIClient()
+    url = reverse("accounts-v1:send_email")
+    data = {"email": "es468@naver.com"}
+
+    response = client.post(url, data, format="json")
+
+    assert response.status_code == 200
+    assert len(mail.outbox) == 1  # 이메일이 발송되었는지 확인
+    assert "인증코드가 발송 되었습니다." in response.data["message"]
+    email = mail.outbox[0]
+    assert "안녕하세요. poko 입니다!" in email.subject
+    assert "회원가입을 위한 코드입니다" in email.body
+
+    # 인증코드 및 인증 링크 확인
+    # 테스트 환경에서는 실제 이메일 발송은 이루어지지 않고 메모리에 저장 됨. 이를 통해 assert 검증
+    assert response.data["url_code"] in email.body
+    assert response.data["email_code"] in email.body
+
+
 # @pytest.mark.django_db
 # def test_confirm_email():
 #     client = APIClient()

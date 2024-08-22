@@ -205,6 +205,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.poko-dev.com",
     "https://poko-dev.com",
     "http://localhost:3000",
+    "http://localhost:80",
 ]
 CSRF_COOKIE_SECURE = False
 
@@ -254,7 +255,8 @@ SIMPLE_JWT = {
 
 # CORS 허용 설정
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React 앱의 주소
+    # "http://localhost:3000",  # React 앱의 주소
+    "http://localhost:80",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
