@@ -5,7 +5,7 @@ services:
     build:
       context: ./poko/nginx  # 빌드 컨텍스트가 위치한 디렉토리
     volumes:
-      - ./frontend/build:/usr/share/nginx/html   # 로컬에서 빌드된 프론트엔드 파일을 Nginx 컨테이너로 마운트(중요)
+      - ./frontend/build:/usr/share/nginx/html  # 프론트엔드 빌드된 파일을 Nginx 컨테이너로 마운트
       - static_volume:/usr/src/app/static
       - media_volume:/usr/src/app/media
       - ./data/certbot/conf:/etc/letsencrypt
@@ -38,6 +38,16 @@ services:
       - ./poko/.env.dev
     depends_on:
       - db
+
+  frontend:
+    build:
+      context: ./frontend  # 빌드 컨텍스트를 지정
+    environment:
+      - NODE_ENV=production
+    expose:
+      - 3000
+    volumes:
+      - ./frontend/build:/usr/src/app/build  # 빌드된 파일을 로컬에서 접근 가능하게 마운트
 
   db:
     image: postgres:12.0-alpine
