@@ -6,7 +6,6 @@ letsencrypt.sh
 backup
 backup.sh
 blog
-data
 .DS_Store
 .env.dev.db
 .env.dev
@@ -14,6 +13,8 @@ docker-compose.dev.yml
 db.sqlite3
 backup.sh
 identifier.sqlite
+data
+init-letsencrypt.sh
 
 # Ignore Python byte-compiled files
 __pycache__/
