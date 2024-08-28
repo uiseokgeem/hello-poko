@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = Env()
 ENV_PATH = BASE_DIR / ".env"
 if ENV_PATH.exists():
-    print("환경변수 파일 있으니까 읽어올게! .env file")
+    print(f"환경변수 파일 있으니까 읽어올게! {ENV_PATH}")
     with ENV_PATH.open(encoding="utf-8") as f:
         env.read_env(f, overwrite=True)
 else:
