@@ -22,11 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = Env()
 ENV_PATH = BASE_DIR / ".env"
 if ENV_PATH.exists():
-    print(f"환경변수 파일 있으니까 읽어올게! {ENV_PATH}")
+    print(f".env read success! {ENV_PATH}")
     with ENV_PATH.open(encoding="utf-8") as f:
         env.read_env(f, overwrite=True)
 else:
-    print("ENV_PATH에 환경 변수가 없다!", ENV_PATH)
+    print(".env read fail!", ENV_PATH)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
