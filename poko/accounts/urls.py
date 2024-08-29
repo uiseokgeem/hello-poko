@@ -54,6 +54,7 @@ account_api_v1 = [
         api.ValidatePwdAPIView.as_view(),
         name="validate_pwd",
     ),
+    path("test-email/", api.test_email, name="test_email")
     # path("get-passwords", GetPasswordsAPIView.as_view(), name="get-passwords"),
 ]
 

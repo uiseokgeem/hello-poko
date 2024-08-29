@@ -22,6 +22,25 @@ from dj_rest_auth.views import LoginView
 from dj_rest_auth.serializers import LoginSerializer
 from .serializers import CustomLoginSerializer
 
+# email test
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
+
+@csrf_exempt
+def test_email(request):
+    try:
+        send_mail(
+            "test email",
+            "test email on aws ses",
+            "poko@poko-dev.com",
+            ["arounderseul@gmail.com"],
+            fail_silently=False,
+        ),
+        return HttpResponse("Email sent")
+    except Exception as e:
+        return HttpResponse("Email not sent")
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLoginView(LoginView):
