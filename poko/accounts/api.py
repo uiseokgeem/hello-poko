@@ -23,8 +23,11 @@ from dj_rest_auth.serializers import LoginSerializer
 from .serializers import CustomLoginSerializer
 
 # email test
+import logging
 from django.core.mail import send_mail
 from django.http import HttpResponse
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -39,7 +42,8 @@ def test_email(request):
         ),
         return HttpResponse("Email sent")
     except Exception as e:
-        return HttpResponse("Email not sent")
+        logger.error(f"Email not sent log: {str(e)}")
+        return HttpResponse(f"Email not sent {str(e)}")
 
 
 @method_decorator(csrf_exempt, name="dispatch")
