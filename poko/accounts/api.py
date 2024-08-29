@@ -36,7 +36,7 @@ def test_email(request):
         send_mail(
             "test email",
             "test email on aws ses",
-            "poko@poko-dev.com",
+            "arounderseul@gmail.com",
             ["arounderseul@gmail.com"],
             fail_silently=False,
         ),
@@ -69,8 +69,8 @@ class SendEmailAPIView(APIView):
             code = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
             url_code = urlsafe_base64_encode(force_bytes(code))
             email_code = urlsafe_base64_encode(force_bytes(email))
-            protocol = "http"
-            domain = "localhost:80"
+            protocol = "https"
+            domain = "poko-dev.com"
             code_confirm_url = (
                 f"{protocol}://{domain}/verify-email/{url_code}/{email_code}/"
             )
@@ -92,7 +92,10 @@ class SendEmailAPIView(APIView):
 
             # 이메일 발송 세팅
             email = EmailMessage(
-                "안녕하세요. poko 입니다!", html_message, "es468@naver.com", [email]  # 발신자 이메일
+                "안녕하세요. poko 입니다!",
+                html_message,
+                "arounderseul@gmail.com",
+                [email],  # 발신자 이메일
             )
             email.content_subtype = "html"
 
