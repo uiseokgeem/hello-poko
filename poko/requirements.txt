@@ -4,7 +4,7 @@ argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
 arrow==1.3.0
 asgiref==3.8.1
-asttokens @ file:///opt/conda/conda-bld/asttokens_1646925590279/work
+asttokens==2.0.5
 async-lru==2.0.4
 attrs==23.2.0
 awscli==1.34.9
@@ -14,18 +14,18 @@ black==24.2.0
 bleach==6.1.0
 boto3==1.35.9
 botocore==1.35.9
-Brotli @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_27zk0eqdh0/croot/brotli-split_1714483157007/work
+Brotli==1.0.9
 certifi==2024.2.2
-cffi @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_7a9c7wyorr/croot/cffi_1714483157752/work
+cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
 comm==0.2.1
-contourpy @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/contourpy_1701814001737/work
-cryptography @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_31zgxm62w8/croot/cryptography_1714660690857/work
-cycler @ file:///tmp/build/80754af9/cycler_1637851556182/work
+contourpy==1.2.0
+cryptography==42.0.5
+cycler==0.11.0
 debugpy==1.8.1
-decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
+decorator==5.1.1
 defusedxml==0.7.1
 dj-rest-auth==6.0.0
 Django==5.0.6
@@ -40,7 +40,7 @@ djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 docutils==0.16
 et-xmlfile==1.1.0
-executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
+executing==0.8.3
 Faker==25.4.0
 fastjsonschema==2.19.1
 fonttools==4.25.0
@@ -49,13 +49,13 @@ gunicorn==21.2.0
 h11==0.14.0
 httpcore==1.0.3
 httpx==0.26.0
-idna @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a12xpo84t2/croot/idna_1714398852854/work
+idna==3.7
 iniconfig==2.0.0
 ipykernel==6.29.2
-ipython @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a1tmxj9b4u/croot/ipython_1704833016119/work
+ipython==8.20.0
 ipywidgets==8.1.2
 isoduration==20.11.0
-jedi @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/jedi_1699242252604/work
+jedi==0.18.1
 Jinja2==3.1.3
 jmespath==1.0.1
 json5==0.9.14
@@ -74,10 +74,10 @@ jupyterlab==4.1.1
 jupyterlab_pygments==0.3.0
 jupyterlab_server==2.25.3
 jupyterlab_widgets==3.0.10
-kiwisolver @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/kiwisolver_1699239145780/work
+kiwisolver==1.4.4
 MarkupSafe==2.1.5
-matplotlib @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/matplotlib-suite_1699241272749/work
-matplotlib-inline @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/matplotlib-inline_1699242375920/work
+matplotlib==3.8.0
+matplotlib-inline==0.1.6
 mistune==3.0.2
 munkres==1.1.4
 mypy-extensions==1.0.0
@@ -87,36 +87,36 @@ nbformat==5.9.2
 nest-asyncio==1.6.0
 notebook==7.1.0
 notebook_shim==0.2.4
-numpy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_cfbbnu3tzv/croot/numpy_and_numpy_base_1704311724719/work/dist/numpy-1.26.3-cp312-cp312-macosx_11_0_arm64.whl#sha256=e066d59974be230052477e95f2633cdef4c4987c2f32c15291d3f4b184022bdc
+numpy==1.26.3
 oauthlib==3.2.2
 openpyxl==3.1.2
 overrides==7.7.0
 packaging==23.2
 pandas==2.2.1
 pandocfilters==1.5.1
-parso @ file:///opt/conda/conda-bld/parso_1641458642106/work
+parso==0.8.3
 pathspec==0.12.1
-pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
-pillow @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_e02b4k5qik/croot/pillow_1707233036487/work
+pexpect==4.8.0
+pillow==10.2.0
 platformdirs==4.2.0
 pluggy==1.5.0
 prometheus_client==0.20.0
-prompt-toolkit @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_c63v4kqjzr/croot/prompt-toolkit_1704404354115/work
-psutil @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/psutil_1699248249804/work
+prompt-toolkit==3.0.43
+psutil==5.9.0
 psycopg2-binary==2.9.9
-ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
-pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
+ptyprocess==0.7.0
+pure-eval==0.2.2
 pyasn1==0.6.0
-pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
-Pygments @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/pygments_1699238063295/work
+pycparser==2.21
+Pygments==2.15.1
 PyJWT==2.8.0
-pyOpenSSL @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_55z9ffoadh/croot/pyopenssl_1723651585773/work
-pyparsing @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/pyparsing_1699239441347/work
-PySocks @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/pysocks_1699237568675/work
+pyOpenSSL==24.2.1
+pyparsing==3.0.9
+PySocks==1.7.1
 pytest==8.2.2
 pytest-django==4.8.0
 pytest-testdox==3.1.0
-python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+python-dateutil==2.8.2
 python-json-logger==2.0.7
 python3-openid==3.2.0
 pytz==2024.1
@@ -134,22 +134,22 @@ rsa==4.7.2
 s3transfer==0.10.2
 Send2Trash==1.8.2
 setuptools==68.2.2
-six @ file:///tmp/build/80754af9/six_1644875935023/work
+six==1.16.0
 sniffio==1.3.0
 soupsieve==2.5
-sqlparse @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/sqlparse_1699250105010/work
-stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
+sqlparse==0.4.4
+stack-data==0.2.0
 terminado==0.18.0
 tinycss2==1.2.1
-tornado @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/tornado_1699243541634/work
+tornado==6.3.3
 tqdm==4.66.4
-traitlets @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/traitlets_1699282007293/work
+traitlets==5.7.1
 types-python-dateutil==2.8.19.20240106
 typing==3.7.4.3
 tzdata==2024.1
 uri-template==1.3.0
 urllib3==2.2.2
-wcwidth @ file:///Users/ktietz/demo/mc3/conda-bld/wcwidth_1629357192024/work
+wcwidth==0.2.5
 webcolors==1.13
 webencodings==0.5.1
 websocket-client==1.7.0
