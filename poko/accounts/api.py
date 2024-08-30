@@ -27,7 +27,47 @@ import logging
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
+# boto3
+import boto3
+from poko import settings
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
+from django.http import JsonResponse
+
 logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+def boto3_test(request):
+    ses_client = boto3.client(
+        "ses",
+        region_name=settings.AWS_SES_REGION_NAME,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+
+    subject = "TEST SES FROM DJANGO WITH BOTO3"
+    body = "TEST SES FROM DJANGO WITH BOTO3"
+    recipient = "manager.poko@gmail.com"
+
+    try:
+        response = ses_client.send_email(
+            Source=settings.DEFAULT_FROM_EMAIL,
+            Destination={
+                "ToAddresses": [
+                    recipient,
+                ],
+            },
+            Message={
+                "Subject": {"Data": subject, "Charset": "UTF-8"},
+                "Body": {"Text": {"Data": body, "Charset": "UTF-8"}},
+            },
+        )
+        return JsonResponse({"status": "success", "message_id": response["MessageId"]})
+
+    except (NoCredentialsError, PartialCredentialsError) as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 @csrf_exempt
