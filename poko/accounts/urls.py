@@ -55,7 +55,7 @@ account_api_v1 = [
         name="validate_pwd",
     ),
     path("test-email/", api.test_email, name="test_email"),
-    path("test-boto3/", api.test_boto3, name="test_boto3"),
+    path("test-boto3/", api.boto3_test, name="boto3_test"),
     # path("get-passwords", GetPasswordsAPIView.as_view(), name="get-passwords"),
 ]
 
