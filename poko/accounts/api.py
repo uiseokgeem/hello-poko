@@ -36,8 +36,8 @@ def test_email(request):
         send_mail(
             "test email",
             "test email on aws ses",
-            "arounderseoul@gmail.com",
-            ["arounderseoul@gmail.com"],
+            "poko@poko-dev.com",
+            ["manager.poko@gmail.com"],
             fail_silently=False,
         ),
         return HttpResponse("Email sent")
@@ -94,7 +94,7 @@ class SendEmailAPIView(APIView):
             email = EmailMessage(
                 "안녕하세요. poko 입니다!",
                 html_message,
-                "arounderseoul@gmail.com",
+                "poko@poko-dev.com",
                 [email],  # 발신자 이메일
             )
             email.content_subtype = "html"
