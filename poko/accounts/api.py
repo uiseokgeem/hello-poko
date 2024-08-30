@@ -45,6 +45,11 @@ def boto3_test(request):
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
 
+    logger.info("SES Client: %s", ses_client)
+    logger.info("Region Name: %s", ses_client.meta.region_name)
+    logger.info("Access Key ID: %s", ses_client._request_signer._credentials.access_key)
+    logger.info("Secret Access Key: %s", "************")
+
     subject = "TEST SES FROM DJANGO WITH BOTO3"
     body = "TEST SES FROM DJANGO WITH BOTO3"
     recipient = "manager.poko@gmail.com"
