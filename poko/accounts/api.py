@@ -45,11 +45,6 @@ def boto3_test(request):
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
 
-    logger.info("SES Client: %s", ses_client)
-    logger.info("Region Name: %s", ses_client.meta.region_name)
-    logger.info("Access Key ID: %s", ses_client._request_signer._credentials.access_key)
-    logger.info("Secret Access Key: %s", "************")
-
     subject = "TEST SES FROM DJANGO WITH BOTO3"
     body = "TEST SES FROM DJANGO WITH BOTO3"
     recipient = "manager.poko@gmail.com"
@@ -75,22 +70,6 @@ def boto3_test(request):
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
-@csrf_exempt
-def test_email(request):
-    try:
-        send_mail(
-            "test email",
-            "test email on aws ses",
-            "poko@poko-dev.com",
-            ["manager.poko@gmail.com"],
-            fail_silently=False,
-        ),
-        return HttpResponse("Email sent")
-    except Exception as e:
-        logger.error(f"Email not sent log: {str(e)}")
-        return HttpResponse(f"Email not sent {str(e)}")
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLoginView(LoginView):
     serializer_class = CustomLoginSerializer
@@ -109,6 +88,12 @@ class SendEmailAPIView(APIView):
             #     return Response(
             #         {"message": "이미 가입된 이메일입니다."}, status=status.HTTP_409_CONFLICT
             #     )
+            ses_client = boto3.client(
+                "ses",
+                region_name=settings.AWS_SES_REGION_NAME,
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
 
             # 인증코드 및 이메일 인증 링크 생성
             code = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
@@ -121,6 +106,7 @@ class SendEmailAPIView(APIView):
             )
 
             # 이메일 message 세팅
+            subject = "안녕하세요. poko 등록 안내입니다."
             html_message = f"""
                         <!DOCTYPE html>
                         <html>
@@ -136,25 +122,37 @@ class SendEmailAPIView(APIView):
                         """
 
             # 이메일 발송 세팅
-            email = EmailMessage(
-                "안녕하세요. poko 입니다!",
-                html_message,
-                "poko@poko-dev.com",
-                [email],  # 발신자 이메일
-            )
-            email.content_subtype = "html"
+            try:
+                response = ses_client.send_email(
+                    Source=settings.DEFAULT_FROM_EMAIL,
+                    Destination={
+                        "ToAddresses": [
+                            email,
+                        ],
+                    },
+                    Message={
+                        "Subject": {"Data": subject, "Charset": "utf-8"},
+                        "Body": {"Html": {"Data": html_message, "Charset": "utf-8"}},
+                    },
+                )
 
-            # 이메일 발송
-            email.send()
+                return Response(
+                    {
+                        "message": "인증코드가 발송 되었습니다.",
+                        "url_code": url_code,
+                        "email_code": email_code,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            except (NameError, PartialCredentialsError) as e:
+                return Response(
+                    {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except Exception as e:
+                return Response(
+                    {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
-            return Response(
-                {
-                    "message": "인증코드가 발송 되었습니다.",
-                    "url_code": url_code,
-                    "email_code": email_code,
-                },
-                status=status.HTTP_200_OK,
-            )
         return Response(
             data={"message": "이메일 주소가 올바르지 않습니다. 다시 시도해주세요."},
             status=status.HTTP_400_BAD_REQUEST,
