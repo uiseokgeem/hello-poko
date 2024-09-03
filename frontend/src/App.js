@@ -6,6 +6,7 @@ import ValidatePwdPage from './pages/ValidatePwdPage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ReportPage from './pages/ReportPage';
+import AttendancePage from './pages/AttendancePage';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/register/:url_code/:email_code" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage></LoginPage>}/>
         <Route path="/report" element={<ReportPage />} /> 
+        <Route path="/attendance" element={<AttendancePage />} />
       </Routes>
     </Router>
   );

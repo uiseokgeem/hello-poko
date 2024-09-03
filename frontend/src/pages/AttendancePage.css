@@ -1,0 +1,20 @@
+.page-container {
+    padding: 20px;
+    background-color: #fff;
+    min-height: 100vh;
+  }
+  
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .year-select {
+    width: 120px;
+  }
+  
+  .new-attendance-button {
+    margin-left: 20px;
+  }

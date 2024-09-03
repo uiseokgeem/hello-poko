@@ -115,7 +115,7 @@ class SendEmailAPIView(APIView):
                             <title>회원가입 이메일 인증</title>
                         </head>
                         <body>
-                            <p>회원가입을 위한 코드입니다: <strong>{code}</strong></p>
+                            <p>poko 등록을 위한 코드입니다: <strong>{code}</strong></p>
                             <p><a href="{code_confirm_url}">이메일 인증 링크</a></p>
                         </body>
                         </html>
