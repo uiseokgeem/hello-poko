@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import ReportPage from './pages/ReportPage';
 import AttendancePage from './pages/AttendancePage';
 
+
 const App = () => {
   return (
     <Router>
