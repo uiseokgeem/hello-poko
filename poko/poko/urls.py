@@ -9,11 +9,11 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     # zpath("blog/", include("blog.urls")),  # drf test
     path("common/", include("common.urls")),
-    path("checking/", include("checking.urls")),
+    path("attendance/", include("attendance.urls")),
     path("report/", include("report.urls")),
     # path("accounts/", include("allauth.urls"))
-    # path("checking/", include("checking.urls")),
-    # path("checking/date/", include("checking.urls")),
+    # path("attendance/", include("attendance.urls")),
+    # path("attendance/date/", include("attendance.urls")),
 ]
 # settings.MEDIA_URL / settings.MEDIA_ROOT의 사용
 

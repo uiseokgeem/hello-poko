@@ -90,7 +90,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     # local apps
     "common",
-    "checking",
+    "attendance",
     "report",
     "graph",
     "accounts",
@@ -119,7 +119,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "checking", "templates"),
+            os.path.join(BASE_DIR, "attendance", "templates"),
             os.path.join(BASE_DIR, "templates"),
         ],
         "APP_DIRS": True,

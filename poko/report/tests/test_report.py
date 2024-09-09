@@ -2,7 +2,7 @@
 import pytest
 from django.utils import timezone
 from accounts.models import CustomUser
-from checking.models import Member
+from attendance.models import Member
 from report.models import MemberCheck, UserCheck, Comment
 
 

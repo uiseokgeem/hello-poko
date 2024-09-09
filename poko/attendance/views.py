@@ -130,7 +130,7 @@ def ApiAttendanceChecking(request):  # 수정완료-태욱님
         return redirect("/common/user/")
         # return render(
         #     request,
-        #     "checking/attendance_check.html",
+        #     "attendance/attendance_check.html",
         #     {
         #         "date": attendance.date,
         #         "user_students": user_students,
@@ -209,7 +209,7 @@ def ApiAttendanceModify(request):
 #     graph_ind, result = graph_individual(request)
 #     return render(
 #         request,
-#         "checking/index_user.html",
+#         "attendance/index_user.html",
 #         context={
 #             "graph_ind": graph_ind,
 #             "result": result,

@@ -3,7 +3,7 @@ import datetime
 
 from django.db import models
 from accounts.models import CustomUser
-from checking.models import Member
+from attendance.models import Member
 from django.db.models import Model
 
 

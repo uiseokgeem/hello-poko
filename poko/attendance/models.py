@@ -36,7 +36,7 @@ class Attendance(models.Model):
 
 # class GetImage(models.Model):
 #     name = models.CharField(max_length=50)
-#     image = models.ImageField(blank=True)  # upload_to="checking/getimage/%Y/%m/%d"
+#     image = models.ImageField(blank=True)  # upload_to="attendance/getimage/%Y/%m/%d"
 #     description = models.TextField()
 #
 #     def __str__(self):
