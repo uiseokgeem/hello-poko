@@ -21,7 +21,7 @@ const Login = ({ handleLoginSubmit }) => {
     };
 
     const handleSendEmail = () => {
-        navigate("/");
+        navigate("/send-email");
     }; 
 
     return (
