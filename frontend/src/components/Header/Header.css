@@ -55,28 +55,3 @@
     font-size: 18px; /* 아이콘 크기 약간 축소 */
   }
 }
-
-@media (max-width: 480px) {
-  .app-header {
-    padding: 0 10px; /* 너무 좁지 않게 패딩을 유지 */
-  }
-
-  .logo img {
-    height: 25px; /* 로고 크기 축소 */
-  }
-
-  .menu {
-    display: flex; /* 메뉴는 유지하되 간격 조절 */
-    justify-content: space-between; /* 메뉴 항목을 일정한 간격으로 배치 */
-    margin-left: 10px; /* 좌측 간격 줄임 */
-  }
-
-  .menu .ant-menu-item {
-    font-size: 12px; /* 메뉴 항목의 폰트 크기 축소 */
-    padding: 0 8px; /* 각 항목의 좌우 간격 줄임 */
-  }
-
-  .user-icon {
-    font-size: 16px; /* 아이콘 크기 약간 축소 */
-  }
-}
