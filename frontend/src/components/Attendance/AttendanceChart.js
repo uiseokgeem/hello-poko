@@ -10,7 +10,7 @@ const AttendanceChart = ({ data, students }) => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
-      width: 120,
+      width: 50,
     }, 
     ...data.map(dateEntry => ({
       title: dateEntry.date,  // date -> dateEntry로 수정, 각 날짜를 column의 제목으로 사용한다.
@@ -27,7 +27,7 @@ const AttendanceChart = ({ data, students }) => {
       title: '정보',
       key: 'info',
       fixed: 'right',
-      width: 100,
+      width: 40,
       render: (text, record) => <a href="#">보기</a>,
       
     }
