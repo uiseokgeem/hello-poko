@@ -30,19 +30,19 @@ else:
 
 # boto3 환경변수
 EMAIL_BACKEND = env("EMAIL_BACKEND")
-print(EMAIL_BACKEND)
+# print(EMAIL_BACKEND)
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-print(AWS_ACCESS_KEY_ID)
+# print(AWS_ACCESS_KEY_ID)
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-print(AWS_SECRET_ACCESS_KEY)
+# print(AWS_SECRET_ACCESS_KEY)
 AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-print(AWS_SES_REGION_NAME)
+# print(AWS_SES_REGION_NAME)
 AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
-print(AWS_SES_REGION_ENDPOINT)
+# print(AWS_SES_REGION_ENDPOINT)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-print(DEFAULT_FROM_EMAIL)
+# print(DEFAULT_FROM_EMAIL)
 USE_SES_V2 = env.bool("USE_SES_V2", default=False)
-print(USE_SES_V2)
+# print(USE_SES_V2)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 

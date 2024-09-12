@@ -9,11 +9,14 @@ const AttendanceChart = ({ data, students }) => {
       title: '학생명',
       dataIndex: 'name',
       key: 'name',
+      fixed: 'left',
+      width: 120,
     }, 
     ...data.map(dateEntry => ({
-      title: dateEntry.date,  // date -> dateEntry로 수정
+      title: dateEntry.date,  // date -> dateEntry로 수정, 각 날짜를 column의 제목으로 사용한다.
       dataIndex: dateEntry.date,
       key: dateEntry.date,
+      width: 100,
       render: attendance => (
         <span>
           {attendance ? '✅' : '❌'}
@@ -23,7 +26,10 @@ const AttendanceChart = ({ data, students }) => {
     {
       title: '정보',
       key: 'info',
+      fixed: 'right',
+      width: 100,
       render: (text, record) => <a href="#">보기</a>,
+      
     }
   ], [data]);
 
@@ -42,7 +48,14 @@ const AttendanceChart = ({ data, students }) => {
     });
   }, [data, students]);
 
-  return <Table columns={columns} dataSource={dataSource} pagination={false} />;
+  return <Table
+   columns={columns} 
+   dataSource={dataSource} 
+   pagination={false} 
+   scroll={{ x: 1500 }} // 가로 스크롤 강제 설정 (1500px 넓이 이상일 때 스크롤 생성)
+   sticky
+   bordered
+   />;
 };
 
 export default AttendanceChart;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect }  from "react";
-import {Layout, Select, Button } from 'antd';
+import {Layout, Select, Button, Modal, Checkbox } from 'antd';
 import AppHeader from '../components/Header/Header';
 import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
+import AttendanceModal  from "../components/Attendance/AttendanceModal";
 // import StudentList from '../components/Attendance/StudentList';
 // import { fetchAttendanceData, fetchStudents } from '../api/attendanceApi';
 import './AttendancePage.css'
@@ -12,20 +13,29 @@ const { Option } = Select;
 
 // 임의의 학생 데이터 생성
 const mockStudents = [
-    { id: '1', name: '김사랑' },
-    { id: '2', name: '김선우' },
-    { id: '3', name: '김예나' },
-    { id: '4', name: '오예린' },
-    { id: '5', name: '이예담' },
+  { id: '1', name: '김사랑' },
+  { id: '2', name: '김선우' },
+  { id: '3', name: '김예나' },
+  { id: '4', name: '오예린' },
+  { id: '5', name: '이예담' },
+  { id: '6', name: '이하진' },
+  { id: '7', name: '이조훈' },
+  { id: '8', name: '홍수민' },
   ];
 
   // 임의의 출석 데이터 생성
 const mockAttendanceData = [
-    { date: '2023-06-30', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false } },
-    { date: '2023-07-07', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true } },
-    { date: '2023-07-14', attendance: { '1': true, '2': false, '3': true, '4': true, '5': true } },
-    { date: '2023-07-21', attendance: { '1': true, '2': true, '3': true, '4': true, '5': false } },
-  ];
+  { date: '2023-06-30', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': true, '7': true, '8': false, '9': true, '10': false } },
+  { date: '2023-07-07', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true, '6': false, '7': true, '8': true, '9': false, '10': true } },
+  { date: '2023-07-14', attendance: { '1': true, '2': false, '3': true, '4': true, '5': true, '6': true, '7': false, '8': true, '9': true, '10': false } },
+  { date: '2023-07-21', attendance: { '1': true, '2': true, '3': true, '4': true, '5': false, '6': false, '7': true, '8': true, '9': false, '10': true } },
+  { date: '2023-07-28', attendance: { '1': false, '2': true, '3': false, '4': true, '5': true, '6': true, '7': true, '8': false, '9': true, '10': true } },
+  { date: '2023-08-04', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': false, '7': true, '8': true, '9': false, '10': true } },
+  { date: '2023-08-11', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true, '6': true, '7': true, '8': true, '9': false, '10': true } },
+  { date: '2023-08-18', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': true, '7': false, '8': true, '9': true, '10': true } }
+];
+
+  
 
 const AttendancePage = () => {
      //const [attendanceData, setAttendanceData] = useState([]);
@@ -33,12 +43,37 @@ const AttendancePage = () => {
     //const [students, setStudents ] = useState([]);
     const [students, setStudents] = useState(mockStudents);
     const [selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+    const [checkedStudents, setCheckedStudents] = useState([]);
     
 
     // useEffect(() => {
     //     fetchStudents().then(setStudents);
     //     fetchAttendanceData(selectedYear).then(setAttendanceData);
     //   }, [selectedYear]);
+
+    const handleCheck = (studentId) => {
+      setCheckedStudents(prevChecked => 
+        prevChecked.includes(studentId)
+        ? prevChecked.filter(id => id !== studentId)
+        : [...prevChecked, studentId]
+      );
+    };
+
+    const handleSubmit = () => {
+      console.log('출석부 등록 완료:', checkedStudents);
+      setIsModalOpen(false);  // 모달 닫기
+    };
+  
+    const openModal = () => {
+      setIsModalOpen(true);  // 모달 열기
+    };
+  
+    const closeModal = () => {
+      setIsModalOpen(false);  // 모달 닫기
+    };
+  
+  
 
     return (
         <Layout>
@@ -56,10 +91,18 @@ const AttendancePage = () => {
                   <Option key={year} value={year}>{year}</Option>  // Option 컴포넌트 추가
                 ))}
               </Select>
-              <Button type="primary" className="new-attendance-button">+ 새 출석부</Button>
+              <Button type="primary" onClick={openModal} className="new-attendance-button">+ 새 출석부</Button>
             </div>
-            
             <AttendanceChart data={attendanceData} students={students} />  {/* 출석 차트 컴포넌트 */}
+            <AttendanceModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              students={students}
+              checkedStudents={checkedStudents}
+              handleCheck={handleCheck}
+              handleSubmit={handleSubmit}
+            >
+            </AttendanceModal>
           </Content>
         </Layout>
       );

@@ -52,3 +52,24 @@ for name in student_names:
         )
 
 print("데이터 생성 완료!")
+
+
+# membercheck 테스트 데이터
+from attendance.models import Member  # 이미 생성된 학생 데이터가 있어야 합니다.
+from report.models import MemberCheck
+from django.utils import timezone
+
+# 특정 학생 가져오기
+student = Member.objects.first()  # 첫 번째 학생을 가져옴
+
+# MemberCheck 데이터 생성
+member_check = MemberCheck.objects.create(
+    name=student,  # Member 모델의 인스턴스
+    gqs=True,  # 참석 여부
+    pray_member="기도 멤버",  # 임의의 값
+    date=timezone.now(),  # 현재 날짜 및 시간
+    status="작성완료",  # 상태
+)
+
+# 쿼리 확인
+# MemberCheck.objects.all()
