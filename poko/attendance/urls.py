@@ -1,0 +1,28 @@
+from . import views
+from django.urls import path, include
+
+# DRF
+from rest_framework.routers import DefaultRouter
+from .api import MembersViewSet
+
+app_name = "attendance"
+
+# DRF 라우터 설정
+router = DefaultRouter()
+router.register(r"members", MembersViewSet, basename="member")
+
+# 기존에 정의된 URL 패턴
+urlpatterns = [
+    path("produce/", views.ApiAttendanceProduce),
+    path("date/", views.ApiAttendanceList),
+    path("check/", views.ApiAttendanceChecking),
+    path("check_modi/", views.ApiAttendanceModify),
+    path("api/", include(router.urls)),  # API URL 포함
+    # 5월 22일 기준 사용하지 않는 url
+    # path("", views.index_attendance, name="index_attendance"),
+    # path("index_detail/", views.index_detail),
+    # path("attendance_detail/", views.attendance_detail),
+    # path("attendance_group/", views.attendance_group),
+    # path("ind/", views.attendance_ind),
+    # path("download_excel/", views.result_excel, name="download_excel"),
+]

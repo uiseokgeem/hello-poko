@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt, ticker
 from matplotlib import font_manager as fm
 
 # Models
-from checking.models import Attendance, Member
+from attendance.models import Attendance, Member
 from django.contrib.auth.models import User
 
 

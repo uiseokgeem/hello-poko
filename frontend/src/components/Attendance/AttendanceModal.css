@@ -1,0 +1,67 @@
+.custom-modal {
+    border-radius: 12px;
+    padding: 20px;
+  }
+  
+  .modal-header {
+    text-align: center;
+    margin-bottom: 30px; /* 헤더와 내용 사이의 간격 조정 */
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .modal-subtitle {
+    font-size: 14px;
+    color: #757575;
+  }
+  
+  .modal-form {
+    max-height: 400px; /* 학생 목록의 최대 높이 */
+    overflow-y: auto; /* 학생 목록에만 스크롤 추가 */
+    margin-bottom: 20px; /* 학생 목록과 하단 버튼 사이의 간격 */
+    padding-right: 10px; /* 스크롤바와 내용 간의 간격 */
+  }
+  
+  .form-item {
+    background-color: #F0F4FF;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .checkbox {
+    width: 100%;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    position: sticky;
+    bottom: 0;
+    background-color: white; /* 고정 시 버튼 영역이 가려지지 않도록 배경색 추가 */
+    padding-top: 10px;
+  }
+  
+  .cancel-btn {
+    background-color: #F5F5F5;
+    border: none;
+    color: #757575;
+    width: 100px; /* 디자인에 맞게 너비 조정 */
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  .submit-btn {
+    background-color: #1890ff;
+    border: none;
+    color: white;
+    width: 100px; /* 디자인에 맞게 너비 조정 */
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+  }

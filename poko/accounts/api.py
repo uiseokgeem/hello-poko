@@ -13,19 +13,15 @@ from django.utils.encoding import force_bytes, force_str
 from dj_rest_auth.registration.views import RegisterView
 from .serializers import CustomRegisterSerializer
 from accounts.models import CustomUser
-from django.core.mail import EmailMessage
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 
 # 로그인
 from dj_rest_auth.views import LoginView
-from dj_rest_auth.serializers import LoginSerializer
 from .serializers import CustomLoginSerializer
 
 # email test
 import logging
-from django.core.mail import send_mail
-from django.http import HttpResponse
 
 # boto3
 import boto3
@@ -33,41 +29,12 @@ from poko import settings
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from django.http import JsonResponse
 
+from django.core.mail import EmailMessage
+from django.core.mail import send_mail
+from django.http import HttpResponse
+from dj_rest_auth.serializers import LoginSerializer
+
 logger = logging.getLogger(__name__)
-
-
-@csrf_exempt
-def boto3_test(request):
-    ses_client = boto3.client(
-        "ses",
-        region_name=settings.AWS_SES_REGION_NAME,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    )
-
-    subject = "TEST SES FROM DJANGO WITH BOTO3"
-    body = "TEST SES FROM DJANGO WITH BOTO3"
-    recipient = "manager.poko@gmail.com"
-
-    try:
-        response = ses_client.send_email(
-            Source=settings.DEFAULT_FROM_EMAIL,
-            Destination={
-                "ToAddresses": [
-                    recipient,
-                ],
-            },
-            Message={
-                "Subject": {"Data": subject, "Charset": "UTF-8"},
-                "Body": {"Text": {"Data": body, "Charset": "UTF-8"}},
-            },
-        )
-        return JsonResponse({"status": "success", "message_id": response["MessageId"]})
-
-    except (NoCredentialsError, PartialCredentialsError) as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -272,3 +239,37 @@ class CustomRegisterAPIView(RegisterView):
 #             {"password1": password1, "password2": password2},
 #             status=status.HTTP_200_OK,
 #         )
+
+# AWS SES with boto3 test code
+# @csrf_exempt
+# def boto3_test(request):
+#     ses_client = boto3.client(
+#         "ses",
+#         region_name=settings.AWS_SES_REGION_NAME,
+#         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+#         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+#     )
+#
+#     subject = "TEST SES FROM DJANGO WITH BOTO3"
+#     body = "TEST SES FROM DJANGO WITH BOTO3"
+#     recipient = "manager.poko@gmail.com"
+#
+#     try:
+#         response = ses_client.send_email(
+#             Source=settings.DEFAULT_FROM_EMAIL,
+#             Destination={
+#                 "ToAddresses": [
+#                     recipient,
+#                 ],
+#             },
+#             Message={
+#                 "Subject": {"Data": subject, "Charset": "UTF-8"},
+#                 "Body": {"Text": {"Data": body, "Charset": "UTF-8"}},
+#             },
+#         )
+#         return JsonResponse({"status": "success", "message_id": response["MessageId"]})
+#
+#     except (NoCredentialsError, PartialCredentialsError) as e:
+#         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+#     except Exception as e:
+#         return JsonResponse({"status": "error", "message": str(e)}, status=500)
