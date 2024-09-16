@@ -1,3 +1,6 @@
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from attendance.models import Member, Attendance
@@ -8,6 +11,10 @@ from .serializers import MemberSerializer
 
 
 # 학생 목록 조회 및 생성, 특정 학생 정보 조회 및 수정
+
+
+# @login_required
+@method_decorator(csrf_exempt, name="dispatch")
 class MembersViewSet(ModelViewSet):
     serializer_class = MemberSerializer
     # permission_classes = [IsAuthenticated]
