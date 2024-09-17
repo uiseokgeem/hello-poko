@@ -33,7 +33,7 @@ const AttendanceChart = ({ data, students }) => {
     }
   ], [data]);
 
-  // 데이터를 학생 별로 처리
+  // 학생별 출석 데이터를 매핑하여 테이블에 표할 데이터 구조로 변환
   const dataSource = useMemo(() => {
     return students.map(student => {
       const studentAttendance = data.reduce((acc, dateEntry) => {

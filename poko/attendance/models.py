@@ -24,8 +24,8 @@ class Attendance(models.Model):
         on_delete=models.CASCADE,
         related_name="attendance",
     )
-    attendance = models.CharField(max_length=50)
-    date = models.DateTimeField()
+    attendance = models.BooleanField()
+    date = models.DateField()  # 기본 YYYY-MM-DD 형식으로만 저장
 
     def __str__(self):
         return self.name.name

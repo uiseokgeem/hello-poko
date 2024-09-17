@@ -28,9 +28,9 @@ def random_grade():
     return random.choice(["1", "2", "3"])
 
 
-# 랜덤 출석 여부 생성 함수
+# 랜덤 출석 여부 생성 함수 (True: 출석, False: 결석)
 def random_attendance():
-    return random.choice(["출석", "결석"])
+    return random.choice([True, False])
 
 
 # 학생과 출석 데이터 생성
@@ -47,8 +47,8 @@ for name in student_names:
     for date_str in september_sundays:
         Attendance.objects.create(
             name=student,
-            attendance=random_attendance(),
-            date=datetime.strptime(date_str, "%Y-%m-%d"),
+            attendance=random_attendance(),  # Boolean 값으로 변경
+            date=date_str,  # DateTime에서 Date로 수정
         )
 
 print("데이터 생성 완료!")
