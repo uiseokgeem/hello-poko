@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const fetchAttendanceData = async (year) => {
     try {
-        const response = await axios.get('http://localhost:8000/attendance/api/records', {
+        const response = await axios.get('https://www.poko-dev.com/attendance/api/records', {
             params: { year }
         });
         return response.data;
@@ -17,7 +17,7 @@ export const fetchAttendanceData = async (year) => {
 
 export const fetchStudents = async () => {
     try {
-        const response = await axios.get('http://localhost:8000/attendance/api/members');
+        const response = await axios.get('https://www.poko-dev.com/attendance/api/members');
         return response.data        
     }   catch (error) {
         throw error;
