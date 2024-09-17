@@ -219,7 +219,7 @@ AUTHENTICATION_BACKENDS = (
 
 # CORS 허용 설정
 CORS_ALLOWED_ORIGINS = [
-    # "http://localhost:3000",  # React 앱의 주소
+    "http://localhost:3000",  # React 앱의 주소
     # "http://localhost:80",
     "http://poko-dev.com",  # 도메인 이름 (http 사용)
     "https://poko-dev.com",  # 도메인 이름 (https 사용)

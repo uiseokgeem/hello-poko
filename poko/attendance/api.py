@@ -27,6 +27,10 @@ class MembersViewSet(ModelViewSet):
         # return Member.objects.filter(teacher=user)
         return Member.objects.filter(teacher__email=user)
 
+    def get_serializer(self, *args, **kwargs):
+        kwargs["context"] = {"request": self.request}
+        return super(MembersViewSet, self).get_serializer(*args, **kwargs)
+
 
 # 출석 데이터 목록 조회 및 생성
 class AttendanceViewSet(ModelViewSet):

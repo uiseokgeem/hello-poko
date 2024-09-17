@@ -5,25 +5,27 @@ import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal  from "../components/Attendance/AttendanceModal";
 // import StudentList from '../components/Attendance/StudentList';
-// import { fetchAttendanceData, fetchStudents } from '../api/attendanceApi';
+import { fetchAttendanceData, fetchStudents } from '../api/attendanceApi';
 import './AttendancePage.css'
 
 const  { Content } = Layout;
 const { Option } = Select; 
 
 // 임의의 학생 데이터 생성
-const mockStudents = [
-  { id: '1', name: '김사랑' },
-  { id: '2', name: '김선우' },
-  { id: '3', name: '김예나' },
-  { id: '4', name: '오예린' },
-  { id: '5', name: '이예담' },
-  { id: '6', name: '이하진' },
-  { id: '7', name: '이조훈' },
-  { id: '8', name: '홍수민' },
-  ];
+// const mockStudents = [
+//   { id: '1', name: '김사랑' },
+//   { id: '2', name: '김선우' },
+//   { id: '3', name: '김예나' },
+//   { id: '4', name: '오예린' },
+//   { id: '5', name: '이예담' },
+//   { id: '6', name: '이하진' },
+//   { id: '7', name: '이조훈' },
+//   { id: '8', name: '홍수민' },
+//   ];
 
-  // 임의의 출석 데이터 생성
+
+
+// 임의의 출석 데이터 생성
 const mockAttendanceData = [
   { date: '2023-06-30', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': true, '7': true, '8': false, '9': true, '10': false } },
   { date: '2023-07-07', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true, '6': false, '7': true, '8': true, '9': false, '10': true } },
@@ -40,17 +42,17 @@ const mockAttendanceData = [
 const AttendancePage = () => {
      //const [attendanceData, setAttendanceData] = useState([]);
     const [attendanceData, setAttendanceData] = useState(mockAttendanceData);
-    //const [students, setStudents ] = useState([]);
-    const [students, setStudents] = useState(mockStudents);
+    const [students, setStudents ] = useState([]);
+    // const [students, setStudents] = useState(mockStudents); 
     const [selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
     const [checkedStudents, setCheckedStudents] = useState([]);
     
 
-    // useEffect(() => {
-    //     fetchStudents().then(setStudents);
-    //     fetchAttendanceData(selectedYear).then(setAttendanceData);
-    //   }, [selectedYear]);
+    useEffect(() => {
+        fetchStudents().then(setStudents);
+        // fetchAttendanceData(selectedYear).then(setAttendanceData);
+      }, [selectedYear]);
 
     const handleCheck = (studentId) => {
       setCheckedStudents(prevChecked => 
