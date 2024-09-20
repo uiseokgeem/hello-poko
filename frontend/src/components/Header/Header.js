@@ -10,7 +10,7 @@ const items = [
   {
     key: '1',
     icon: <HomeOutlined />,
-    label: <Link to="/">홈</Link>,
+    label: <Link to="/home">홈</Link>,
   },
   {
     key: '2',

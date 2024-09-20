@@ -1,0 +1,29 @@
+/* frontend/src/pages/HomePage.css */
+.home-content {
+    padding: 24px;
+    background-color: #f0f2f5;
+  }
+  
+  .prayer-records-section {
+    margin-top: 24px;
+  }
+  
+  .prayer-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .prayer-table th, .prayer-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .prayer-table th {
+    background-color: #fafafa;
+    font-weight: bold;
+  }
+  
+  .prayer-table td {
+    background-color: #fff;
+  }
