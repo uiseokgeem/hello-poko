@@ -34,11 +34,18 @@ const AttendancePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
     const [checkedStudents, setCheckedStudents] = useState([]);
     
+    // useEffect(() => {
+    //   fetchStudents().then(setStudents);
+    //   fetchAttendanceData(selectedYear).then(setAttendanceData);
+    // }, [selectedYear]);
 
     useEffect(() => {
-        fetchStudents().then(setStudents);
-        fetchAttendanceData(selectedYear).then(setAttendanceData);
-      }, [selectedYear]);
+      fetchStudents().then(setStudents);
+      fetchAttendanceData(selectedYear).then((data) => {
+        console.log("Fetched attendance data: ", data); // 데이터 로그 출력
+        setAttendanceData(data);
+      });
+    }, [selectedYear]);
 
     const handleCheck = (studentId) => {
       setCheckedStudents(prevChecked => 
@@ -60,7 +67,6 @@ const AttendancePage = () => {
     const closeModal = () => {
       setIsModalOpen(false);  // 모달 닫기
     };
-  
   
 
     return (
