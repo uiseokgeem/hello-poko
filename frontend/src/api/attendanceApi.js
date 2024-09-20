@@ -4,7 +4,7 @@ import { Cookies } from "react-cookie";
 
 // API URL을 환경에 따라 설정 (배포 환경과 개발 환경 구분)
 const isProd = process.env.NODE_ENV === "production"; // 배포 환경 감지
-const API_URL = isProd ? 'https://www.poko-dev.com/attendance/api/' : 'http://127.0.0.1:8000/attendance/api/';
+const API_URL = isProd ? 'https://www.poko-dev.com/api/attendance/' : 'http://127.0.0.1:8000/api/attendance/';
 
 
 // CSRF 토큰을 가져오는 함수

@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
+// 배포 환경 감지
+const isProd = process.env.NODE_ENV === "production"; 
+const API_URL = isProd ? 'https://www.poko-dev.com/api/accounts/' : 'http://127.0.0.1:8000/api/accounts/';
+
 // CSRF 토큰을 쿠키에서 가져오는 함수
 const getCSRFToken = () => {
   const cookies = new Cookies();
@@ -13,16 +17,15 @@ const csrftoken = getCSRFToken();
 export const sendEmail = async (email) => {
   try {
     const response = await axios.post(
-      'https://poko-dev.com/api/send-email',
+      `${API_URL}send-email`,
       { email },
       {
-         withCredentials: true,
-         headers: {
+        withCredentials: true,
+        headers: {
           'X-CSRFToken': csrftoken,
-          'Content-Type': 'application/json'
-          }
-      },
-      
+          'Content-Type': 'application/json',
+        },
+      }
     );
     return {
       message: response.data.message,
@@ -37,15 +40,15 @@ export const sendEmail = async (email) => {
 export const verifyEmail = async (urlCode, emailCode, verificationCode) => {
   try {
     const response = await axios.post(
-      `https://poko-dev.com/api/confirm-email/${urlCode}/${emailCode}`,
+      `${API_URL}confirm-email/${urlCode}/${emailCode}`,
       { user_input_code: verificationCode },
       {
-         withCredentials: true,
-         headers: {
+        withCredentials: true,
+        headers: {
           'X-CSRFToken': csrftoken,
-          'Content-Type': 'application/json'
-          }
-        }
+          'Content-Type': 'application/json',
+        },
+      }
     );
     return response.data.message;
   } catch (error) {
@@ -55,32 +58,15 @@ export const verifyEmail = async (urlCode, emailCode, verificationCode) => {
 
 export const validatePwd = async (urlCode, emailCode, password1, password2) => {
   try {
-    const response = await axios.post(`https://poko-dev.com/api/validate-pwd/${urlCode}/${emailCode}`,
-      {password1, password2},
-      {
-         withCredentials: true,
-         headers: {
-          'X-CSRFToken': csrftoken,
-          'Content-Type': 'application/json'
-          }
-        },
-    );
-    return response.data.message;
-  } catch (error){
-    handleError(error);
-  }
-};
-
-export const register = async (urlCode, emailCode, fullName, birthDate) => {
-  try {
-    const response = await axios.post(`https://poko-dev.com/api/register/${urlCode}/${emailCode}`,
-      {full_name: fullName, birth_date : birthDate},
+    const response = await axios.post(
+      `${API_URL}validate-pwd/${urlCode}/${emailCode}`,
+      { password1, password2 },
       {
         withCredentials: true,
         headers: {
           'X-CSRFToken': csrftoken,
-          'Content-Type': 'application/json'
-          }
+          'Content-Type': 'application/json',
+        },
       }
     );
     return response.data.message;
@@ -89,7 +75,24 @@ export const register = async (urlCode, emailCode, fullName, birthDate) => {
   }
 };
 
-
+export const register = async (urlCode, emailCode, fullName, birthDate) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}register/${urlCode}/${emailCode}`,
+      { full_name: fullName, birth_date: birthDate },
+      {
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data.message;
+  } catch (error) {
+    handleError(error);
+  }
+};
 
 const handleError = (error) => {
   if (error.response) {

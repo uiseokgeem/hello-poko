@@ -18,7 +18,7 @@ urlpatterns = [
     path("date/", views.ApiAttendanceList),
     path("check/", views.ApiAttendanceChecking),
     path("check_modi/", views.ApiAttendanceModify),
-    path("api/", include(router.urls)),  # API URL 포함
+    path("", include(router.urls)),  # API URL 포함
     # 5월 22일 기준 사용하지 않는 url
     # path("", views.index_attendance, name="index_attendance"),
     # path("index_detail/", views.index_detail),

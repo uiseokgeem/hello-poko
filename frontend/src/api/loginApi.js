@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
+// 배포 환경 감지
+const isProd = process.env.NODE_ENV === "production"; 
+const API_URL = isProd ? 'https://www.poko-dev.com/api/accounts/' : 'http://localhost:8000/api/accounts/';
+
 // CSRF 토큰을 쿠키에서 가져오는 함수
 const getCSRFToken = () => {
     const cookies = new Cookies();
@@ -13,20 +17,19 @@ const csrftoken = getCSRFToken();
 export const login = async (id, password) => {
     try {
         const response = await axios.post(
-        'http://localhost/api/login/',
-        {email : id, password : password},
-        {
-            withCredentials: true,
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/json'
+            `${API_URL}login/`, // API URL 수정
+            { email: id, password: password },
+            {
+                withCredentials: true,
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
             }
-        }
-
-    );
-    return response.data;
+        );
+        return response.data;
     } catch (error) {
-      handleError(error);
+        handleError(error);
     }
 };
 
