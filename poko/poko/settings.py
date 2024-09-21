@@ -229,6 +229,10 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # 배포시 설정(csrf 토큰 설정), 개발환경에서는 admin login issue로 사용하지 말 것
+
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False
+
 CSRF_TRUSTED_ORIGINS = [
     "https://www.poko-dev.com",
     "https://poko-dev.com",
