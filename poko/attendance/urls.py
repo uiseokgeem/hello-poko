@@ -3,14 +3,23 @@ from django.urls import path, include
 
 # DRF
 from rest_framework.routers import DefaultRouter
-from .api import MembersViewSet, AttendanceViewSet
+from .api import (
+    TeachersViewSet,
+    MembersViewSet,
+    AttendanceViewSet,
+    AttendanceStatsViewSet,
+)
 
 app_name = "attendance"
 
 # DRF 라우터 설정
 router = DefaultRouter()
+router.register(r"teachers", TeachersViewSet, basename="teachers")
 router.register(r"members", MembersViewSet, basename="member")
 router.register(r"records", AttendanceViewSet, basename="records")
+router.register(
+    r"attendance-stats", AttendanceStatsViewSet, basename="attendance-stats"
+)
 
 # 기존에 정의된 URL 패턴
 urlpatterns = [

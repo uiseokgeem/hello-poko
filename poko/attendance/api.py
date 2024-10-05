@@ -15,8 +15,6 @@ from .serializers import FullMemberSerializer, MemberSerializer, AttendanceSeria
 
 
 # 학생 목록 조회 및 생성, 특정 학생 정보 조회 및 수정
-
-
 # @login_required
 @method_decorator(csrf_exempt, name="dispatch")
 class MembersViewSet(ModelViewSet):
@@ -75,11 +73,17 @@ class AttendanceViewSet(ModelViewSet):
         return Response(response_data)
 
 
-# 출석부 통계
-class AttendanceStatisticsViewSet(ViewSet):
-    pass
-
-
 # 선생님 정보 조회
+# urls teachers/
 class TeachersViewSet(ViewSet):
     pass
+
+
+# 출석부 통계
+# url attendance-statistics/
+# report-Statistics를 고려
+class AttendanceStatsViewSet(ViewSet):
+    pass
+
+
+# 출석부 POST PATCH DELTE API
