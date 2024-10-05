@@ -50,3 +50,38 @@ export const fetchStudents = async () => {
     }
 };
 
+// 선생님 데이터를 가져오는 함수
+export const fetchTeachers = async () => {
+    try {
+        const response = await axios.get(`${API_URL}teachers/`,{
+            withCredentials: true,
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching teachers:', error);
+        throw error;
+    }
+};
+
+// 출석 통계를 가져오는 함수
+export const fetchAttendanceStats = async () => {
+    try {
+        const response = await axios.get(`${API_URL}attendance-stats/`,{
+            withCredentials: true,
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        })
+        return response.data;
+    } catch (error){
+        console.error('Error fetching attendance statistics:', error);
+        throw error
+    }
+};
+
+

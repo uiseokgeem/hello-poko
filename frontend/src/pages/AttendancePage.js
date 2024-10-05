@@ -5,7 +5,7 @@ import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal  from "../components/Attendance/AttendanceModal";
 // import StudentList from '../components/Attendance/StudentList';
-import { fetchAttendanceData, fetchStudents } from '../api/attendanceApi';
+import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats } from '../api/attendanceApi';
 import './AttendancePage.css'
 
 const  { Content } = Layout;
@@ -13,23 +13,22 @@ const { Option } = Select;
   
 
 const AttendancePage = () => {
-     const [attendanceData, setAttendanceData] = useState([]);
+    const [teachers, setTeachers] = useState([]);
     const [students, setStudents ] = useState([]);
+    const [attendanceData, setAttendanceData] = useState([]);
+    const [attendanceStats, setAttendanceStats] = useState([]);
     const [selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
     const [checkedStudents, setCheckedStudents] = useState([]);
-    
-    // useEffect(() => {
-    //   fetchStudents().then(setStudents);
-    //   fetchAttendanceData(selectedYear).then(setAttendanceData);
-    // }, [selectedYear]);
 
     useEffect(() => {
+      fetchTeachers().then(setTeachers);
       fetchStudents().then(setStudents);
       fetchAttendanceData(selectedYear).then((data) => {
         console.log("Fetched attendance data: ", data); // 데이터 로그 출력
         setAttendanceData(data);
       });
+      fetchAttendanceStats().then(setAttendanceStats);
     }, [selectedYear]);
 
     const handleCheck = (studentId) => {
@@ -59,7 +58,7 @@ const AttendancePage = () => {
           <AppHeader />
           <Content className="page-container">
           <h1>출석부</h1>
-          <TeacherInfo teacherName="노다은 선생님" className="중 2,3 여" attendanceRate={80} />
+          <TeacherInfo teacherName={setTeachers} className="보류" attendanceRate={80} />
             <div className="header-section">
               <Select
                 defaultValue={selectedYear}
