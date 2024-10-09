@@ -73,3 +73,60 @@ member_check = MemberCheck.objects.create(
 
 # 쿼리 확인
 # MemberCheck.objects.all()
+
+# 특정 선생님 기준 더미 데이터 생성 코드
+from accounts.models import CustomUser
+from attendance.models import Member, Attendance
+from datetime import datetime
+import random
+
+# 9월의 일요일 날짜 리스트 (2024년 기준)
+september_sundays = [
+    "2024-09-01",
+    "2024-09-08",
+    "2024-09-15",
+    "2024-09-22",
+    "2024-09-29",
+]
+
+
+# 랜덤 학생 이름 리스트 생성 함수
+def generate_student_names():
+    return [f"학생{random.randint(11, 100)}" for _ in range(10)]  # 1~100 범위에서 랜덤 이름 생성
+
+
+# 랜덤 학년 생성 함수
+def random_grade():
+    return random.choice(["1", "2", "3"])
+
+
+# 랜덤 출석 여부 생성 함수 (True: 출석, False: 결석)
+def random_attendance():
+    return random.choice([True, False])
+
+
+# poko@poko.com 사용자 가져오기
+teacher = CustomUser.objects.get(email="poko@poko.com")
+
+# 학생 이름 리스트 랜덤 생성
+student_names = generate_student_names()
+
+# 학생과 출석 데이터 생성
+for name in student_names:
+    # 학생 생성 (학년과 성별은 랜덤)
+    student = Member.objects.create(
+        teacher=teacher,
+        name=name,
+        grade=random_grade(),
+        gender=random.choice(["남", "여"]),
+    )
+
+    # 출석 데이터 생성 (9월의 일요일 날짜에 랜덤 출석/결석 기록)
+    for date_str in september_sundays:
+        Attendance.objects.create(
+            name=student,
+            attendance=random_attendance(),  # Boolean 값으로 출석 상태 기록
+            date=date_str,  # 날짜만 저장
+        )
+
+print("데이터 생성 완료!")
