@@ -7,12 +7,19 @@ const isProd = process.env.NODE_ENV === "production"; // 배포 환경 감지
 const API_URL = isProd ? 'https://www.poko-dev.com/api/attendance/' : 'http://127.0.0.1:8000/api/attendance/';
 
 
+// access token 가져오는 함수
+const getAccessToken = () => {
+    const cookies = new Cookies();
+    return cookies.get('poko-auth'); // 쿠키에서 access token 가져오기
+};
+
 // CSRF 토큰을 가져오는 함수
 const getCSRFToken = () => {
     const cookies = new Cookies();
     return cookies.get('csrftoken');
 };
 
+const accessToken = getAccessToken();
 const csrftoken = getCSRFToken();
 
 // 출석 데이터를 가져오는 함수
@@ -22,6 +29,7 @@ export const fetchAttendanceData = async (year) => {
             params: { year }, // 파라미터 추가
             withCredentials: true, // 쿠키와 함께 요청
             headers: {
+                'Authorization': `Bearer ${accessToken}`,
                 'X-CSRFToken': csrftoken, // CSRF 토큰
                 'Content-Type': 'application/json' // 헤더 설정 오타 수정
             }
@@ -39,6 +47,7 @@ export const fetchStudents = async () => {
         const response = await axios.get(`${API_URL}members/`, {
             withCredentials: true, // 쿠키와 함께 요청
             headers: {
+                'Authorization': `Bearer ${accessToken}`,
                 'X-CSRFToken': csrftoken, // CSRF 토큰
                 'Content-Type': 'application/json' // 헤더 설정
             }
@@ -56,6 +65,7 @@ export const fetchTeachers = async () => {
         const response = await axios.get(`${API_URL}teachers/`,{
             withCredentials: true,
             headers: {
+                'Authorization': `Bearer ${accessToken}`,
                 'X-CSRFToken': csrftoken,
                 'Content-Type': 'application/json'
             }
@@ -73,6 +83,7 @@ export const fetchAttendanceStats = async () => {
         const response = await axios.get(`${API_URL}attendance-stats/`,{
             withCredentials: true,
             headers: {
+                'Authorization': `Bearer ${accessToken}`,
                 'X-CSRFToken': csrftoken,
                 'Content-Type': 'application/json'
             }

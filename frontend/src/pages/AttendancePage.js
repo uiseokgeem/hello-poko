@@ -22,14 +22,17 @@ const AttendancePage = () => {
     const [checkedStudents, setCheckedStudents] = useState([]);
 
     useEffect(() => {
-      fetchTeachers().then(setTeachers);
+      fetchTeachers().then((data) => {
+        console.log("Fetched teachers data: ", data); // teachers 데이터 확인
+        setTeachers(data);
+      });
       fetchStudents().then(setStudents);
       fetchAttendanceData(selectedYear).then((data) => {
         console.log("Fetched attendance data: ", data); // 데이터 로그 출력
         setAttendanceData(data);
       });
       fetchAttendanceStats().then(setAttendanceStats);
-    }, [selectedYear]);
+   }, [selectedYear]);
 
     const handleCheck = (studentId) => {
       setCheckedStudents(prevChecked => 
@@ -58,7 +61,11 @@ const AttendancePage = () => {
           <AppHeader />
           <Content className="page-container">
           <h1>출석부</h1>
-          <TeacherInfo teacherName={setTeachers} className="보류" attendanceRate={80} />
+          <TeacherInfo 
+              teacherName={teachers?.teacher_name ? teachers.teacher_name : "Unknown"} 
+              className="보류" 
+              attendanceRate={attendanceStats?.result_stats || []}
+            />
             <div className="header-section">
               <Select
                 defaultValue={selectedYear}

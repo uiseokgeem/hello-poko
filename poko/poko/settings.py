@@ -16,6 +16,8 @@ from environ import Env
 from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 
+from rest_framework.permissions import IsAuthenticated
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -217,6 +219,11 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_DOMAIN = None  # 로컬 개발 환경에서는 None으로 설정
+SESSION_COOKIE_DOMAIN = None
+
 # CORS 허용 설정
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React 앱의 주소
@@ -246,7 +253,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
+# SESSION_COOKIE_SAMESITE = "Lax"
 
 # 로그인 성공후 이동하는 URL
 LOGIN_REDIRECT_URL = "/"
@@ -256,32 +263,33 @@ LOGIN_URL = "login/"
 
 # Django REST framework 인증/권한 설정
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny"),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny"),
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
 }
-
-#        "rest_framework_simplejwt.authentication.JWTAuthentication",
-
 # dj-rest-auth 설정
 # REST_USE_JWT = True
 REST_AUTH = {
     "USE_JWT": True,
-    "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_COOKIE": "poko-auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
     "JWT_AUTH_COOKIE_USE_CSRF": True,
     "SESSION_LOGIN": False,
 }
 
-JWT_AUTH_COOKIE = "my-app-auth"
-JWT_AUTH_REFRESH_COOKIE = "my-refresh-token"
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),  # 헤더에서 Bearer 타입의 JWT 토큰을 사용
 }
 
 # email

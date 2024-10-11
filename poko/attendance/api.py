@@ -1,4 +1,6 @@
 from collections import defaultdict
+
+from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -23,13 +25,15 @@ import pandas as pd
 @method_decorator(csrf_exempt, name="dispatch")
 class TeachersViewSet(ViewSet):
     serializer_class = TeacherSerializer
+    # permission_classes = [AllowAny]
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def list(self, request):
         user = request.user
-
+        print("USER CHECK", user)
         if user.is_authenticated:
+            print("USER full_name CHECK", user.full_name)
             teacher_name = user.full_name  # 로그인된 경우 사용자 이름 반환
         else:
             teacher_name = "Anonymous"  # 로그인되지 않은 경우 처리
@@ -46,8 +50,9 @@ class TeachersViewSet(ViewSet):
 @method_decorator(csrf_exempt, name="dispatch")
 class MembersViewSet(ModelViewSet):
     serializer_class = MemberSerializer
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     # 로그인한 사용자의 반에 속한 학생만 필터링
     def get_queryset(self):
@@ -69,8 +74,9 @@ class MembersViewSet(ModelViewSet):
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
         # user = self.request.uesr
@@ -105,7 +111,9 @@ class AttendanceViewSet(ModelViewSet):
 # report-Statistics를 고려
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceStatsViewSet(ViewSet):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def list(self, request):
         queryset = Attendance.objects.all().values("date", "attendance", "name_id")
