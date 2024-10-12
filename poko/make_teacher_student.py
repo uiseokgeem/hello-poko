@@ -92,7 +92,11 @@ september_sundays = [
 
 # 랜덤 학생 이름 리스트 생성 함수
 def generate_student_names():
-    return [f"학생{random.randint(11, 100)}" for _ in range(10)]  # 1~100 범위에서 랜덤 이름 생성
+    first_names = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임"]  # 성
+    last_names = ["민수", "지수", "현우", "영희", "철수", "승현", "유리", "동현", "주영", "하준"]  # 이름
+    return [
+        f"{random.choice(first_names)}{random.choice(last_names)}" for _ in range(10)
+    ]
 
 
 # 랜덤 학년 생성 함수
@@ -106,7 +110,7 @@ def random_attendance():
 
 
 # poko@poko.com 사용자 가져오기
-teacher = CustomUser.objects.get(email="poko@poko.com")
+teacher = CustomUser.objects.get(email="token@toen.com")
 
 # 학생 이름 리스트 랜덤 생성
 student_names = generate_student_names()
