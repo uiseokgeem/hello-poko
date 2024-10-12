@@ -99,7 +99,7 @@ class AttendanceStatsViewSet(ViewSet):
 
     def list(self, request, *args, **kwargs):
         user = self.request.user
-        queryset = Attendance.objects.filter(name__teacher__email=user).values(
+        queryset = Attendanccde.objects.filter(name__teacher__email=user).values(
             "date",
             "attendance",
             "name_id",

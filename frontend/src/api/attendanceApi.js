@@ -9,9 +9,8 @@ const API_URL = isProd ? 'https://www.poko-dev.com/api/attendance/' : 'http://12
 
 // access token 가져오는 함수
 const getAccessToken = () => {
-    const cookies = new Cookies();
-    const token = cookies.get('poko-auth');
-    console.log("Access Token: ", token);  // 오타 수정
+    const token = localStorage.getItem('poko-auth');  // LocalStorage에서 access token 가져오기
+    console.log("Access Token: ", token);  // 토큰을 콘솔에 출력해 확인
     return token;
 };
 
