@@ -217,9 +217,9 @@ SESSION_COOKIE_DOMAIN = None
 
 
 CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "Lax"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불가함), 상황에 맞게 조정
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = "None"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불가함), 상황에 맞게 조정
+SESSION_COOKIE_SECURE = False  # HTTPS를 통해서만 쿠키가 전송
+CSRF_COOKIE_SECURE = False  # HTTPS를 통해서만 쿠키가 전송
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CORS_ALLOW_CREDENTIALS = True
@@ -238,7 +238,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.poko-dev.com",
     "https://poko-dev.com",
     "http://localhost:3000",
-    "http://localhost:80",
+    # "http://localhost:80",
 ]
 
 # session 쿠키 기본 설정
@@ -253,16 +253,16 @@ REST_FRAMEWORK = {
     ],
     # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny"),
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         # "rest_framework.authentication.SessionAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
 
 # REST_USE_JWT = True
 REST_AUTH = {
     "USE_JWT": True,
-    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_HTTPONLY": True,
     "JWT_AUTH_COOKIE": "poko-auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
     "JWT_AUTH_COOKIE_USE_CSRF": True,

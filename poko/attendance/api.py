@@ -28,7 +28,7 @@ import pandas as pd
 class TeachersViewSet(ViewSet):
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
 
     def list(self, request):
         user = request.user
@@ -44,7 +44,7 @@ class TeachersViewSet(ViewSet):
 class MembersViewSet(ModelViewSet):
     serializer_class = MemberSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
 
     # 로그인한 사용자의 반에 속한 학생만 필터링
     def get_queryset(self):
@@ -65,7 +65,7 @@ class MembersViewSet(ModelViewSet):
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get_queryset(self):
         # user = "teacher1@example.com"
@@ -95,11 +95,11 @@ class AttendanceViewSet(ModelViewSet):
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceStatsViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
 
     def list(self, request, *args, **kwargs):
         user = self.request.user
-        queryset = Attendanccde.objects.filter(name__teacher__email=user).values(
+        queryset = Attendance.objects.filter(name__teacher__email=user).values(
             "date",
             "attendance",
             "name_id",
