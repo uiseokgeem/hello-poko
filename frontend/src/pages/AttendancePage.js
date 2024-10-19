@@ -44,7 +44,6 @@ const AttendancePage = () => {
     };
 
     const handleSubmit = async () => {
-
       const attendanceData = students.map(student => ({
         id : student.id,
         attendance: checkedStudents.includes(student.id)

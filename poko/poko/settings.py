@@ -217,12 +217,12 @@ CSRF_COOKIE_DOMAIN = None  # 로컬 개발 환경에서는 None으로 설정
 SESSION_COOKIE_DOMAIN = None
 
 
-CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "Lax"  # 로컬 개발환경에서 None으로 설정시 admin에서 csrf 발급되지 않아 로그인 되지 않음.
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = False  # True 시 HTTPS를 통해서만 CSRF 쿠키가 전송
 CSRF_COOKIE_SECURE = False  # Tre 시 HTTPS를 통해서만 CSRF 쿠키가 전송
 CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_NAME = "csrftoken"
 

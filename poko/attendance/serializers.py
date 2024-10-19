@@ -45,10 +45,15 @@ class AttendanceSerializer(serializers.ModelSerializer):
         ]
 
 
+class AttendanceItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()  # 학생 ID
+    attendance = serializers.BooleanField()  # 출석 여부
+
+
 class BulkAttendanceSerializer(serializers.Serializer):
     date = serializers.DateField(format="%Y-%m-%d")
     attendance = serializers.ListField(
-        child=serializers.DictField(child=serializers.BooleanField())
+        child=AttendanceItemSerializer()  # 중첩 Serializer 사용
     )
     # ModelSerializer 대신 Serializer를 사용한 이유
     # 요청으로 오는 attendance 필드가 일반적인 모델 필드와 다르기 때문에

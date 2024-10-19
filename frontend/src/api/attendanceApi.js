@@ -69,6 +69,7 @@ export const fetchTeachers = async () => {
 
 // 출석 통계를 가져오는 함수
 export const fetchAttendanceStats = async () => {
+    
     try {
         const response = await axios.get(`${API_URL}attendance-stats/`,{
             withCredentials: true,
@@ -85,8 +86,9 @@ export const fetchAttendanceStats = async () => {
 };
 
 // 출석 데이터를 서버로 POST 요청하는 함수
-export const postAttendanceData = async (date, student_id, attendanceData) => {
-    try {
+export const postAttendanceData = async (date, attendanceData) => {
+    try {console.log('post 요청 데이터:', { date, attendanceData }); // 데이터를 확인하기 위해 추가
+    
         const response = await axios.post(
             `${API_URL}attendance-records/`,
             {
