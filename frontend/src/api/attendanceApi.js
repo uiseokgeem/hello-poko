@@ -90,9 +90,8 @@ export const postAttendanceData = async (date, attendanceData) => {
     
     try {
         console.log('post 요청 데이터:', { date, attendanceData }); // 데이터를 확인하기 위해 추가
+        console.log('token 확인:', { csrftoken }); // 데이터를 확인하기 위해 추가
         
-        const csrftoken = getCSRFToken();
-
         const response = await axios.post(
             `${API_URL}attendance-records/`,
             {
