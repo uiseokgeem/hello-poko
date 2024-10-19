@@ -98,6 +98,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "accounts.CustomMiddleware.CustomCsrfMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -217,21 +218,36 @@ SESSION_COOKIE_DOMAIN = None
 
 
 CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "None"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불가함), 상황에 맞게 조정
-SESSION_COOKIE_SECURE = False  # HTTPS를 통해서만 쿠키가 전송
-CSRF_COOKIE_SECURE = False  # HTTPS를 통해서만 쿠키가 전송
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = False  # True 시 HTTPS를 통해서만 CSRF 쿠키가 전송
+CSRF_COOKIE_SECURE = False  # Tre 시 HTTPS를 통해서만 CSRF 쿠키가 전송
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_HTTPONLY = False
+
+# Product CSRF Setting
+# CSRF_COOKIE_SAMESITE = "None"
+# SESSION_COOKIE_SAMESITE = "Lax"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불>
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_NAME = "csrftoken"
+# CSRF_COOKIE_HTTPONLY = True
+# CORS_ALLOW_CREDENTIALS = True
+# SESSION_COOKIE_HTTPONLY = True
+
+# session 쿠키 기본 설정
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_NAME = "sessionid"
 
 # CORS 허용 설정
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React 앱의 주소
-    # "http://localhost:80", # Nginx
     "http://poko-dev.com",  # 도메인 이름 (http 사용)
     "https://poko-dev.com",  # 도메인 이름 (https 사용)
     "http://www.poko-dev.com",  # www 포함 도메인 (http 사용)
     "https://www.poko-dev.com",  # www 포함 도메인 (https 사용)
+    # "http://localhost:80", # Nginx
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -240,11 +256,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     # "http://localhost:80",
 ]
-
-# session 쿠키 기본 설정
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_NAME = "sessionid"
-SESSION_COOKIE_HTTPONLY = True
 
 # Django REST framework 인증/권한 설정
 REST_FRAMEWORK = {

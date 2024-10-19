@@ -16,7 +16,7 @@ app_name = "attendance"
 router = DefaultRouter()
 router.register(r"teachers", TeachersViewSet, basename="teachers")
 router.register(r"members", MembersViewSet, basename="member")
-router.register(r"records", AttendanceViewSet, basename="records")
+router.register(r"attendance-records", AttendanceViewSet, basename="attendance-records")
 router.register(
     r"attendance-stats", AttendanceStatsViewSet, basename="attendance-stats"
 )

@@ -3,6 +3,7 @@ import { Modal, Button, Checkbox, Form } from "antd";
 import './AttendanceModal.css'
 
 const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleCheck, handleSubmit }) => {
+  
 
   return (
     <Modal
@@ -21,7 +22,9 @@ const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleChe
 
       <Form layout="vertical" className="modal-form">
         {students.map((student) => (
-          <Form.Item key={student.id} className="form-item">
+          <Form.Item key={student.id} 
+          className={`form-item ${checkedStudents.includes(student.id) ? 'checked' : ''}`}  // 체크된 항목에 대해 클래스 추가
+          >
             <Checkbox
               checked={checkedStudents.includes(student.id)}
               onChange={() => handleCheck(student.id)}

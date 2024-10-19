@@ -1,11 +1,12 @@
 import React, { useState, useEffect }  from "react";
 import {Layout, Select, Button, Modal, Checkbox } from 'antd';
+import axios from "axios";
 import AppHeader from '../components/Header/Header';
 import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal  from "../components/Attendance/AttendanceModal";
 // import StudentList from '../components/Attendance/StudentList';
-import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats } from '../api/attendanceApi';
+import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats, postAttendanceData } from '../api/attendanceApi';
 import './AttendancePage.css'
 
 const  { Content } = Layout;
@@ -42,8 +43,19 @@ const AttendancePage = () => {
       );
     };
 
-    const handleSubmit = () => {
-      console.log('출석부 등록 완료:', checkedStudents);
+    const handleSubmit = async () => {
+
+      const attendanceData = students.map(student => ({
+        id : student.id,
+        attendance: checkedStudents.includes(student.id)
+      }));
+
+      try {
+        const response = await postAttendanceData(new Date().toISOString().split('T')[0], attendanceData);
+        console.log('서버 응답:', response);
+      } catch (error) {
+        console.error('Error posting attendance data:', error);
+      }
       setIsModalOpen(false);  // 모달 닫기
     };
   

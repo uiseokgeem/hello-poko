@@ -1,3 +1,4 @@
+import { withConfirm } from "antd/es/modal/confirm";
 import axios from "axios";
 import { Cookies } from "react-cookie";
 
@@ -17,7 +18,7 @@ const csrftoken = getCSRFToken();
 // 출석 데이터를 가져오는 함수
 export const fetchAttendanceData = async (year) => {
     try {
-        const response = await axios.get(`${API_URL}records/`, {
+        const response = await axios.get(`${API_URL}attendance-records/`, {
             params: { year }, // 파라미터 추가
             withCredentials: true, // 쿠키와 함께 요청
             headers: {
@@ -82,5 +83,31 @@ export const fetchAttendanceStats = async () => {
         throw error
     }
 };
+
+// 출석 데이터를 서버로 POST 요청하는 함수
+export const postAttendanceData = async (date, attendanceData) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}attendance-records/`,
+            {
+                date: date,
+                attendance: attendanceData
+            },
+            {
+                withCredentials: true,
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        console.log('Post Response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error posting attendance data:', error);
+        throw error;
+    }
+};
+
 
 

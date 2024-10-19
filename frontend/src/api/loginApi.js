@@ -28,14 +28,6 @@ export const login = async (id, password) => {
             }
         );
 
-        const { access, refresh } = response.data;
-
-        localStorage.setItem('poko-auth', access);
-        localStorage.setItem('refresh-token', refresh);
-
-        console.log("Access Token:", access);
-        console.log("Refresh Token:", refresh);
-
         return response.data;
     } catch (error) {
         handleError(error);

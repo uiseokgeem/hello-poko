@@ -1,13 +1,14 @@
 from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from docutils.nodes import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth.decorators import login_required
 
 from attendance.models import Member, Attendance
 from .serializers import (
@@ -16,6 +17,7 @@ from .serializers import (
     MemberSerializer,
     AttendanceSerializer,
     AttendanceStatsSerializer,
+    BulkAttendanceSerializer,
 )
 import pandas as pd
 
@@ -60,7 +62,7 @@ class MembersViewSet(ModelViewSet):
         return super().get_serializer_class()
 
 
-# 출석 데이터 목록 조회 및 생성
+# 단일 출석 데이터 목록 조회 및 생성
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
@@ -90,10 +92,18 @@ class AttendanceViewSet(ModelViewSet):
         ]
         return Response(response_data)
 
+    def create(self, request, *args, **kwargs):
+        serializer = BulkAttendanceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # 출석부 통계
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceStatsViewSet(ViewSet):
+    serializer_class = AttendanceStatsSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
