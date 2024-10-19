@@ -3,10 +3,10 @@ from collections import defaultdict
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from docutils.nodes import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.decorators import login_required
 

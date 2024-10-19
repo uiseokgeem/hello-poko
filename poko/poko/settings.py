@@ -221,20 +221,21 @@ CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = False  # True 시 HTTPS를 통해서만 CSRF 쿠키가 전송
 CSRF_COOKIE_SECURE = False  # Tre 시 HTTPS를 통해서만 CSRF 쿠키가 전송
-CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_HTTPONLY = False
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_NAME = "csrftoken"
+
 
 # Product CSRF Setting
 # CSRF_COOKIE_SAMESITE = "None"
 # SESSION_COOKIE_SAMESITE = "Lax"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불>
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
-# CSRF_COOKIE_NAME = "csrftoken"
 # CSRF_COOKIE_HTTPONLY = True
-# CORS_ALLOW_CREDENTIALS = True
 # SESSION_COOKIE_HTTPONLY = True
+# CORS_ALLOW_CREDENTIALS = True
+# CSRF_COOKIE_NAME = "csrftoken"
 
 # session 쿠키 기본 설정
 SESSION_ENGINE = "django.contrib.sessions.backends.db"

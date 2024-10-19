@@ -85,7 +85,7 @@ export const fetchAttendanceStats = async () => {
 };
 
 // 출석 데이터를 서버로 POST 요청하는 함수
-export const postAttendanceData = async (date, attendanceData) => {
+export const postAttendanceData = async (date, student_id, attendanceData) => {
     try {
         const response = await axios.post(
             `${API_URL}attendance-records/`,

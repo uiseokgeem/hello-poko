@@ -59,7 +59,7 @@ class BulkAttendanceSerializer(serializers.Serializer):
         attendance_list = validated_data.get("attendance")
 
         for attendance_data in attendance_list:
-            member_id = attendance_data.get("student_id")
+            member_id = attendance_data.get("id")
             attendance_status = attendance_data.get("attendance")
 
             Attendance.objects.create(
