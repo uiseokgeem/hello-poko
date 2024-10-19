@@ -18,6 +18,7 @@ const csrftoken = getCSRFToken();
 // 출석 데이터를 가져오는 함수
 export const fetchAttendanceData = async (year) => {
     try {
+        console.log('fetchAttendanceStats,token 확인:', { csrftoken }); // CSRF 토큰 로그
         const response = await axios.get(`${API_URL}attendance-records/`, {
             params: { year }, // 파라미터 추가
             withCredentials: true, // 쿠키와 함께 요청
@@ -36,6 +37,7 @@ export const fetchAttendanceData = async (year) => {
 // 학생 데이터를 가져오는 함수
 export const fetchStudents = async () => {
     try {
+        console.log('fetchAttendanceStats,token 확인:', { csrftoken }); // CSRF 토큰 로그
         const response = await axios.get(`${API_URL}members/`, {
             withCredentials: true, // 쿠키와 함께 요청
             headers: {
@@ -53,6 +55,7 @@ export const fetchStudents = async () => {
 // 선생님 데이터를 가져오는 함수
 export const fetchTeachers = async () => {
     try {
+        console.log('fetchAttendanceStats,token 확인:', { csrftoken }); // CSRF 토큰 로그
         const response = await axios.get(`${API_URL}teachers/`,{
             withCredentials: true,
             headers: {
@@ -71,6 +74,7 @@ export const fetchTeachers = async () => {
 export const fetchAttendanceStats = async () => {
     
     try {
+        console.log('fetchAttendanceStats,token 확인:', { csrftoken }); // CSRF 토큰 로그
         const response = await axios.get(`${API_URL}attendance-stats/`,{
             withCredentials: true,
             headers: {
@@ -90,8 +94,10 @@ export const postAttendanceData = async (date, attendanceData) => {
     
     try {
         console.log('post 요청 데이터:', { date, attendanceData }); // 데이터를 확인하기 위해 추가
-        console.log('token 확인:', { csrftoken }); // 데이터를 확인하기 위해 추가
-        
+        // 요청 직전에 CSRF 토큰을 다시 가져옴
+        const csrftoken = getCSRFToken();
+        console.log('token 확인:', { csrftoken }); // CSRF 토큰 로그
+
         const response = await axios.post(
             `${API_URL}attendance-records/`,
             {
