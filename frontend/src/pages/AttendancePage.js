@@ -5,7 +5,6 @@ import AppHeader from '../components/Header/Header';
 import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal  from "../components/Attendance/AttendanceModal";
-// import StudentList from '../components/Attendance/StudentList';
 import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats, postAttendanceData } from '../api/attendanceApi';
 import './AttendancePage.css'
 
@@ -52,9 +51,17 @@ const AttendancePage = () => {
       try {
         const response = await postAttendanceData(new Date().toISOString().split('T')[0], attendanceData);
         console.log('서버 응답:', response);
+    
+        // 새로운 데이터를 반영하기 위해 출석 데이터를 다시 가져옴
+        const updatedAttendanceData = await fetchAttendanceData(selectedYear);
+        console.log("Fetched updated attendance data: ", updatedAttendanceData);
+        
+        // 차트를 업데이트하기 위해 상태를 업데이트
+        setAttendanceData(updatedAttendanceData);
       } catch (error) {
         console.error('Error posting attendance data:', error);
       }
+    
       setIsModalOpen(false);  // 모달 닫기
     };
   
