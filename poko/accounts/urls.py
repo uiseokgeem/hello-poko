@@ -13,7 +13,7 @@ urlpatterns = [
     # path(
     #    "", include("dj_rest_auth.urls")
     # ),  # dj_rest_auth login test 해당 라인 추가, http://127.0.0.1:8000/api/login -> common으로 이동할 것
-    path("get-csrf-token/", get_csrf_token, name="get_csrf_token"),
+    # path("get-csrf-token/", get_csrf_token, name="get_csrf_token"),
     path("login/", api.CustomLoginView.as_view()),
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

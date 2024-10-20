@@ -63,6 +63,7 @@ class MembersViewSet(ModelViewSet):
 
 
 # 단일 출석 데이터 목록 조회 및 생성
+# 데코레이터와 인증 충돌 확인, login api에서는 post 요청 정상 작동
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer

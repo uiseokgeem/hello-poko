@@ -98,7 +98,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "accounts.CustomMiddleware.CustomCsrfMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -106,6 +105,8 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     # "django.middleware.common.CommonMiddleware", 중복
     # "common.middleware.LoginRequiredMiddleware",
+    # "accounts.CustomMiddleware.CustomCsrfMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware", JWTCookieAuthentication 기반 인증 시 사용하지 않음.
 ]
 
 ROOT_URLCONF = "poko.urls"
@@ -218,10 +219,10 @@ SESSION_COOKIE_DOMAIN = None
 
 
 CSRF_COOKIE_SAMESITE = "Lax"  # 로컬 개발환경에서 None으로 설정시 admin에서 csrf 발급되지 않아 로그인 되지 않음.
-SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "Lax"  # "None"으로 설정시(개발 환경에서 admin 로그인이 불가
 SESSION_COOKIE_SECURE = False  # True 시 HTTPS를 통해서만 CSRF 쿠키가 전송
 CSRF_COOKIE_SECURE = False  # Tre 시 HTTPS를 통해서만 CSRF 쿠키가 전송
-CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_NAME = "csrftoken"
@@ -229,7 +230,7 @@ CSRF_COOKIE_NAME = "csrftoken"
 
 # Product CSRF Setting
 # CSRF_COOKIE_SAMESITE = "None"
-# SESSION_COOKIE_SAMESITE = "Lax"  # 또는 "None"으로 설정시(개발 환경에서 admin 로그인이 불>
+# SESSION_COOKIE_SAMESITE = "Lax"
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
@@ -277,7 +278,7 @@ REST_AUTH = {
     "JWT_AUTH_HTTPONLY": True,
     "JWT_AUTH_COOKIE": "poko-auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
-    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_USE_CSRF": False,  # JWTCookieAuthentication 기반 인증 사용으로 csrf 토큰은 사용하지않아 비활성화
     "SESSION_LOGIN": False,
 }
 
@@ -286,7 +287,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "AUTH_HEADER_TYPES": ("Bearer",),  # 헤더에서 Bearer 타입의 JWT 토큰을 사용
+    # "AUTH_HEADER_TYPES": ("Bearer",),  # 헤더에서 Bearer 타입의 JWT 토큰을 사용
 }
 
 # email
