@@ -42,14 +42,23 @@ const AttendancePage = () => {
       );
     };
 
+    const getFormattedDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');  // 월은 0부터 시작하므로 +1 필요
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     const handleSubmit = async () => {
       const attendanceData = students.map(student => ({
         id : student.id,
         attendance: checkedStudents.includes(student.id)
       }));
 
+      const currentDate = getFormattedDate(new Date());
+
       try {
-        const response = await postAttendanceData(new Date().toISOString().split('T')[0], attendanceData);
+        const response = await postAttendanceData(currentDate, attendanceData);
         console.log('서버 응답:', response);
     
         // 새로운 데이터를 반영하기 위해 출석 데이터를 다시 가져옴
@@ -60,6 +69,13 @@ const AttendancePage = () => {
         setAttendanceData(updatedAttendanceData);
       } catch (error) {
         console.error('Error posting attendance data:', error);
+        
+        if (error.response && error.response.data && error.response.data.detail) {
+          Modal.error({
+              title: '출석 데이터 중복',
+              content: error.response.data.detail,  // Django Response error mesaage
+          });
+      } 
       }
     
       setIsModalOpen(false);  // 모달 닫기
@@ -104,6 +120,7 @@ const AttendancePage = () => {
               checkedStudents={checkedStudents}
               handleCheck={handleCheck}
               handleSubmit={handleSubmit}
+              getFormattedDate={getFormattedDate(new Date())}
             >
             </AttendanceModal>
           </Content>

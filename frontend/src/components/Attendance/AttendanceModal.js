@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Button, Checkbox, Form } from "antd";
 import './AttendanceModal.css'
 
-const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleCheck, handleSubmit }) => {
+const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleCheck, handleSubmit, getFormattedDate }) => {
   
 
   return (
@@ -17,7 +17,7 @@ const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleChe
     >
       <div className="modal-header">
         <h2>출석부 등록</h2>
-        <p className="modal-subtitle">등록일: <b>{new Date().toLocaleDateString()}</b></p>
+        <p className="modal-subtitle">등록일: <b>{getFormattedDate}</b></p>
       </div>
 
       <Form layout="vertical" className="modal-form">

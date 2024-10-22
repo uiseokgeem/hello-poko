@@ -63,6 +63,13 @@ class BulkAttendanceSerializer(serializers.Serializer):
         date = validated_data.get("date")
         attendance_list = validated_data.get("attendance")
 
+        print(date)
+
+        if Attendance.objects.filter(date=date).exists():
+            raise serializers.ValidationError(
+                {"detail": f"{date}의 출석 데이터가 저장되어있습니다."},
+            )
+
         for attendance_data in attendance_list:
             member_id = attendance_data.get("id")
             attendance_status = attendance_data.get("attendance")
