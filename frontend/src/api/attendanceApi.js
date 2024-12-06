@@ -98,4 +98,6 @@ export const postAttendanceData = async (date, attendanceData) => {
 };
 
 
+// 출석 데이터를 서버로 PATCH  요청하는 함수
+
 

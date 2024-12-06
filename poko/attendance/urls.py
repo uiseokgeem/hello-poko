@@ -35,4 +35,5 @@ urlpatterns = [
     # path("attendance_group/", views.attendance_group),
     # path("ind/", views.attendance_ind),
     # path("download_excel/", views.result_excel, name="download_excel"),
+    path("", include(router.urls)),  # ViewSet을 위한 URL 포함
 ]

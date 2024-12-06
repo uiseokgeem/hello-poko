@@ -3,6 +3,7 @@ from collections import defaultdict
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -67,11 +68,11 @@ class MembersViewSet(ModelViewSet):
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTCookieAuthentication]
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [JWTCookieAuthentication]
 
     def get_queryset(self):
-        # user = "teacher1@example.com"
+        # user = "token@toen.com"
         user = self.request.user
         queryset = Attendance.objects.filter(name__teacher__email=user)
         year = self.request.query_params.get("year", None)
@@ -81,16 +82,19 @@ class AttendanceViewSet(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        attendance_data = defaultdict(dict)
+        attendance_data = defaultdict(list)
 
         for record in queryset:
             date_str = record.date.strftime("%Y-%m-%d")
-            attendance_data[date_str][record.name.id] = record.attendance
+            attendance_data[date_str].append(
+                {"id": record.name.id, "attendance": record.attendance}
+            )
 
         response_data = [
             {"date": date, "attendance": attendance}
             for date, attendance in attendance_data.items()
         ]
+
         return Response(response_data)
 
     def create(self, request, *args, **kwargs):
@@ -99,6 +103,18 @@ class AttendanceViewSet(ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=["patch"], url_path="bulk-update")
+    def bulk_update(self, request, *args, **kwargs):
+        serializer = BulkAttendanceSerializer(data=request.data)
+
+        if serializer.is_valid():
+            updated_records = serializer.update(None, serializer.validated_data)
+            return Response(
+                self.get_serializer(updated_records, many=True).data,
+                status=status.HTTP_200_OK,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

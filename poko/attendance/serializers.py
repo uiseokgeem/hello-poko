@@ -63,12 +63,14 @@ class BulkAttendanceSerializer(serializers.Serializer):
         date = validated_data.get("date")
         attendance_list = validated_data.get("attendance")
 
-        print(date)
-
-        if Attendance.objects.filter(date=date).exists():
-            raise serializers.ValidationError(
-                {"detail": f"{date}의 출석 데이터가 저장되어있습니다."},
-            )
+        # issue
+        # 사용자 구분 없이 해당 날짜 출석 데이터가 있으면 error 발생
+        # filter에 user 조건 추가한다.
+        # 1. 로그인한 사용자의 2. 조회 날짜 데이터만 확인하여 error 발생 하도록 수정한다.
+        # if Attendance.objects.filter(date=date).exists():
+        #     raise serializers.ValidationError(
+        #         {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
+        #     )
 
         for attendance_data in attendance_list:
             member_id = attendance_data.get("id")
@@ -81,6 +83,31 @@ class BulkAttendanceSerializer(serializers.Serializer):
             )
 
         return validated_data
+
+        # PATCH 요청: 출석 데이터를 수정하는 메서드
+
+    def update(self, instance, validated_data):
+        date = validated_data.get("date")
+        attendance_list = validated_data.get("attendance")
+
+        updated_records = []
+
+        for attendance_data in attendance_list:
+            member_id = attendance_data.get("id")
+            attendance_status = attendance_data.get("attendance")
+
+            # 해당 학생의 출석 데이터를 찾음
+            attendance_record = Attendance.objects.filter(
+                name_id=member_id, date=date
+            ).first()
+
+            if attendance_record:
+                # 출석 상태 업데이트
+                attendance_record.attendance = attendance_status
+                attendance_record.save()
+                updated_records.append(attendance_record)
+
+        return updated_records
 
 
 class AttendanceStatsSerializer(serializers.ModelSerializer):

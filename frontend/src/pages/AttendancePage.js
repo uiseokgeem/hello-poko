@@ -26,7 +26,10 @@ const AttendancePage = () => {
         console.log("Fetched teachers data: ", data); // teachers 데이터 확인
         setTeachers(data);
       });
-      fetchStudents().then(setStudents);
+      fetchStudents().then((data) => {
+        console.log("Fetched students data: ", data); // students 데이터 확인
+        setStudents(data);
+      });
       fetchAttendanceData(selectedYear).then((data) => {
         console.log("Fetched attendance data: ", data); // 데이터 로그 출력
         setAttendanceData(data);
