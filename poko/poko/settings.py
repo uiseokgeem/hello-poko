@@ -103,10 +103,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # "django.middleware.common.CommonMiddleware", 중복
-    # "common.middleware.LoginRequiredMiddleware",
-    # "accounts.CustomMiddleware.CustomCsrfMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware", JWTCookieAuthentication 기반 인증 시 사용하지 않음.
 ]
 
 ROOT_URLCONF = "poko.urls"
