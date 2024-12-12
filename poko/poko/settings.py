@@ -274,7 +274,7 @@ REST_AUTH = {
     "JWT_AUTH_HTTPONLY": True,
     "JWT_AUTH_COOKIE": "poko-auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
-    "JWT_AUTH_COOKIE_USE_CSRF": False,  # JWTCookieAuthentication 기반 인증 사용으로 csrf 토큰은 사용하지않아 비활성화
+    "JWT_AUTH_COOKIE_USE_CSRF": True,  # JWTCookieAuthentication 기반 인증 사용으로 csrf 토큰은 사용하지않아 비활성화
     "SESSION_LOGIN": False,
 }
 
