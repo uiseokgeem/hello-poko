@@ -29,7 +29,7 @@ const AppHeader = () => {
     <Header className="app-header">
       <div className="logo">
         <Link to="/">
-          <img src="/images/poko_logo.png" alt="Logo" />
+        <img src={`${process.env.PUBLIC_URL}/images/poko_logo.png`} alt="Logo" />
         </Link>
       </div>
       <Menu theme="light" mode="horizontal" defaultSelectedKeys={['1']} className="menu" items={items} />

@@ -63,14 +63,14 @@ class BulkAttendanceSerializer(serializers.Serializer):
         date = validated_data.get("date")
         attendance_list = validated_data.get("attendance")
 
-        # issue
-        # 사용자 구분 없이 해당 날짜 출석 데이터가 있으면 error 발생
-        # filter에 user 조건 추가한다.
-        # 1. 로그인한 사용자의 2. 조회 날짜 데이터만 확인하여 error 발생 하도록 수정한다.
-        # if Attendance.objects.filter(date=date).exists():
-        #     raise serializers.ValidationError(
-        #         {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
-        #     )
+        # 요청한 사용자 정보 가져오기
+        user = self.context["request"].user  # DRF에서 context를 통해 현재 요청의 사용자 가져오기
+
+        # 사용자와 날짜 조건으로 데이터 확인
+        if Attendance.objects.filter(name__teacher=user, date=date).exists():
+            raise serializers.ValidationError(
+                {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
+            )
 
         for attendance_data in attendance_list:
             member_id = attendance_data.get("id")

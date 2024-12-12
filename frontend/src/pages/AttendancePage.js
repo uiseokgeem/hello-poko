@@ -5,7 +5,7 @@ import AppHeader from '../components/Header/Header';
 import AttendanceChart from '../components/Attendance/AttendanceChart';
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal  from "../components/Attendance/AttendanceModal";
-import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats, postAttendanceData } from '../api/attendanceApi';
+import { fetchAttendanceData, fetchStudents, fetchTeachers, fetchAttendanceStats, postAttendanceData, patchAttendanceData } from '../api/attendanceApi';
 import './AttendancePage.css'
 
 const  { Content } = Layout;
@@ -20,6 +20,8 @@ const AttendancePage = () => {
     const [selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
     const [checkedStudents, setCheckedStudents] = useState([]);
+    const [selectedDate, setselectedDate] = useState(null);
+    const [modalMode, setModalMode] = useState("create");
 
     useEffect(() => {
       fetchTeachers().then((data) => {
@@ -61,8 +63,15 @@ const AttendancePage = () => {
       const currentDate = getFormattedDate(new Date());
 
       try {
-        const response = await postAttendanceData(currentDate, attendanceData);
-        console.log('서버 응답:', response);
+        if (modalMode === "edit") {
+          // PATCH 요청
+          console.log("Sending PATCH request...");
+          await patchAttendanceData(selectedDate, attendanceData); // 수정된 데이터를 서버로 전송
+      } else {
+          // POST 요청
+          console.log("Sending POST request...");
+          await postAttendanceData(getFormattedDate(new Date()), attendanceData); // 새로운 데이터를 서버로 전송
+      }
     
         // 새로운 데이터를 반영하기 위해 출석 데이터를 다시 가져옴
         const updatedAttendanceData = await fetchAttendanceData(selectedYear);
@@ -84,8 +93,24 @@ const AttendancePage = () => {
       setIsModalOpen(false);  // 모달 닫기
     };
   
-    const openModal = () => {
-      setIsModalOpen(true);  // 모달 열기
+    const openModal = (date, mode = "create") => {
+      setselectedDate(date);
+      setModalMode(mode);
+      if (mode === "edit") {
+        const existingAttendance = attendanceData.find(
+          (entry) => entry.date === date
+        );
+        if (existingAttendance) {
+          setCheckedStudents(
+            existingAttendance.attendance
+            .filter((entry) => entry.attendance)
+            .map((entry) => entry.id)
+          );
+        }
+      } else {
+        setCheckedStudents([]);
+      }
+      setIsModalOpen(mode);  // 모달 열기
     };
   
     const closeModal = () => {
@@ -94,7 +119,7 @@ const AttendancePage = () => {
   
 
     return (
-        <Layout>
+      <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
           <AppHeader />
           <Content className="page-container">
           <h1>출석부</h1>
@@ -115,7 +140,7 @@ const AttendancePage = () => {
               </Select>
               <Button type="primary" onClick={openModal} className="new-attendance-button">+ 새 출석부</Button>
             </div>
-            <AttendanceChart data={attendanceData} students={students} />  {/* 출석 차트 컴포넌트 */}
+            <AttendanceChart data={attendanceData} students={students} openModal={openModal} />  {/* 출석 차트 컴포넌트 */}
             <AttendanceModal
               isOpen={isModalOpen}
               onClose={closeModal}
@@ -124,6 +149,8 @@ const AttendancePage = () => {
               handleCheck={handleCheck}
               handleSubmit={handleSubmit}
               getFormattedDate={getFormattedDate(new Date())}
+              selectedDate={selectedDate} // 선택된 날짜 전달
+              mode={modalMode} // 모달 모드 전달
             >
             </AttendanceModal>
           </Content>

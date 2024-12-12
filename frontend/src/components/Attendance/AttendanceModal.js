@@ -2,7 +2,17 @@ import React from "react";
 import { Modal, Button, Checkbox, Form } from "antd";
 import './AttendanceModal.css'
 
-const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleCheck, handleSubmit, getFormattedDate }) => {
+const AttendanceModal = ({
+   isOpen,
+   onClose,
+   students,
+   checkedStudents,
+   handleCheck,
+   handleSubmit,
+   getFormattedDate,
+   selectedDate,
+   mode,
+  }) => {
   
 
   return (
@@ -16,8 +26,12 @@ const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleChe
       centered // 모달을 화면 중앙에 위치시킴
     >
       <div className="modal-header">
-        <h2>출석부 등록</h2>
-        <p className="modal-subtitle">등록일: <b>{getFormattedDate}</b></p>
+        {/* <h2>출석부 등록</h2> */}
+        <h2>{mode === "edit" ? "출석 수정" : "출석부 등록"}</h2>
+        {/* <p className="modal-subtitle">등록일: <b>{getFormattedDate}</b></p> */}
+        <p className="modal-subtitle">
+          {mode === "edit" ? `수정 날짜: ${selectedDate}` : `등록일: ${getFormattedDate}`}
+        </p>
       </div>
 
       <Form layout="vertical" className="modal-form">
@@ -39,7 +53,7 @@ const AttendanceModal = ({ isOpen, onClose, students, checkedStudents, handleChe
             취소
           </Button>
           <Button type="primary" onClick={handleSubmit} className="submit-btn">
-            등록
+            {mode === "edit" ? "수정 저장" : "등록"}
           </Button>
         </div>
       </Form>

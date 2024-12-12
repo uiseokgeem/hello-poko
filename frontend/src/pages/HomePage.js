@@ -9,7 +9,7 @@ const { Title, Text } = Typography;
 
 const HomePage = () => {
   return (
-    <Layout>
+    <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       <AppHeader />
       <Content className="home-content">
         <Row gutter={[16, 16]}>

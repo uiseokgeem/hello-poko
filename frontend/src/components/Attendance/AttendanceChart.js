@@ -17,9 +17,17 @@ const mapAttendanceForStudent = (student, data) => {
   return attendance;
 };
 
-const AttendanceChart = ({ data, students }) => {
-  // Columns는 데이터가 변경될 때만 새로 계산되도록 useMemo를 사용하여 최적화
-  // useMemo()
+const AttendanceChart = ({ data, students, openModal }) => {
+  const errorIconPath = `${process.env.PUBLIC_URL}/images/variant=error@3x.png`;
+  const successIconPath = `${process.env.PUBLIC_URL}/images/variant=sucess@3x.png`;
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString); 
+    const month = date.getMonth() + 1; 
+    const day = date.getDate(); 
+    return `${month}월 ${day}일`;
+  };
+
   const columns = useMemo(() => [
     {
       title: '이름',
@@ -28,16 +36,27 @@ const AttendanceChart = ({ data, students }) => {
       fixed: 'left',
       width: 50,
     }, 
-    // date -> dateEntry로 수정, 각 날짜를 column의 제목으로 사용한다.
+
     ...data.map(dateEntry => ({
-      title: dateEntry.date,
+      title: (
+        <a
+          onClick={() => openModal(dateEntry.date, "edit")}
+          style={{ cursor: "pointer", color: "#1890ff" }}
+        >
+          {formatDate(dateEntry.date)}
+        </a>
+      ),
       dataIndex: dateEntry.date,
       key: dateEntry.date,
       width: 100,
       render: attendance => (
         <span>
-          {attendance ? '✅' : '❌'}
-        </span>
+        {attendance ? (
+          <img src={successIconPath} alt="Success" style={{ width: '20px', height: '20px' }} />
+        ) : (
+          <img src={errorIconPath} alt="Error" style={{ width: '20px', height: '20px' }} />
+        )}
+      </span>
       ),
     })),
     {
@@ -49,24 +68,6 @@ const AttendanceChart = ({ data, students }) => {
       
     }
   ], [data]);
-
-  // 학생별 출석 데이터를 매핑하여 테이블에 표할 데이터 구조로 변환
-  // const dataSource = useMemo(() => {
-  //   return students.map(student => {
-  //     const studentAttendance = data.reduce((acc, dateEntry) => {
-  //       const attendanceRecord = dateEntry.attendance.find(
-  //         item => item.id === student.id
-  //       );
-  //       acc[dateEntry.date] = attendanceRecord ? attendanceRecord.attendance : null;
-  //       return acc;
-  //     }, {});
-  //     return {
-  //       key: student.id,
-  //       name: student.name,
-  //       ...studentAttendance,
-  //     };
-  //   });
-  // }, [data, students]);
 
   const dataSource = useMemo(() => {
     return students.map(student => {
@@ -90,3 +91,21 @@ const AttendanceChart = ({ data, students }) => {
 };
 
 export default AttendanceChart;
+
+  // 학생별 출석 데이터를 매핑하여 테이블에 표할 데이터 구조로 변환
+  // const dataSource = useMemo(() => {
+  //   return students.map(student => {
+  //     const studentAttendance = data.reduce((acc, dateEntry) => {
+  //       const attendanceRecord = dateEntry.attendance.find(
+  //         item => item.id === student.id
+  //       );
+  //       acc[dateEntry.date] = attendanceRecord ? attendanceRecord.attendance : null;
+  //       return acc;
+  //     }, {});
+  //     return {
+  //       key: student.id,
+  //       name: student.name,
+  //       ...studentAttendance,
+  //     };
+  //   });
+  // }, [data, students]);

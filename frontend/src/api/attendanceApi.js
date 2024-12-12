@@ -99,5 +99,27 @@ export const postAttendanceData = async (date, attendanceData) => {
 
 
 // 출석 데이터를 서버로 PATCH  요청하는 함수
-
+export const patchAttendanceData = async (date, attendanceData) => {
+    try {
+        console.log('PATCH 요청 데이터:', { date, attendanceData }); // 데이터를 확인하기 위해 추가
+        const response = await axios.patch(
+            `${API_URL}attendance-records/bulk-update/`, // PATCH 요청 URL
+            {
+                date: date,
+                attendance: attendanceData
+            },
+            {
+                withCredentials: true, // 인증 정보를 포함
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        console.log('Patch Response:', response.data); // 서버 응답 데이터 로그 출력
+        return response.data;
+    } catch (error) {
+        console.error('Error patching attendance data:', error);
+        throw error;
+    }
+};
 

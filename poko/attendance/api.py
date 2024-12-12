@@ -71,6 +71,10 @@ class AttendanceViewSet(ModelViewSet):
     # permission_classes = [IsAuthenticated]
     # authentication_classes = [JWTCookieAuthentication]
 
+    def get_serializer_context(self):
+        # context에 request 정보를 포함하여 Serializer에 전달
+        return {"request": self.request}
+
     def get_queryset(self):
         # user = "token@toen.com"
         user = self.request.user
@@ -98,7 +102,9 @@ class AttendanceViewSet(ModelViewSet):
         return Response(response_data)
 
     def create(self, request, *args, **kwargs):
-        serializer = BulkAttendanceSerializer(data=request.data)
+        serializer = BulkAttendanceSerializer(
+            data=request.data, context={"request": request}
+        )
 
         if serializer.is_valid():
             serializer.save()
