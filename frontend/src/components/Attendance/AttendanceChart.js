@@ -34,7 +34,7 @@ const AttendanceChart = ({ data, students, openModal }) => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
-      width: 50,
+      width: 100,
     }, 
 
     ...data.map(dateEntry => ({
@@ -48,7 +48,7 @@ const AttendanceChart = ({ data, students, openModal }) => {
       ),
       dataIndex: dateEntry.date,
       key: dateEntry.date,
-      width: 100,
+      width: 120,
       render: attendance => (
         <span>
         {attendance ? (
@@ -63,7 +63,7 @@ const AttendanceChart = ({ data, students, openModal }) => {
       title: '정보',
       key: 'info',
       fixed: 'right',
-      width: 40,
+      width: 100,
       render: (text, record) => <a href="#">보기</a>,
       
     }
@@ -84,7 +84,7 @@ const AttendanceChart = ({ data, students, openModal }) => {
    columns={columns} 
    dataSource={dataSource} 
    pagination={false} 
-   scroll={{ x: 1500 }} // 가로 스크롤 강제 설정 (1500px 넓이 이상일 때 스크롤 생성)
+   scroll={{ x: 'max-content' }} // 컬럼 내용에 따라 스크롤 크기 조정
    sticky
    bordered
    />;
@@ -109,3 +109,102 @@ export default AttendanceChart;
   //     };
   //   });
   // }, [data, students]);
+
+  // import React, { useMemo } from "react";
+  // import { Table } from 'antd';
+  
+  // const mapAttendanceForStudent = (student, data) => {
+  //   const attendance = {};
+  
+  //   data.forEach(dateEntry => {
+  //     const attendanceRecord = dateEntry.attendance.find(
+  //       item => item.id === student.id
+  //     );
+  //     attendance[dateEntry.date] = attendanceRecord
+  //       ? attendanceRecord.attendance
+  //       : null;
+  //   });
+  
+  //   return attendance;
+  // };
+  
+  // const AttendanceChart = ({ data, students, openModal }) => {
+  //   const errorIconPath = `${process.env.PUBLIC_URL}/images/variant=error@3x.png`;
+  //   const successIconPath = `${process.env.PUBLIC_URL}/images/variant=sucess@3x.png`;
+  
+  //   const formatDate = (dateString) => {
+  //     const date = new Date(dateString); 
+  //     const month = date.getMonth() + 1; 
+  //     const day = date.getDate(); 
+  //     return `${month}월 ${day}일`;
+  //   };
+  
+  //   const columns = useMemo(() => {
+  //     // 전체 너비를 기준으로 각 날짜 컬럼의 비율 계산
+  //     const dateColumns = data.map(dateEntry => ({
+  //       title: (
+  //         <a
+  //           onClick={() => openModal(dateEntry.date, "edit")}
+  //           style={{ cursor: "pointer", color: "#1890ff" }}
+  //         >
+  //           {formatDate(dateEntry.date)}
+  //         </a>
+  //       ),
+  //       dataIndex: dateEntry.date,
+  //       key: dateEntry.date,
+  //       width: `${Math.floor(100 / (data.length + 2))}%`, // 날짜 컬럼 비율
+  //       render: attendance => (
+  //         <span>
+  //           {attendance ? (
+  //             <img src={successIconPath} alt="Success" style={{ width: '20px', height: '20px' }} />
+  //           ) : (
+  //             <img src={errorIconPath} alt="Error" style={{ width: '20px', height: '20px' }} />
+  //           )}
+  //         </span>
+  //       ),
+  //     }));
+  
+  //     // 고정 컬럼 포함
+  //     return [
+  //       {
+  //         title: '이름',
+  //         dataIndex: 'name',
+  //         key: 'name',
+  //         fixed: 'left',
+  //         width: `${Math.floor(100 / (data.length + 2))}%`,
+  //       },
+  //       ...dateColumns,
+  //       {
+  //         title: '정보',
+  //         key: 'info',
+  //         fixed: 'right',
+  //         width: `${Math.floor(100 / (data.length + 2))}%`,
+  //         render: (text, record) => <a href="#">보기</a>,
+  //       },
+  //     ];
+  //   }, [data]);
+  
+  //   const dataSource = useMemo(() => {
+  //     return students.map(student => {
+  //       const studentAttendance = mapAttendanceForStudent(student, data);
+  //       return {
+  //         key: student.id,
+  //         name: student.name,
+  //         ...studentAttendance,
+  //       };
+  //     });
+  //   }, [data, students]);
+  
+  //   return (
+  //     <Table
+  //       columns={columns}
+  //       dataSource={dataSource}
+  //       pagination={false}
+  //       scroll={{ x: true }}
+  //       sticky
+  //       bordered
+  //     />
+  //   );
+  // };
+  
+  // export default AttendanceChart;

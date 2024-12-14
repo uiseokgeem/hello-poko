@@ -139,11 +139,23 @@ class AttendanceStatsViewSet(ViewSet):
             "name_id",
         )
 
+        # DataFrame 생성
         attendance_df = pd.DataFrame(queryset)
+
+        if attendance_df.empty:  # 출석 정보가 없을 때 처리
+            return Response(
+                {
+                    "result_stats": 0,
+                }
+            )
+
+        # 출석 정보가 있는 경우 처리
         attendance_df["date"] = pd.to_datetime(attendance_df["date"])
         attendance_df["week"] = attendance_df["date"].dt.isocalendar().week
         weekly_stats = attendance_df.groupby("week")["attendance"].mean() * 100
-        result_stats = int(weekly_stats.mean())  # 소수점 아래를 버리고 정수변환(반올림이 필요한지)
+
+        # weekly_stats가 비어 있으면 0으로 반환
+        result_stats = int(weekly_stats.mean()) if not weekly_stats.empty else 0
 
         return Response(
             {
