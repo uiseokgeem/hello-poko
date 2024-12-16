@@ -29,7 +29,7 @@ const AppHeader = () => {
     <Header className="app-header">
       <div className="logo">
         <Link to="/">
-        <img src={`${process.env.PUBLIC_URL}/images/poko_logo.png`} alt="Logo" />
+          <img src={`${process.env.PUBLIC_URL}/images/poko_logo.png`} alt="Logo" />
         </Link>
       </div>
       <div className="menu-container">

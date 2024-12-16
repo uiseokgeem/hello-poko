@@ -15,16 +15,17 @@
   height: 35px;
 }
 
-/* 메뉴와 User 아이콘을 정렬할 컨테이너 */
 .menu-container {
   flex: 1;
   display: flex;
-  justify-content: space-between; /* 메뉴와 유저 아이콘 사이에 공간 배치 */
+  justify-content: space-between; /* 메뉴와 유저 아이콘 간 공간 배치 */
   align-items: center;
 }
 
 .menu {
-  flex: 1; /* 메뉴는 가능한 너비를 차지 */
+  flex: 1;
+  display: flex;
+  justify-content: flex-start; /* 메뉴를 왼쪽으로 정렬 */
 }
 
 .menu .ant-menu-item {
@@ -35,5 +36,26 @@
 .user-icon {
   font-size: 20px;
   cursor: pointer;
-  margin-left: 20px; /* 유저 아이콘과 메뉴 사이 여백 */
+  margin-left: 10px; /* 모바일 환경에서 여백 축소 */
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .menu-container {
+    flex-direction: row; /* 메뉴와 아이콘을 한 줄에 배치 */
+    justify-content: space-between; /* 메뉴와 아이콘을 양 끝으로 정렬 */
+  }
+
+  .menu {
+    flex: 0.8; /* 메뉴가 차지하는 공간 축소 */
+  }
+
+  .menu .ant-menu-item {
+    font-size: 14px; /* 메뉴 폰트 크기 축소 */
+  }
+
+  .user-icon {
+    font-size: 18px; /* 아이콘 크기 축소 */
+    margin-left: 5px; /* 여백 최소화 */
+  }
 }
