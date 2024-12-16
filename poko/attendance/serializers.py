@@ -67,6 +67,7 @@ class BulkAttendanceSerializer(serializers.Serializer):
         user = self.context["request"].user  # DRF에서 context를 통해 현재 요청의 사용자 가져오기
 
         # 사용자와 날짜 조건으로 데이터 확인
+        # issue2 학생별로 조회하여 데이터가 있는지 수정
         if Attendance.objects.filter(name__teacher=user, date=date).exists():
             raise serializers.ValidationError(
                 {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},

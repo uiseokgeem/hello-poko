@@ -3,7 +3,7 @@
   align-items: center;
   padding: 0 20px;
   background: #fff;
-  box-shadow: no;
+  box-shadow: none;
 }
 
 .logo {
@@ -15,11 +15,16 @@
   height: 35px;
 }
 
-.menu {
+/* 메뉴와 User 아이콘을 정렬할 컨테이너 */
+.menu-container {
   flex: 1;
   display: flex;
-  justify-content: flex-start;
-  margin-left: 20px;
+  justify-content: space-between; /* 메뉴와 유저 아이콘 사이에 공간 배치 */
+  align-items: center;
+}
+
+.menu {
+  flex: 1; /* 메뉴는 가능한 너비를 차지 */
 }
 
 .menu .ant-menu-item {
@@ -30,11 +35,10 @@
 .user-icon {
   font-size: 20px;
   cursor: pointer;
-  margin-left: 10px; /* 간격을 줄이기 위해 auto 대신 특정 값 설정 */
-  margin-right: 20px; /* 오른쪽 여백 추가로 위치 정리 */
+  margin-left: 20px; /* 유저 아이콘과 메뉴 사이 여백 */
 }
 
-/* 반응형 스타일 추가 */
+/* 반응형 스타일 */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 10px; /* 패딩 축소 */
@@ -44,15 +48,19 @@
     height: 30px; /* 로고 크기 축소 */
   }
 
+  .menu-container {
+    justify-content: space-between; /* 메뉴와 유저 아이콘 정렬 유지 */
+  }
+
   .menu {
-    margin-left: 10px; /* 메뉴와 로고 사이의 간격 축소 */
+    margin-left: 10px; /* 메뉴와 로고 간격 축소 */
   }
 
   .menu .ant-menu-item {
-    font-size: 14px; /* 메뉴 아이템의 폰트 크기 축소 */
+    font-size: 14px; /* 메뉴 아이템 폰트 크기 축소 */
   }
 
   .user-icon {
-    font-size: 18px; /* 아이콘 크기 약간 축소 */
+    font-size: 18px; /* 유저 아이콘 크기 축소 */
   }
 }
