@@ -32,17 +32,15 @@ const AppHeader = () => {
           <img src={`${process.env.PUBLIC_URL}/images/poko_logo.png`} alt="Logo" />
         </Link>
       </div>
-      <div className="menu-container">
-        <Menu
-          theme="light"
-          mode="horizontal"
-          defaultSelectedKeys={['1']}
-          className="menu"
-          items={items}
-        />
-        <div className="user-icon">
-          <UserOutlined />
-        </div>
+      <Menu
+        theme="light"
+        mode="horizontal"
+        defaultSelectedKeys={['1']}
+        className="menu"
+        items={items}
+      />
+      <div className="user-icon">
+        <UserOutlined />
       </div>
     </Header>
   );
