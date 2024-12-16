@@ -37,30 +37,3 @@
   cursor: pointer;
   margin-left: 20px; /* 유저 아이콘과 메뉴 사이 여백 */
 }
-
-/* 반응형 스타일 */
-@media (max-width: 768px) {
-  .app-header {
-    padding: 0 10px; /* 패딩 축소 */
-  }
-
-  .logo img {
-    height: 30px; /* 로고 크기 축소 */
-  }
-
-  .menu-container {
-    justify-content: space-between; /* 메뉴와 유저 아이콘 정렬 유지 */
-  }
-
-  .menu {
-    margin-left: 10px; /* 메뉴와 로고 간격 축소 */
-  }
-
-  .menu .ant-menu-item {
-    font-size: 14px; /* 메뉴 아이템 폰트 크기 축소 */
-  }
-
-  .user-icon {
-    font-size: 18px; /* 유저 아이콘 크기 축소 */
-  }
-}
