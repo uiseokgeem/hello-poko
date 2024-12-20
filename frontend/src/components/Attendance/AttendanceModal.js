@@ -9,7 +9,7 @@ const AttendanceModal = ({
    checkedStudents,
    handleCheck,
    handleSubmit,
-   getFormattedDate,
+   nearestSunday,
    selectedDate,
    mode,
   }) => {
@@ -30,7 +30,7 @@ const AttendanceModal = ({
         <h2>{mode === "edit" ? "출석 수정" : "출석부 등록"}</h2>
         {/* <p className="modal-subtitle">등록일: <b>{getFormattedDate}</b></p> */}
         <p className="modal-subtitle">
-          {mode === "edit" ? `수정 날짜: ${selectedDate}` : `등록일: ${getFormattedDate}`}
+          {mode === "edit" ? `수정 날짜: ${selectedDate}` : `등록일: ${nearestSunday}`}
         </p>
       </div>
 

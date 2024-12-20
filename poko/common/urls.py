@@ -1,7 +1,17 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from .api import HomepageAttendance
 
 app_name = "common"
+
+# DRF
+api_patterns = [
+    path(
+        "homepage_attendance/",
+        HomepageAttendance.as_view(),
+        name="homepage_attendance",
+    ),
+]
 
 urlpatterns = [
     path("manager/", views.ApiIndexManager, name="ApiIndexManager"),
@@ -10,26 +20,29 @@ urlpatterns = [
     path("register/create/", views.ApiNewRegister, name="ApiNewRegister"),
     path("register/climb/", views.ApiClimb),
     path("error/", views.ApiError, name="ApiError"),
-    # 5월 22일 기준 사용하지 않는 url
-    # path("register/update/{q.id}", views.ApiRegisterUpdate),
-    # path(
-    #     "update_pwd/",
-    #     CustomPasswordResetView.as_view(template_name="common/update_pwd.html"),
-    #     name="CustomPasswordResetView",
-    # ),
-    # path(
-    #         "update_pwd/done/",
-    #         CustomPasswordChangeDoneView.as_view(),
-    #         name="CustomPasswordChangeDoneView",
-    #     ),
-    # 5월 28일 회원가입 로그인 체계 구현으로 accounts app으로 이전
-    # path("", CustomLoginView.as_view(template_name="common/login.html")),
-    # path(
-    #     "login/",
-    #     CustomLoginView.as_view(template_name="common/../templates/accounts/login.html"),
-    #     name="login",
-    # ),
-    # path("update_pwd", views.ApiUpdatePwd, name="ApiUpdatePwd"),
-    # path("logout/", views.ApiLogoutView, name="ApiLogoutView"),
-    # path("signup/", views.ApiSignup, name="ApiSignup"),
+    path("", include((api_patterns, "common"), namespace="api")),
 ]
+
+
+# 5월 22일 기준 사용하지 않는 url
+# path("register/update/{q.id}", views.ApiRegisterUpdate),
+# path(
+#     "update_pwd/",
+#     CustomPasswordResetView.as_view(template_name="common/update_pwd.html"),
+#     name="CustomPasswordResetView",
+# ),
+# path(
+#         "update_pwd/done/",
+#         CustomPasswordChangeDoneView.as_view(),
+#         name="CustomPasswordChangeDoneView",
+#     ),
+# 5월 28일 회원가입 로그인 체계 구현으로 accounts app으로 이전
+# path("", CustomLoginView.as_view(template_name="common/login.html")),
+# path(
+#     "login/",
+#     CustomLoginView.as_view(template_name="common/../templates/accounts/login.html"),
+#     name="login",
+# ),
+# path("update_pwd", views.ApiUpdatePwd, name="ApiUpdatePwd"),
+# path("logout/", views.ApiLogoutView, name="ApiLogoutView"),
+# path("signup/", views.ApiSignup, name="ApiSignup"),

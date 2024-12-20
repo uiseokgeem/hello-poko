@@ -28,6 +28,10 @@ const AttendanceChart = ({ data, students, openModal }) => {
     return `${month}월 ${day}일`;
   };
 
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+  }, [data]);
+
   const columns = useMemo(() => [
     {
       title: '이름',
@@ -37,7 +41,7 @@ const AttendanceChart = ({ data, students, openModal }) => {
       width: 100,
     }, 
 
-    ...data.map(dateEntry => ({
+    ...sortedData.map(dateEntry => ({
       title: (
         <a
           onClick={() => openModal(dateEntry.date, "edit")}
@@ -67,18 +71,18 @@ const AttendanceChart = ({ data, students, openModal }) => {
       render: (text, record) => <a href="#">보기</a>,
       
     }
-  ], [data]);
+  ], [sortedData]);
 
   const dataSource = useMemo(() => {
     return students.map(student => {
-      const studentAttendance = mapAttendanceForStudent(student, data);
+      const studentAttendance = mapAttendanceForStudent(student, sortedData);
       return {
         key: student.id, // 테이블에서 고유 식별자로 사용
         name: student.name,
         ...studentAttendance, // 날짜별 출석 데이터를 추가
       };
     });
-  }, [data, students]);
+  }, [sortedData, students]);
 
   return <Table
    columns={columns} 

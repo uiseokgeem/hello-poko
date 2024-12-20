@@ -1,5 +1,4 @@
 from collections import defaultdict
-
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt

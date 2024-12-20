@@ -12,7 +12,7 @@ from .api import (
 
 app_name = "attendance"
 
-# DRF 라우터 설정
+# DRF
 router = DefaultRouter()
 router.register(r"teachers", TeachersViewSet, basename="teachers")
 router.register(r"members", MembersViewSet, basename="member")
