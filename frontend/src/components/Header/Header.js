@@ -10,7 +10,7 @@ const items = [
   {
     key: '1',
     icon: <HomeOutlined />,
-    label: <Link to="/">홈</Link>,
+    label: <Link to="/home">홈</Link>,
   },
   {
     key: '2',
@@ -29,10 +29,16 @@ const AppHeader = () => {
     <Header className="app-header">
       <div className="logo">
         <Link to="/">
-          <img src="/images/poko_logo.png" alt="Logo" />
+          <img src={`${process.env.PUBLIC_URL}/images/poko_logo.png`} alt="Logo" />
         </Link>
       </div>
-      <Menu theme="light" mode="horizontal" defaultSelectedKeys={['1']} className="menu" items={items} />
+      <Menu
+        theme="light"
+        mode="horizontal"
+        defaultSelectedKeys={['1']}
+        className="menu"
+        items={items}
+      />
       <div className="user-icon">
         <UserOutlined />
       </div>

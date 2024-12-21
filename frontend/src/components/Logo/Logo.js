@@ -3,7 +3,7 @@ import './Logo.css';
 
 const Logo = () => (
   <img 
-    src="/images/poko_logo.png" 
+    src={`${process.env.PUBLIC_URL}/images/poko_logo.png`}
     alt="Logo" 
     className="logo" 
   />

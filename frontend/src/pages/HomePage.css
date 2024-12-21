@@ -1,0 +1,49 @@
+.home-content {
+  padding: 24px;
+  background-color: #fff;
+}
+
+.prayer-records-section {
+  margin-top: 24px;
+}
+
+.prayer-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prayer-table th, .prayer-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.prayer-table th {
+  background-color: #fafafa;
+  font-weight: bold;
+}
+
+.prayer-table td {
+  background-color: #fff;
+}
+
+/* 카드 스타일링 */
+.ant-card {
+  background-color: #fff; /* 카드 배경색 */
+  border: none; /* 카드의 경계선을 제거 */
+  box-shadow: none; /* 그림자 제거 */
+  margin: 0; /* 카드 외부 여백 제거 */
+  padding: 0; /* 카드 내부 여백 제거 */
+}
+
+/* 카드의 헤더 스타일링 (선택 사항) */
+.ant-card-head {
+  border-bottom: none; /* 헤더 하단 경계선 제거 */
+  margin: 0; /* 헤더 외부 여백 제거 */
+  padding: 0; /* 헤더 내부 여백 제거 */
+}
+
+/* 카드 내부 콘텐츠 간 여백 제거 */
+.ant-card-body {
+  padding: 0; /* 카드 본문 내부 여백 제거 */
+}

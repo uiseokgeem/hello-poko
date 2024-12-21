@@ -3,16 +3,16 @@ from accounts.models import CustomUser
 
 
 class Member(models.Model):
+    # to_field : 외래키로 지정된 모델의 특정 필드값을 참조할 수 있게함.
     teacher = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="members",
-        to_field="email",
-    )  # to_field : 외래키로 지정된 모델의 특정 필드값을 참조할 수 있게함.
-    name = models.CharField(max_length=5, unique=True)  # 최대로 넣을 수 있는 글자 수
+    )
+    name = models.CharField(max_length=5, unique=True)
     grade = models.CharField(max_length=3, null=True, default=None)
     gender = models.CharField(max_length=3, null=True, default=None)
-    attendance_count = models.IntegerField(default=0)  # 값이 없는 경우 default = 0
+    attendance_count = models.IntegerField(default=0)
     absent_count = models.IntegerField(default=0)
 
     def __str__(self):
@@ -24,10 +24,9 @@ class Attendance(models.Model):
         to="Member",
         on_delete=models.CASCADE,
         related_name="attendance",
-        to_field="name",
     )
-    attendance = models.CharField(max_length=50)
-    date = models.DateTimeField()
+    attendance = models.BooleanField()
+    date = models.DateField()  # 기본 YYYY-MM-DD 형식으로만 저장
 
     def __str__(self):
         return self.name.name

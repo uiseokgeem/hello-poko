@@ -26,11 +26,17 @@
   }
   
   .form-item {
-    background-color: #F0F4FF;
+    background-color: white;
     border-radius: 8px;
     padding: 8px;
     margin-bottom: 10px;
   }
+    /* 체크된 항목의 스타일 */
+  .form-item.checked {
+    background-color: #F0F4FF;
+    color: white;
+  }
+    
   
   .checkbox {
     width: 100%;

@@ -15,6 +15,7 @@ from pathlib import Path
 from environ import Env
 from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
+from rest_framework.permissions import IsAuthenticated
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,24 +31,17 @@ else:
 
 # boto3 환경변수
 EMAIL_BACKEND = env("EMAIL_BACKEND")
-# print(EMAIL_BACKEND)
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-# print(AWS_ACCESS_KEY_ID)
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-# print(AWS_SECRET_ACCESS_KEY)
 AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-# print(AWS_SES_REGION_NAME)
 AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
-# print(AWS_SES_REGION_ENDPOINT)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-# print(DEFAULT_FROM_EMAIL)
 USE_SES_V2 = env.bool("USE_SES_V2", default=False)
-# print(USE_SES_V2)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-^*)3u$zud1z2dfngqh7fdb)xp$cueimjz_0r(4q35l-+gwhme-"
 )
@@ -109,8 +103,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # "django.middleware.common.CommonMiddleware", 중복
-    # "common.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "poko.urls"
@@ -217,65 +209,81 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-# CORS 허용 설정
-CORS_ALLOWED_ORIGINS = [
-    # "http://localhost:3000",  # React 앱의 주소
-    # "http://localhost:80",
-    "http://poko-dev.com",  # 도메인 이름 (http 사용)
-    "https://poko-dev.com",  # 도메인 이름 (https 사용)
-]
-CORS_ALLOW_CREDENTIALS = True
 
-# 배포시 설정(csrf 토큰 설정), 개발환경에서는 admin login issue로 사용하지 말 것
-CSRF_TRUSTED_ORIGINS = [
-    "https://www.poko-dev.com",
-    "https://poko-dev.com",
-    "http://localhost:3000",
-    "http://localhost:80",
-]
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_DOMAIN = None  # 로컬 개발 환경에서는 None으로 설정
+SESSION_COOKIE_DOMAIN = None
+
+
+CSRF_COOKIE_SAMESITE = "Lax"  # 로컬 개발환경에서 None으로 설정시 admin에서 csrf 발급되지 않아 로그인 되지 않음.
+SESSION_COOKIE_SAMESITE = "Lax"  # "None"으로 설정시(개발 환경에서 admin 로그인이 불가
+SESSION_COOKIE_SECURE = False  # True 시 HTTPS를 통해서만 CSRF 쿠키가 전송
+CSRF_COOKIE_SECURE = False  # Tre 시 HTTPS를 통해서만 CSRF 쿠키가 전송
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_NAME = "csrftoken"
+
+
+# Product CSRF Setting
+# CSRF_COOKIE_SAMESITE = "None"
+# SESSION_COOKIE_SAMESITE = "Lax"
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_HTTPONLY = True
+# CORS_ALLOW_CREDENTIALS = True
+# CSRF_COOKIE_NAME = "csrftoken"
 
 # session 쿠키 기본 설정
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = "sessionid"
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
 
-# 로그인 성공후 이동하는 URL
-LOGIN_REDIRECT_URL = "/"
+# CORS 허용 설정
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React 앱의 주소
+    "http://poko-dev.com",  # 도메인 이름 (http 사용)
+    "https://poko-dev.com",  # 도메인 이름 (https 사용)
+    "http://www.poko-dev.com",  # www 포함 도메인 (http 사용)
+    "https://www.poko-dev.com",  # www 포함 도메인 (https 사용)
+    # "http://localhost:80", # Nginx
+]
 
-# middleware login 인증이 아닌 경우 이동하는 URL
-LOGIN_URL = "login/"
+CSRF_TRUSTED_ORIGINS = [
+    "https://www.poko-dev.com",
+    "https://poko-dev.com",
+    "http://localhost:3000",
+    # "http://localhost:80",
+]
 
 # Django REST framework 인증/권한 설정
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny"),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny"),
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
 
-#        "rest_framework_simplejwt.authentication.JWTAuthentication",
-
-# dj-rest-auth 설정
 # REST_USE_JWT = True
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_COOKIE": "poko-auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
-    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_USE_CSRF": False,  # JWTCookieAuthentication 기반 인증 사용으로 csrf 토큰은 사용하지않아 비활성화
     "SESSION_LOGIN": False,
 }
 
-JWT_AUTH_COOKIE = "my-app-auth"
-JWT_AUTH_REFRESH_COOKIE = "my-refresh-token"
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
+    # "AUTH_HEADER_TYPES": ("Bearer",),  # 헤더에서 Bearer 타입의 JWT 토큰을 사용
 }
 
 # email
@@ -299,3 +307,10 @@ else:
         )  # 미설정 시 오류 내용을 화면에 출력
         EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # 계정정보는 프로젝트에 하드코딩이 아닌 .env을통해 주입 받는다
+
+
+# 로그인 성공후 이동하는 URL
+LOGIN_REDIRECT_URL = "/"
+
+# middleware login 인증이 아닌 경우 이동하는 URL
+LOGIN_URL = "login/"

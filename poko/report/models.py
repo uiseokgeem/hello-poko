@@ -19,7 +19,6 @@ class MemberCheck(models.Model):
         Member,
         related_name="membercheck",
         on_delete=models.CASCADE,
-        to_field="name",
     )
     gqs = models.BooleanField(default=True, choices=gqs_choice)  # GQS 참석 여부
     pray_member = models.CharField(max_length=300, null=True, default=None)
@@ -71,7 +70,6 @@ class UserCheck(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         related_name="usercheck",
-        to_field="email",
     )
 
     title = models.CharField(max_length=30, null=True, default=None)

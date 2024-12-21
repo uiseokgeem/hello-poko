@@ -1,111 +1,163 @@
-import React, { useState, useEffect }  from "react";
-import {Layout, Select, Button, Modal, Checkbox } from 'antd';
-import AppHeader from '../components/Header/Header';
-import AttendanceChart from '../components/Attendance/AttendanceChart';
+import React, { useState, useEffect } from "react";
+import { Layout, Select, Button, Modal } from "antd";
+import AppHeader from "../components/Header/Header";
+import AttendanceChart from "../components/Attendance/AttendanceChart";
 import TeacherInfo from "../components/Attendance/TeacherInfo";
-import AttendanceModal  from "../components/Attendance/AttendanceModal";
-// import StudentList from '../components/Attendance/StudentList';
-// import { fetchAttendanceData, fetchStudents } from '../api/attendanceApi';
-import './AttendancePage.css'
+import AttendanceModal from "../components/Attendance/AttendanceModal";
+import {
+  fetchAttendanceData,
+  fetchStudents,
+  fetchTeachers,
+  fetchAttendanceStats,
+  postAttendanceData,
+  patchAttendanceData,
+} from "../api/attendanceApi";
+import { getNearestSunday } from "../utils/dateUtils";
+import "./AttendancePage.css";
 
-const  { Content } = Layout;
-const { Option } = Select; 
-
-// 임의의 학생 데이터 생성
-const mockStudents = [
-  { id: '1', name: '김사랑' },
-  { id: '2', name: '김선우' },
-  { id: '3', name: '김예나' },
-  { id: '4', name: '오예린' },
-  { id: '5', name: '이예담' },
-  { id: '6', name: '이하진' },
-  { id: '7', name: '이조훈' },
-  { id: '8', name: '홍수민' },
-  ];
-
-  // 임의의 출석 데이터 생성
-const mockAttendanceData = [
-  { date: '2023-06-30', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': true, '7': true, '8': false, '9': true, '10': false } },
-  { date: '2023-07-07', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true, '6': false, '7': true, '8': true, '9': false, '10': true } },
-  { date: '2023-07-14', attendance: { '1': true, '2': false, '3': true, '4': true, '5': true, '6': true, '7': false, '8': true, '9': true, '10': false } },
-  { date: '2023-07-21', attendance: { '1': true, '2': true, '3': true, '4': true, '5': false, '6': false, '7': true, '8': true, '9': false, '10': true } },
-  { date: '2023-07-28', attendance: { '1': false, '2': true, '3': false, '4': true, '5': true, '6': true, '7': true, '8': false, '9': true, '10': true } },
-  { date: '2023-08-04', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': false, '7': true, '8': true, '9': false, '10': true } },
-  { date: '2023-08-11', attendance: { '1': true, '2': true, '3': true, '4': false, '5': true, '6': true, '7': true, '8': true, '9': false, '10': true } },
-  { date: '2023-08-18', attendance: { '1': true, '2': false, '3': true, '4': true, '5': false, '6': true, '7': false, '8': true, '9': true, '10': true } }
-];
-
-  
+const { Content } = Layout;
+const { Option } = Select;
 
 const AttendancePage = () => {
-     //const [attendanceData, setAttendanceData] = useState([]);
-    const [attendanceData, setAttendanceData] = useState(mockAttendanceData);
-    //const [students, setStudents ] = useState([]);
-    const [students, setStudents] = useState(mockStudents);
-    const [selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
-    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
-    const [checkedStudents, setCheckedStudents] = useState([]);
-    
+  const [teachers, setTeachers] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceStats, setAttendanceStats] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkedStudents, setCheckedStudents] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [modalMode, setModalMode] = useState("create");
+  const [nearestSunday, setNearestSunday] = useState(getNearestSunday()); // 상태로 관리
 
-    // useEffect(() => {
-    //     fetchStudents().then(setStudents);
-    //     fetchAttendanceData(selectedYear).then(setAttendanceData);
-    //   }, [selectedYear]);
+  useEffect(() => {
+    fetchTeachers().then(setTeachers);
+    fetchStudents().then(setStudents);
+    fetchAttendanceData(selectedYear).then(setAttendanceData);
 
-    const handleCheck = (studentId) => {
-      setCheckedStudents(prevChecked => 
-        prevChecked.includes(studentId)
-        ? prevChecked.filter(id => id !== studentId)
+    fetchAttendanceStats()
+      .then((data) => {
+        if (data) {
+          setAttendanceStats(data);
+        } else {
+          console.error("Failed to fetch attendance stats");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching attendance stats:", error);
+      });
+  }, [selectedYear]);
+
+  const handleCheck = (studentId) => {
+    setCheckedStudents((prevChecked) =>
+      prevChecked.includes(studentId)
+        ? prevChecked.filter((id) => id !== studentId)
         : [...prevChecked, studentId]
-      );
-    };
+    );
+  };
 
-    const handleSubmit = () => {
-      console.log('출석부 등록 완료:', checkedStudents);
-      setIsModalOpen(false);  // 모달 닫기
-    };
-  
-    const openModal = () => {
-      setIsModalOpen(true);  // 모달 열기
-    };
-  
-    const closeModal = () => {
-      setIsModalOpen(false);  // 모달 닫기
-    };
-  
-  
+  const handleSubmit = async () => {
+    const attendanceData = students.map((student) => ({
+      id: student.id,
+      attendance: checkedStudents.includes(student.id),
+    }));
 
-    return (
-        <Layout>
-          <AppHeader />
-          <Content className="page-container">
-          <h1>출석부</h1>
-          <TeacherInfo teacherName="노다은 선생님" className="중 2,3 여" attendanceRate={80} />
-            <div className="header-section">
-              <Select
-                defaultValue={selectedYear}
-                onChange={(value) => setSelectedYear(value)}  // 상태 업데이트
-                className="year-select"
-              >
-                {[2022, 2023, 2024].map(year => (
-                  <Option key={year} value={year}>{year}</Option>  // Option 컴포넌트 추가
-                ))}
-              </Select>
-              <Button type="primary" onClick={openModal} className="new-attendance-button">+ 새 출석부</Button>
-            </div>
-            <AttendanceChart data={attendanceData} students={students} />  {/* 출석 차트 컴포넌트 */}
-            <AttendanceModal
-              isOpen={isModalOpen}
-              onClose={closeModal}
-              students={students}
-              checkedStudents={checkedStudents}
-              handleCheck={handleCheck}
-              handleSubmit={handleSubmit}
-            >
-            </AttendanceModal>
-          </Content>
-        </Layout>
+    try {
+      if (modalMode === "edit") {
+        await patchAttendanceData(selectedDate, attendanceData);
+      } else {
+        await postAttendanceData(nearestSunday, attendanceData); // 상태에서 가져온 값 사용
+      }
+
+      const updatedAttendanceData = await fetchAttendanceData(selectedYear);
+      setAttendanceData(updatedAttendanceData);
+    } catch (error) {
+      console.error("Error posting attendance data:", error);
+
+      if (error.response && error.response.data && error.response.data.detail) {
+        Modal.error({
+          title: "출석 데이터 중복",
+          content: error.response.data.detail,
+        });
+      }
+    }
+
+    setIsModalOpen(false);
+  };
+
+  const openModal = (date, mode = "create") => {
+    setSelectedDate(date || nearestSunday); // 선택된 날짜가 없으면 최근 일요일로 설정
+    setModalMode(mode);
+    if (mode === "edit") {
+      const existingAttendance = attendanceData.find(
+        (entry) => entry.date === date
       );
-    };
-    
-    export default AttendancePage;
+      if (existingAttendance) {
+        setCheckedStudents(
+          existingAttendance.attendance
+            .filter((entry) => entry.attendance)
+            .map((entry) => entry.id)
+        );
+      }
+    } else {
+      setCheckedStudents([]);
+    }
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
+      <AppHeader />
+      <Content className="page-container">
+        <h1>출석부</h1>
+        <TeacherInfo
+        teacherName={teachers?.teacher_name ? teachers.teacher_name : "Unknown"}
+        className="보류"
+        attendanceRate={attendanceStats?.result_stats || []}
+        />
+        <div className="header-section">
+          <Select
+            defaultValue={selectedYear}
+            onChange={(value) => setSelectedYear(value)}
+            className="year-select"
+          >
+            {[2022, 2023, 2024].map((year) => (
+              <Option key={year} value={year}>
+                {year}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            onClick={() => openModal()} // 기본적으로 가장 가까운 일요일 날짜를 사용
+            className="new-attendance-button"
+          >
+            + 새 출석부
+          </Button>
+        </div>
+        <AttendanceChart
+          data={attendanceData}
+          students={students}
+          openModal={openModal}
+        />
+        <AttendanceModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          students={students}
+          checkedStudents={checkedStudents}
+          handleCheck={handleCheck}
+          handleSubmit={handleSubmit}
+          selectedDate={selectedDate}
+          nearestSunday={nearestSunday} // 상태로 관리된 값을 전달
+          mode={modalMode}
+        />
+      </Content>
+    </Layout>
+  );
+};
+
+export default AttendancePage;

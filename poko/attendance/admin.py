@@ -15,6 +15,9 @@ class MemberAdmin(admin.ModelAdmin):
         "absent_count",
     ]
 
+    # def __str__(self):
+    #     self.name
+
 
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
