@@ -248,6 +248,8 @@ AUTHENTICATION_BACKENDS = (
 CSRF_COOKIE_DOMAIN = None  # 로컬 개발 환경에서는 None으로 설정
 SESSION_COOKIE_DOMAIN = None
 
+CSP_DEFAULT_SRC = ["'self'", "https://poko-dev.com", "https://www.poko-dev.com"]
+CSP_CONNECT_SRC = ["'self'", "https://poko-dev.com", "https://www.poko-dev.com"]
 
 CSRF_COOKIE_SAMESITE = "Lax"  # 로컬 개발환경에서 None으로 설정시 admin에서 csrf 발급되지 않아 로그인 되지 않음.
 SESSION_COOKIE_SAMESITE = "Lax"  # "None"으로 설정시(개발 환경에서 admin 로그인이 불가
