@@ -17,49 +17,86 @@ from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
 
+from environ import Env
+from pathlib import Path
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = Env()
-ENV_PATH = BASE_DIR / ".env"
+ENV_PATH = BASE_DIR / ".env.ses"
+
 if ENV_PATH.exists():
     print(f".env read success! {ENV_PATH}")
-    with ENV_PATH.open(encoding="utf-8") as f:
-        env.read_env(f, overwrite=True)
+    env.read_env(str(ENV_PATH))  # 환경 변수 파일 로드
 else:
-    print(".env read fail!", ENV_PATH)
+    raise FileNotFoundError(f"Environment file not found: {ENV_PATH}")
 
-# boto3 환경변수
-EMAIL_BACKEND = env("EMAIL_BACKEND")
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+# 기본 설정
+SECRET_KEY = env(
+    "SECRET_KEY",
+    default="django-insecure-^*)3u$zud1z2dfngqh7fdb)xp$cueimjz_0r(4q35l-+gwhme-",
+)
+DEBUG = env.bool("DEBUG", default=True)
+
+# ALLOWED_HOSTS 설정
+ALLOWED_HOSTS = env.list(
+    "DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "[::1]", "0.0.0.0:8000"]
+)
+print("최종 ALLOWED_HOSTS 확인:", ALLOWED_HOSTS)
+
+# AWS SES 설정
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+)
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default=None)
+AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME", default="ap-northeast-2")
+AWS_SES_REGION_ENDPOINT = env(
+    "AWS_SES_REGION_ENDPOINT", default="email-smtp.ap-northeast-2.amazonaws.com"
+)
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@example.com")
 USE_SES_V2 = env.bool("USE_SES_V2", default=False)
+
+# env = Env()
+# ENV_PATH = BASE_DIR / ".env.ses"
+# if ENV_PATH.exists():
+#     print(f".env read success! {ENV_PATH}")
+#     with ENV_PATH.open(encoding="utf-8") as f:
+#         env.read_env(f, overwrite=True)
+# else:
+#     print(".env read fail!", ENV_PATH)
+#
+# # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = os.environ.get(
+#     "SECRET_KEY", "django-insecure-^*)3u$zud1z2dfngqh7fdb)xp$cueimjz_0r(4q35l-+gwhme-"
+# )
+# # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = int(os.environ.get("DEBUG", 1))
+#
+# if os.environ.get("DJANGO_ALLOWED_HOSTS"):
+#     ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split()
+#     print("ALLOWED_HOSTS environ 확인", ALLOWED_HOSTS)
+#
+# else:
+#     print("else 확인")
+#     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0:8000"]
+#
+# print("최종 ALLOWED_HOSTS 확인", ALLOWED_HOSTS)
+#
+# # AWS SES
+# EMAIL_BACKEND = env("EMAIL_BACKEND")
+# AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+# AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+# AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
+# DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+# USE_SES_V2 = env.bool("USE_SES_V2", default=False)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-^*)3u$zud1z2dfngqh7fdb)xp$cueimjz_0r(4q35l-+gwhme-"
-)
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", 1))
-
-if os.environ.get("DJANGO_ALLOWED_HOSTS"):
-    ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split()
-    print("ALLOWED_HOSTS environ 확인", ALLOWED_HOSTS)
-
-else:
-    print("else 확인")
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0:8000"]
-
-print("최종 ALLOWED_HOSTS 확인", ALLOWED_HOSTS)
 # Application definition
-
 INSTALLED_APPS = [
     # django apps
     "django.contrib.admin",
@@ -128,10 +165,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "poko.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
