@@ -13,8 +13,11 @@ body {
   max-width: 300px;
   width: 20%;
   height: 60vh;
-  margin: 90px auto;
-  position: relative;
+  margin: 90px auto; /* 상하 마진 조정 */
+}
+
+.login-logo {
+  margin-bottom: 30px; /* 로고와 컨테이너 사이의 여백 추가 */
 }
 
 @media (max-width: 768px) {
