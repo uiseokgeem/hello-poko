@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
-// 배포 환경 감지
-const isProd = process.env.NODE_ENV === "production"; 
-const API_URL = isProd ? 'https://www.poko-dev.com/api/accounts/' : 'http://localhost:8000/api/accounts/';
+const BASE_URL = process.env.REACT_APP_API_URL;
+const API_URL = `${BASE_URL}accounts/`;
 
 export const login = async (id, password) => {
     try {
