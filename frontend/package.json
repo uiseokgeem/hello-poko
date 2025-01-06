@@ -19,8 +19,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build:dev": "cross-env NODE_ENV=development react-scripts build",
-    "build:prod": "cross-env NODE_ENV=production react-scripts build && echo $REACT_APP_API_URL",
+    "build:dev": "env-cmd -f .env.development react-scripts build",
+    "build:prod": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
