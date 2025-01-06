@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
+// 환경변수 확인을 위한 로그 추가
 const BASE_URL = process.env.REACT_APP_API_URL;
+console.log("REACT_APP_API_URL (BASE_URL):", BASE_URL);
+
 const API_URL = `${BASE_URL}accounts/`;
+console.log("API_URL:", API_URL);
 
 export const login = async (id, password) => {
     try {
