@@ -1,9 +1,8 @@
 import { withConfirm } from "antd/es/modal/confirm";
 import axios from "axios";
 
-// API URL을 환경에 따라 설정 (배포 환경과 개발 환경 구분)
-const isProd = process.env.NODE_ENV === "production"; // 배포 환경 감지
-const API_URL = isProd ? 'https://www.poko-dev.com/api/attendance/' : 'http://localhost:8000/api/attendance/';
+const BASE_URL = process.env.REACT_APP_API_URL;
+const API_URL = `${BASE_URL}attendance/`;
 
 // 출석 데이터를 가져오는 함수
 export const fetchAttendanceData = async (year) => {
@@ -37,7 +36,6 @@ export const fetchStudents = async () => {
         throw error;
     }
 };
-
 // 선생님 데이터를 가져오는 함수
 export const fetchTeachers = async () => {
     try {
