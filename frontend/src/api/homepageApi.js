@@ -4,9 +4,8 @@
 // 디렉토리에 따로 분류하여 관리하여, modal에서도 사용될 수 있게 구현 해야한다.
 import axios from "axios";
 
-// API URL을 환경에 따라 설정 (배포 환경과 개발 환경 구분)
-const isProd = process.env.NODE_ENV === "production"; // 배포 환경 감지
-const API_URL = isProd ? 'https://www.poko-dev.com/api/common/' : 'http://localhost:8000/api/common/';
+const BASE_URL = process.env.REACT_APP_API_URL;
+const API_URL = `${BASE_URL}common/`;
 
 export const fetchHomepageAttendance = async (date) => {
     // await ? 

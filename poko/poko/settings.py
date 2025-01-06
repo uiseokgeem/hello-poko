@@ -282,6 +282,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://poko-dev.com",  # 도메인 이름 (https 사용)
     "http://www.poko-dev.com",  # www 포함 도메인 (http 사용)
     "https://www.poko-dev.com",  # www 포함 도메인 (https 사용)
+    "http://hellopoko.com",  # 도메인 이름 (http 사용)
+    "https://hellopoko.com",  # 도메인 이름 (https 사용)
+    "http://hellopoko.com",  # www 포함 도메인 (http 사용)
+    "https://hellopoko.com",  # www 포함 도메인 (https 사용)
     # "http://localhost:80", # Nginx
 ]
 
@@ -289,6 +293,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.poko-dev.com",
     "https://poko-dev.com",
     "http://localhost:3000",
+    "https://www.hellopoko.com",
+    "https://hellopoko.com",
     # "http://localhost:80",
 ]
 

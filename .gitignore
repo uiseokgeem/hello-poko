@@ -6,6 +6,9 @@ env
 .env.prod
 .env.prod.db
 .env.prod.ses
+.env.development
+.env.production
+.env.local
 letsencrypt.sh
 backup
 backup.sh

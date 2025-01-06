@@ -8,8 +8,8 @@ services:
         - NGINX_CONF=nginx.prod.conf
     volumes:
       - ./frontend/build:/usr/share/nginx/html   # 로컬에서 빌드된 프론트엔드 파일을 Nginx 컨테이너로 마운트(중요)
-      - static_volume_v2:/usr/src/app/static
-      - media_volume_v2:/usr/src/app/media
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     ports:
@@ -30,8 +30,8 @@ services:
       context: ./poko
     command: gunicorn poko.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - static_volume_v2:/usr/src/app/static
-      - media_volume_v2:/usr/src/app/media
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
       - ./poko:/usr/src/app/
     expose:
       - 8000
@@ -43,11 +43,11 @@ services:
   db:
     image: postgres:12.0-alpine
     volumes:
-      - postgres_data_v2:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./poko/env/.env.prod.db
 
 volumes:
-  postgres_data_v2:
-  static_volume_v2:
-  media_volume_v2:
+  postgres_data:
+  static_volume:
+  media_volume:
