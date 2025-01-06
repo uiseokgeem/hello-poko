@@ -10,6 +10,7 @@ const Register = ({handleRegisterSubmit}) => {
     const [fullName, setFullName] = useState('');
     const [birthDate, setBirthDate] =useState(null);
     const { url_code, email_code } = useParams();
+    const navigate = useNavigate();
 
     const onChange = (date, dateString) => {
         setBirthDate(dateString);
