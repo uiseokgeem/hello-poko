@@ -5,6 +5,11 @@ import 'antd/dist/reset.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// 환경변수 확인 로그 추가
+console.log('Environment Variables:');
+console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
