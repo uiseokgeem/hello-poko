@@ -20,7 +20,7 @@ const Register = ({handleRegisterSubmit}) => {
         handleRegisterSubmit(url_code, email_code, fullName, birthDate)
          .then(responseMessage => {
             setMessage(responseMessage);
-            navigate('/home');
+            navigate('/login');
          })
          .catch(errorMessage => {
             setMessage(errorMessage);
