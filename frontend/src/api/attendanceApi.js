@@ -36,6 +36,7 @@ export const fetchStudents = async () => {
         throw error;
     }
 };
+
 // 선생님 데이터를 가져오는 함수
 export const fetchTeachers = async () => {
     try {
@@ -121,3 +122,23 @@ export const patchAttendanceData = async (date, attendanceData) => {
     }
 };
 
+// 신규학생 추가 함수
+export const createStudent = async (studentData) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}members/`, // 학생 추가 API 엔드포인트
+            studentData, // 요청 데이터 (학생 정보)
+            {
+                withCredentials: true, // 인증 정보를 포함
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        console.log('Student added successfully:', response.data); // 응답 데이터 확인
+        return response.data; // 서버에서 반환된 새 학생 데이터 반환
+    } catch (error) {
+        console.error('Error creating student:', error); // 에러 로그 출력
+        throw error; // 에러를 호출한 쪽으로 전달
+    }
+};

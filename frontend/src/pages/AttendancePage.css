@@ -1,23 +1,41 @@
 .page-container {
   padding: 40px 20px; /* 상단과 하단 여백을 40px로 설정 */
-    background-color: #fff;
-    margin: 0 auto; /* 외부 여백 제거 및 중앙 정렬 */
-    max-width: 1200px; /* 페이지의 최대 너비를 제한 */
-    min-height: 100vh;
-    box-sizing: border-box; /* 패딩과 테두리를 요소 크기에 포함 */
-  }
-  
-  .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .year-select {
-    width: 120px;
-  }
-  
-  .new-attendance-button {
-    margin-left: 20px;
-  }
+  background-color: #fff;
+  margin: 0 auto; /* 외부 여백 제거 및 중앙 정렬 */
+  max-width: 1200px; /* 페이지의 최대 너비를 제한 */
+  min-height: 100vh;
+  box-sizing: border-box; /* 패딩과 테두리를 요소 크기에 포함 */
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.year-select {
+  width: 120px;
+}
+
+.new-attendance-button {
+  margin-left: 20px;
+}
+
+.add-student-button {
+  margin-left: 10px; /* 새 출석부 버튼과 학생 추가 버튼 간격 */
+}
+
+.attendance-buttons {
+  display: flex;
+  gap: 10px; /* 버튼 간격 조정을 위해 gap 사용 */
+}
+
+.attendance-chart-container {
+  margin-top: 30px; /* 차트와 버튼 섹션 간의 간격 */
+}
+
+/* 전역 button 스타일 방지 */
+button {
+  margin-bottom: 0; /* 기본 전역 버튼 여백 제거 */
+}

@@ -1,0 +1,40 @@
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.cancel-btn {
+    background-color: #f5f5f5;
+    border: none;
+    color: #757575;
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.submit-btn {
+    background-color: #1890ff;
+    border: none;
+    color: white;
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+/* 모달 스타일 */
+.ant-modal-content {
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.ant-modal-header {
+    text-align: center;
+}
+
+.ant-modal-title {
+    font-size: 18px;
+    font-weight: bold;
+}
