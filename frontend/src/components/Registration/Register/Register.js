@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, DatePicker, Typography } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Register.css';
 
 const { Title } = Typography;
@@ -10,6 +10,7 @@ const Register = ({handleRegisterSubmit}) => {
     const [fullName, setFullName] = useState('');
     const [birthDate, setBirthDate] =useState(null);
     const { url_code, email_code } = useParams();
+    const navigate = useNavigate();
 
     const onChange = (date, dateString) => {
         setBirthDate(dateString);
@@ -19,6 +20,7 @@ const Register = ({handleRegisterSubmit}) => {
         handleRegisterSubmit(url_code, email_code, fullName, birthDate)
          .then(responseMessage => {
             setMessage(responseMessage);
+            navigate('/login');
          })
          .catch(errorMessage => {
             setMessage(errorMessage);

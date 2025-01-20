@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Select, Button, Modal } from "antd";
+import { Layout, Select, Button, Modal, message } from "antd";
 import AppHeader from "../components/Header/Header";
 import AttendanceChart from "../components/Attendance/AttendanceChart";
 import TeacherInfo from "../components/Attendance/TeacherInfo";
 import AttendanceModal from "../components/Attendance/AttendanceModal";
+import CreateStudentModal from "../components/Attendance/CreateStudentModal";
 import {
   fetchAttendanceData,
   fetchStudents,
+  createStudent,
   fetchTeachers,
   fetchAttendanceStats,
   postAttendanceData,
@@ -19,17 +21,20 @@ const { Content } = Layout;
 const { Option } = Select;
 
 const AttendancePage = () => {
+  // State Management
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
   const [attendanceStats, setAttendanceStats] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [checkedStudents, setCheckedStudents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState("create");
-  const [nearestSunday, setNearestSunday] = useState(getNearestSunday()); // 상태로 관리
+  const [nearestSunday] = useState(getNearestSunday());
 
+  // Fetch Data
   useEffect(() => {
     fetchTeachers().then(setTeachers);
     fetchStudents().then(setStudents);
@@ -37,22 +42,18 @@ const AttendancePage = () => {
 
     fetchAttendanceStats()
       .then((data) => {
-        if (data) {
-          setAttendanceStats(data);
-        } else {
-          console.error("Failed to fetch attendance stats");
-        }
+        if (data) setAttendanceStats(data);
+        else console.error("Failed to fetch attendance stats");
       })
-      .catch((error) => {
-        console.error("Error fetching attendance stats:", error);
-      });
+      .catch((error) => console.error("Error fetching attendance stats:", error));
   }, [selectedYear]);
 
+  // Handle Attendance Modal
   const handleCheck = (studentId) => {
-    setCheckedStudents((prevChecked) =>
-      prevChecked.includes(studentId)
-        ? prevChecked.filter((id) => id !== studentId)
-        : [...prevChecked, studentId]
+    setCheckedStudents((prev) =>
+      prev.includes(studentId)
+        ? prev.filter((id) => id !== studentId)
+        : [...prev, studentId]
     );
   };
 
@@ -66,28 +67,29 @@ const AttendancePage = () => {
       if (modalMode === "edit") {
         await patchAttendanceData(selectedDate, attendanceData);
       } else {
-        await postAttendanceData(nearestSunday, attendanceData); // 상태에서 가져온 값 사용
+        await postAttendanceData(nearestSunday, attendanceData);
       }
 
       const updatedAttendanceData = await fetchAttendanceData(selectedYear);
       setAttendanceData(updatedAttendanceData);
+      message.success("출석 데이터가 성공적으로 저장되었습니다!");
     } catch (error) {
       console.error("Error posting attendance data:", error);
 
-      if (error.response && error.response.data && error.response.data.detail) {
+      if (error.response?.data?.detail) {
         Modal.error({
           title: "출석 데이터 중복",
           content: error.response.data.detail,
         });
       }
     }
-
     setIsModalOpen(false);
   };
 
-  const openModal = (date, mode = "create") => {
-    setSelectedDate(date || nearestSunday); // 선택된 날짜가 없으면 최근 일요일로 설정
+  const openModal = (date = nearestSunday, mode = "create") => {
+    setSelectedDate(date);
     setModalMode(mode);
+
     if (mode === "edit") {
       const existingAttendance = attendanceData.find(
         (entry) => entry.date === date
@@ -105,8 +107,22 @@ const AttendancePage = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
+
+  // Handle Student Modal
+  const openStudentModal = () => setIsStudentModalOpen(true);
+  const closeStudentModal = () => setIsStudentModalOpen(false);
+
+  const addStudent = async (studentData) => {
+    try {
+      const newStudent = await createStudent(studentData);
+      setStudents((prev) => [...prev, newStudent]);
+      message.success("학생이 성공적으로 추가되었습니다!");
+      closeStudentModal();
+    } catch (error) {
+      console.error("Error adding student:", error);
+      message.error("학생 추가 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -115,9 +131,9 @@ const AttendancePage = () => {
       <Content className="page-container">
         <h1>출석부</h1>
         <TeacherInfo
-        teacherName={teachers?.teacher_name ? teachers.teacher_name : "Unknown"}
-        className="보류"
-        attendanceRate={attendanceStats?.result_stats || []}
+          teacherName={teachers?.teacher_name || "Unknown"}
+          className="보류"
+          attendanceRate={attendanceStats?.result_stats || []}
         />
         <div className="header-section">
           <Select
@@ -131,19 +147,30 @@ const AttendancePage = () => {
               </Option>
             ))}
           </Select>
-          <Button
-            type="primary"
-            onClick={() => openModal()} // 기본적으로 가장 가까운 일요일 날짜를 사용
-            className="new-attendance-button"
-          >
-            + 새 출석부
-          </Button>
+          <div className="attendance-buttons">
+            <Button
+              type="primary"
+              onClick={() => openModal()}
+              className="new-attendance-button"
+            >
+              + 새 출석부
+            </Button>
+            <Button
+              type="default"
+              onClick={openStudentModal}
+              className="add-student-button"
+            >
+             + 새친구 등록
+            </Button>
+          </div>
         </div>
-        <AttendanceChart
-          data={attendanceData}
-          students={students}
-          openModal={openModal}
-        />
+        <div className="attendance-chart-container">
+          <AttendanceChart
+            data={attendanceData}
+            students={students}
+            openModal={openModal}
+          />
+        </div>
         <AttendanceModal
           isOpen={isModalOpen}
           onClose={closeModal}
@@ -152,8 +179,14 @@ const AttendancePage = () => {
           handleCheck={handleCheck}
           handleSubmit={handleSubmit}
           selectedDate={selectedDate}
-          nearestSunday={nearestSunday} // 상태로 관리된 값을 전달
+          nearestSunday={nearestSunday}
           mode={modalMode}
+        />
+        <CreateStudentModal
+          isOpen={isStudentModalOpen}
+          onClose={closeStudentModal}
+          addStudent={addStudent}
+          teachers={teachers} // teachers 데이터를 전달
         />
       </Content>
     </Layout>
