@@ -186,6 +186,7 @@ const AttendancePage = () => {
           isOpen={isStudentModalOpen}
           onClose={closeStudentModal}
           addStudent={addStudent}
+          teachers={teachers} // teachers 데이터를 전달
         />
       </Content>
     </Layout>

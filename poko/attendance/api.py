@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework import status
+from accounts.models import CustomUser
 from attendance.models import Member, Attendance
 from .serializers import (
     TeacherSerializer,
@@ -33,9 +34,19 @@ class TeachersViewSet(ViewSet):
         user = request.user
         if user.is_authenticated:
             teacher_name = user.full_name  # 로그인된 경우 사용자 이름 반환
+
         else:
             teacher_name = "Failed Authentication"  # 로그인되지 않은 경우 처리
         return Response({"teacher_name": teacher_name})
+
+    # 새친구 등록 시 모든 선생님들의 리스트 반환
+    @action(detail=False, methods=["get"], url_path="all-teachers")
+    def get_all_teachers(self, request):
+        teachers = CustomUser.objects.values("id", "full_name")  # 필요한 필드만 가져오기
+        teacher_names = [
+            {"id": teacher["id"], "name": teacher["full_name"]} for teacher in teachers
+        ]
+        return Response(teacher_names)
 
 
 # 학생 목록 조회 및 생성, 특정 학생 정보 조회 및 수정

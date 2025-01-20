@@ -21,6 +21,10 @@ router.register(
     r"attendance-stats", AttendanceStatsViewSet, basename="attendance-stats"
 )
 
+urlpatterns = [
+    path("", include(router.urls)),
+]
+
 # 기존에 정의된 URL 패턴
 urlpatterns = [
     path("produce/", views.ApiAttendanceProduce),

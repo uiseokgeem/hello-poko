@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Button, Select, Checkbox, message } from "antd";
-import { fetchTeachers } from "../../api/attendanceApi";
+import { Modal, Form, Input, Button, Select, Checkbox, message, Radio } from "antd";
+import { fetchAllTeachers } from "../../api/attendanceApi";
 import "./CreateStudentModal.css";
 
 const { Option } = Select;
@@ -10,26 +10,35 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
     const [loading, setLoading] = useState(false);
     const [teachers, setTeachers] = useState([]);
 
-    // 담당 선생님 데이터를 불러옴
+    // 모든 선생님 리스트 가져오기
     useEffect(() => {
-        const fetchTeacherData = async () => {
+        const getAllTeachers = async () => {
             try {
-                const data = await fetchTeachers();
-                setTeachers(data);
+                const data = await fetchAllTeachers();
+                setTeachers(data); // 리스트 형태로 teachers 저장
             } catch (error) {
-                console.error("Error fetching teachers:", error);
+                console.error("Error fetching all teachers:", error);
                 setTeachers([]);
             }
         };
-
-        fetchTeacherData();
+        getAllTeachers();
     }, []);
 
     const handleSubmit = async () => {
         try {
+            // 입력된 폼 데이터를 가져옴
             const values = await form.validateFields();
+
+            // attendance_count와 absent_count 초기화
+            const studentData = {
+                ...values,
+                gender: values.gender[0],
+                attendance_count: 0,
+                absent_count: 0,
+            };
+
             setLoading(true);
-            await addStudent(values);
+            await addStudent(studentData); // 수정된 데이터를 전달
             form.resetFields();
             onClose();
         } catch (error) {
@@ -47,7 +56,7 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
             footer={null}
             destroyOnClose
             centered
-            width={400} // 폭 설정
+            width={400}
         >
             <Form layout="vertical" form={form}>
                 <Form.Item
@@ -70,16 +79,16 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
                         ))}
                     </Select>
                 </Form.Item>
-                <Form.Item
-                    label="성별"
-                    name="gender"
-                    rules={[{ required: true, message: "성별을 선택해주세요!" }]}
-                >
-                    <Checkbox.Group style={{ display: "flex", gap: "20px" }}>
-                        <Checkbox value="남">남</Checkbox>
-                        <Checkbox value="여">여</Checkbox>
-                    </Checkbox.Group>
-                </Form.Item>
+                    <Form.Item
+                        label="성별"
+                        name="gender"
+                        rules={[{ required: true, message: "성별을 선택해주세요!" }]}
+                    >
+                        <Radio.Group>
+                            <Radio value="남">남</Radio>
+                            <Radio value="여">여</Radio>
+                        </Radio.Group>
+                    </Form.Item>
                 <Form.Item
                     label="담당 선생님"
                     name="teacher"
@@ -88,10 +97,10 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
                     <Select placeholder="선생님 선택">
                         {teachers.length > 0
                             ? teachers.map((teacher) => (
-                                  <Option key={teacher.id} value={teacher.id}>
-                                      {teacher.name}
-                                  </Option>
-                              ))
+                                <Option key={teacher.id} value={teacher.id}>
+                                    {teacher.name}
+                                </Option>
+                            ))
                             : <Option disabled>선생님 없음</Option>}
                     </Select>
                 </Form.Item>
