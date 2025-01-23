@@ -33,17 +33,27 @@ const AttendancePage = () => {
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
 
+  // 데이터 새로고침 함수
+  const refreshData = async () => {
+    try {
+      const [stats, attendance, studentList] = await Promise.all([
+        fetchAttendanceStats(),
+        fetchAttendanceData(selectedYear),
+        fetchStudents(),
+      ]);
+      setAttendanceStats(stats || []);
+      setAttendanceData(attendance || []);
+      setStudents(studentList || []);
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      message.error("데이터 새로고침에 실패했습니다.");
+    }
+  };
+
+  // 컴포넌트 마운트 시 초기 데이터 로드
   useEffect(() => {
     fetchTeachers().then(setTeachers);
-    fetchStudents().then(setStudents);
-    fetchAttendanceData(selectedYear).then(setAttendanceData);
-
-    fetchAttendanceStats()
-      .then((data) => {
-        if (data) setAttendanceStats(data);
-        else console.error("Failed to fetch attendance stats");
-      })
-      .catch((error) => console.error("Error fetching attendance stats:", error));
+    refreshData();
   }, [selectedYear]);
 
   const handleCheck = (studentId) => {
@@ -59,23 +69,17 @@ const AttendancePage = () => {
       id: student.id,
       attendance: checkedStudents.includes(student.id),
     }));
-  
+
     try {
       if (modalMode === "edit") {
-        // 수정 모드에서는 선택한 날짜를 사용하여 데이터를 수정
         await patchAttendanceData(selectedDate, attendanceData);
       } else {
-        // 생성 모드에서는 사용자가 선택한 날짜(`selectedDate`)를 사용
         await postAttendanceData(selectedDate || nearestSunday, attendanceData);
       }
-  
-      // 출석 데이터를 새로고침
-      const updatedAttendanceData = await fetchAttendanceData(selectedYear);
-      setAttendanceData(updatedAttendanceData);
       message.success("출석 데이터가 성공적으로 저장되었습니다!");
+      refreshData(); // 데이터 새로고침
     } catch (error) {
       console.error("Error posting attendance data:", error);
-  
       if (error.response?.data?.detail) {
         Modal.error({
           title: "출석 데이터 중복",
@@ -114,9 +118,9 @@ const AttendancePage = () => {
 
   const addStudent = async (studentData) => {
     try {
-      const newStudent = await createStudent(studentData);
-      setStudents((prev) => [...prev, newStudent]);
+      await createStudent(studentData);
       message.success("학생이 성공적으로 추가되었습니다!");
+      refreshData(); // 데이터 새로고침
       closeStudentModal();
     } catch (error) {
       console.error("Error adding student:", error);
@@ -178,7 +182,7 @@ const AttendancePage = () => {
           handleCheck={handleCheck}
           handleSubmit={handleSubmit}
           selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate} // 등록날짜 고정 시 생략
+          setSelectedDate={setSelectedDate}
           nearestSunday={nearestSunday}
           mode={modalMode}
         />

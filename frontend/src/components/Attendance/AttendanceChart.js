@@ -20,6 +20,7 @@ const mapAttendanceForStudent = (student, data) => {
 const AttendanceChart = ({ data, students, openModal }) => {
   const errorIconPath = `${process.env.PUBLIC_URL}/images/variant=error@3x.png`;
   const successIconPath = `${process.env.PUBLIC_URL}/images/variant=sucess@3x.png`;
+  const warningIconPath = `${process.env.PUBLIC_URL}/images/variant=warning@3x.png`;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -54,12 +55,26 @@ const AttendanceChart = ({ data, students, openModal }) => {
       width: 120,
       render: attendance => (
         <span>
-          {attendance ? (
-            <img src={successIconPath} alt="Success" style={{ width: '20px', height: '20px' }} />
-          ) : (
-            <img src={errorIconPath} alt="Error" style={{ width: '20px', height: '20px' }} />
-          )}
-        </span>
+            {attendance === true ? (
+              <img
+                src={successIconPath}
+                alt="Success"
+                style={{ width: "20px", height: "20px" }}
+              />
+            ) : attendance === false ? (
+              <img
+                src={errorIconPath}
+                alt="Error"
+                style={{ width: "20px", height: "20px" }}
+              />
+            ) : (
+              <img
+                src={warningIconPath}
+                alt="Warning"
+                style={{ width: "20px", height: "20px" }}
+              />
+            )}
+          </span>
       ),
     })),
     {

@@ -20,7 +20,7 @@ const items = [
   {
     key: '3',
     icon: <FileTextOutlined />,
-    label: <Link to="/">양육일지(업데이트 예정)</Link>,
+    label: <Link to="/attendance">양육일지(업데이트 예정)</Link>,
   },
 ];
 

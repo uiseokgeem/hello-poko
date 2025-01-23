@@ -127,6 +127,7 @@ const AdminPage = () => {
       // 데이터 갱신
       fetchData();
       loadAttendanceData();
+      fetchGroupData();
     } catch (error) {
       console.error("Error adding student:", error);
       message.error("학생 추가 중 오류가 발생했습니다.");

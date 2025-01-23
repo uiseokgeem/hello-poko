@@ -1,4 +1,6 @@
 from collections import defaultdict
+from datetime import datetime, timedelta, date  # date를 import
+
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -50,6 +52,21 @@ class TeachersViewSet(ViewSet):
 
 
 # 학생 목록 조회 및 생성, 특정 학생 정보 조회 및 수정
+def get_sundays_for_year(year, end_date=None):
+    """주어진 연도의 모든 일요일 리스트를 반환."""
+    first_day_of_year = date(year, 1, 1)  # `date`를 사용
+    # 해당 연도의 첫 번째 일요일 찾기
+    first_sunday = first_day_of_year + timedelta(days=(6 - first_day_of_year.weekday()))
+    sundays = []
+    current_sunday = first_sunday
+    while current_sunday.year == year:
+        if end_date and current_sunday > end_date:  # end_date와 비교
+            break
+        sundays.append(current_sunday)
+        current_sunday += timedelta(weeks=1)
+    return sundays
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class MembersViewSet(ModelViewSet):
     serializer_class = MemberSerializer
@@ -58,7 +75,6 @@ class MembersViewSet(ModelViewSet):
 
     # 로그인한 사용자의 반에 속한 학생만 필터링
     def get_queryset(self):
-        # user = "teacher1@example.com"
         user = self.request.user
         return Member.objects.filter(teacher__email=user)
 
@@ -70,9 +86,17 @@ class MembersViewSet(ModelViewSet):
         return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
-        # 요청 데이터에서 studentData 가져오기
         student_data = request.data
-        nearest_sunday = student_data.pop("initial_attendance_date", None)
+        nearest_sunday_str = student_data.pop("initial_attendance_date", None)
+
+        if nearest_sunday_str:
+            nearest_sunday = datetime.strptime(
+                nearest_sunday_str, "%Y-%m-%d"
+            ).date()  # `date` 타입으로 변환
+        else:
+            return Response(
+                {"error": "initial_attendance_date is required"}, status=400
+            )
 
         # 학생 생성
         serializer = self.get_serializer(data=student_data)
@@ -81,12 +105,18 @@ class MembersViewSet(ModelViewSet):
 
         # Attendance 모델에 기본 출석 데이터 생성
         member_instance = serializer.instance
-        if nearest_sunday:
-            Attendance.objects.create(
-                name=member_instance,
-                attendance=False,  # 기본값: False
-                date=nearest_sunday,
-            )
+
+        # 해당 연도의 첫 일요일부터 nearest_sunday 이전의 모든 일요일 리스트 생성
+        year = nearest_sunday.year
+        sundays = get_sundays_for_year(year, end_date=nearest_sunday)
+
+        # Attendance에 기본 출석 데이터 저장
+        Attendance.objects.bulk_create(
+            [
+                Attendance(name=member_instance, attendance=False, date=sunday)
+                for sunday in sundays
+            ]
+        )
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=201, headers=headers)
