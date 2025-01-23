@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Button, Select, Checkbox, message, Radio } from "antd";
 import { fetchAllTeachers } from "../../api/attendanceApi";
 import "./CreateStudentModal.css";
+import {getNearestSunday} from "../../utils/dateUtils";
 
 const { Option } = Select;
 
@@ -26,17 +27,17 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
 
     const handleSubmit = async () => {
         try {
-            // 입력된 폼 데이터를 가져옴
             const values = await form.validateFields();
-
-            // attendance_count와 absent_count 초기화
+            const nearestSunday = getNearestSunday(); // 가장 가까운 일요일 계산
+    
             const studentData = {
                 ...values,
                 gender: values.gender[0],
                 attendance_count: 0,
                 absent_count: 0,
+                initial_attendance_date: nearestSunday, // 최근 일요일을 추가
             };
-
+    
             setLoading(true);
             await addStudent(studentData); // 수정된 데이터를 전달
             form.resetFields();

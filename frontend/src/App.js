@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import ReportPage from './pages/ReportPage';
 import AttendancePage from './pages/AttendancePage';
 import HomePage from './pages/HomePage';
+import Adminpage from './pages/AdminPage';
 
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/login" />}/>
         <Route path="/home" element={<HomePage />} />
+        <Route path='admin-page' element={<Adminpage/>} />
         <Route path="/send-email" element={<SendEmailPage />} />
         <Route path="/verify-email/:url_code/:email_code" element={<VerifyEmailPage />} />
         <Route path="/validate-pwd/:url_code/:email_code" element={<ValidatePwdPage />} />

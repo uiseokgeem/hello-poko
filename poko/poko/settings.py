@@ -125,6 +125,7 @@ INSTALLED_APPS = [
     "report",
     "graph",
     "accounts",
+    "admin_management",
     "allauth.socialaccount.providers.google",
     # "blog",  # dfr test note : OS 업데이트 후 삭제 됨
 ]

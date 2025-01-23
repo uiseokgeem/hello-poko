@@ -13,7 +13,7 @@ const Login = ({ handleLoginSubmit }) => {
   const handleSubmit = async () => {
     try {
       await handleLoginSubmit(id, password);
-      navigate('/home'); // 로그인 성공 후 대시보드로 이동
+      navigate('/attendance'); // 로그인 성공 후 대시보드로 이동
     } catch (error) {
       setMessage(error.message);
     }

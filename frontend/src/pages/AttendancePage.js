@@ -21,7 +21,6 @@ const { Content } = Layout;
 const { Option } = Select;
 
 const AttendancePage = () => {
-  // State Management
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -34,7 +33,6 @@ const AttendancePage = () => {
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
 
-  // Fetch Data
   useEffect(() => {
     fetchTeachers().then(setTeachers);
     fetchStudents().then(setStudents);
@@ -48,7 +46,6 @@ const AttendancePage = () => {
       .catch((error) => console.error("Error fetching attendance stats:", error));
   }, [selectedYear]);
 
-  // Handle Attendance Modal
   const handleCheck = (studentId) => {
     setCheckedStudents((prev) =>
       prev.includes(studentId)
@@ -62,20 +59,23 @@ const AttendancePage = () => {
       id: student.id,
       attendance: checkedStudents.includes(student.id),
     }));
-
+  
     try {
       if (modalMode === "edit") {
+        // 수정 모드에서는 선택한 날짜를 사용하여 데이터를 수정
         await patchAttendanceData(selectedDate, attendanceData);
       } else {
-        await postAttendanceData(nearestSunday, attendanceData);
+        // 생성 모드에서는 사용자가 선택한 날짜(`selectedDate`)를 사용
+        await postAttendanceData(selectedDate || nearestSunday, attendanceData);
       }
-
+  
+      // 출석 데이터를 새로고침
       const updatedAttendanceData = await fetchAttendanceData(selectedYear);
       setAttendanceData(updatedAttendanceData);
       message.success("출석 데이터가 성공적으로 저장되었습니다!");
     } catch (error) {
       console.error("Error posting attendance data:", error);
-
+  
       if (error.response?.data?.detail) {
         Modal.error({
           title: "출석 데이터 중복",
@@ -109,7 +109,6 @@ const AttendancePage = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // Handle Student Modal
   const openStudentModal = () => setIsStudentModalOpen(true);
   const closeStudentModal = () => setIsStudentModalOpen(false);
 
@@ -129,19 +128,19 @@ const AttendancePage = () => {
     <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       <AppHeader />
       <Content className="page-container">
-        <h1>출석부</h1>
+        <h1 className="page-title">출석부</h1>
         <TeacherInfo
           teacherName={teachers?.teacher_name || "Unknown"}
-          className="보류"
+          className="미정"
           attendanceRate={attendanceStats?.result_stats || []}
         />
-        <div className="header-section">
+        <div className="attendance-header-section">
           <Select
             defaultValue={selectedYear}
             onChange={(value) => setSelectedYear(value)}
             className="year-select"
           >
-            {[2022, 2023, 2024].map((year) => (
+            {[2022, 2023, 2024, 2025].map((year) => (
               <Option key={year} value={year}>
                 {year}
               </Option>
@@ -160,7 +159,7 @@ const AttendancePage = () => {
               onClick={openStudentModal}
               className="add-student-button"
             >
-             + 새친구 등록
+              + 새친구 등록
             </Button>
           </div>
         </div>
@@ -179,6 +178,7 @@ const AttendancePage = () => {
           handleCheck={handleCheck}
           handleSubmit={handleSubmit}
           selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate} // 등록날짜 고정 시 생략
           nearestSunday={nearestSunday}
           mode={modalMode}
         />
@@ -186,7 +186,7 @@ const AttendancePage = () => {
           isOpen={isStudentModalOpen}
           onClose={closeStudentModal}
           addStudent={addStudent}
-          teachers={teachers} // teachers 데이터를 전달
+          teachers={teachers}
         />
       </Content>
     </Layout>
@@ -194,3 +194,35 @@ const AttendancePage = () => {
 };
 
 export default AttendancePage;
+
+
+
+// 등록날짜 고정 시 handleSubmit 코드
+// const handleSubmit = async () => {
+//   const attendanceData = students.map((student) => ({
+//     id: student.id,
+//     attendance: checkedStudents.includes(student.id),
+//   }));
+
+//   try {
+//     if (modalMode === "edit") {
+//       await patchAttendanceData(selectedDate, attendanceData);
+//     } else {
+//       await postAttendanceData(nearestSunday, attendanceData);
+//     }
+
+//     const updatedAttendanceData = await fetchAttendanceData(selectedYear);
+//     setAttendanceData(updatedAttendanceData);
+//     message.success("출석 데이터가 성공적으로 저장되었습니다!");
+//   } catch (error) {
+//     console.error("Error posting attendance data:", error);
+
+//     if (error.response?.data?.detail) {
+//       Modal.error({
+//         title: "출석 데이터 중복",
+//         content: error.response.data.detail,
+//       });
+//     }
+//   }
+//   setIsModalOpen(false);
+// };

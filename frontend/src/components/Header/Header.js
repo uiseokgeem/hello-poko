@@ -10,7 +10,7 @@ const items = [
   {
     key: '1',
     icon: <HomeOutlined />,
-    label: <Link to="/home">홈</Link>,
+    label: <Link to="/admin-page">홈</Link>,
   },
   {
     key: '2',
@@ -20,7 +20,7 @@ const items = [
   {
     key: '3',
     icon: <FileTextOutlined />,
-    label: <Link to="/report">양육일지</Link>,
+    label: <Link to="/">양육일지(업데이트 예정)</Link>,
   },
 ];
 

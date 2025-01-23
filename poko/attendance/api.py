@@ -69,14 +69,36 @@ class MembersViewSet(ModelViewSet):
             return FullMemberSerializer
         return super().get_serializer_class()
 
+    def create(self, request, *args, **kwargs):
+        # 요청 데이터에서 studentData 가져오기
+        student_data = request.data
+        nearest_sunday = student_data.pop("initial_attendance_date", None)
+
+        # 학생 생성
+        serializer = self.get_serializer(data=student_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # Attendance 모델에 기본 출석 데이터 생성
+        member_instance = serializer.instance
+        if nearest_sunday:
+            Attendance.objects.create(
+                name=member_instance,
+                attendance=False,  # 기본값: False
+                date=nearest_sunday,
+            )
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
+
 
 # 단일 출석 데이터 목록 조회 및 생성
 # 데코레이터와 인증 충돌 확인, login api에서는 post 요청 정상 작동
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get_serializer_context(self):
         # context에 request 정보를 포함하여 Serializer에 전달
