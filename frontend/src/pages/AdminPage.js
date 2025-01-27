@@ -11,7 +11,12 @@ import {
   fetchMemberAttendanceData,
 } from "../api/adminApi";
 import { createStudent } from "../api/attendanceApi";
-import { getGraphSeries, getLineGraphOptions, getBarGraphOptionsForGroups } from "../utils/graphUtils";
+import {
+  getGraphSeries,
+  getLineGraphOptions,
+  getBarGraphOptionsForGroups,
+  getGroupGraphSeries,
+} from "../utils/graphUtils";
 import "./AdminPage.css";
 
 const { Content } = Layout;
@@ -44,17 +49,22 @@ const AdminPage = () => {
     }
   };
 
-  // 학생별 출석 데이터 가져오기
-  // const loadAttendanceData = async () => {
-  //   try {
-  //     const { students, attendance } = await fetchMemberAttendanceData(selectedYear);
-  //     setStudents(students);
-  //     setMemberAttendanceData(attendance);
-  //   } catch (error) {
-  //     console.error("Error fetching member attendance data:", error);
-  //     message.error("출석 데이터를 가져오는 데 실패했습니다.");
-  //   }
-  // };
+  // 반별 출석 데이터 가져오기
+  const fetchGroupData = async () => {
+    if (!selectedWeek) return;
+
+    setLoading(true);
+    try {
+      const data = await fetchGroupAttendance(selectedWeek);
+      setGroupAttendanceData(data);
+    } catch (error) {
+      console.error("Error fetching group attendance for selected week:", error);
+      message.error("주차별 반별 출석 데이터를 가져오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadAttendanceData = async () => {
     try {
       // API에서 데이터를 가져옴
@@ -77,23 +87,7 @@ const AdminPage = () => {
     }
   };
 
-  // 반별 출석 데이터 가져오기
-  const fetchGroupData = async () => {
-    if (!selectedWeek) return;
-
-    setLoading(true);
-    try {
-      const data = await fetchGroupAttendance(selectedWeek);
-      setGroupAttendanceData(data);
-    } catch (error) {
-      console.error("Error fetching group attendance for selected week:", error);
-      message.error("주차별 반별 출석 데이터를 가져오는 데 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 주차 데이터 가져오기
+  // 주차 날짜 리스트 가져오기
   const fetchWeekOptions = async () => {
     try {
       const weeks = await fetchWeekList(selectedYear);
@@ -135,21 +129,12 @@ const AdminPage = () => {
   };
 
   // 그래프 데이터 생성
-  const series = getGraphSeries(weeklyAttendanceData); // 주간 출석 데이터로 그래프 생성
+  const series = getGraphSeries(weeklyAttendanceData);
   const lineGraphOptions = getLineGraphOptions();
   const groupGrades = groupAttendanceData.map((item) => item.name__grade);
-  const barChartOptions = getBarGraphOptionsForGroups(groupGrades);
-
-  const groupSeries = [
-    {
-      name: "출석",
-      data: groupAttendanceData.map((item) => item.attendance_count),
-    },
-    {
-      name: "결석",
-      data: groupAttendanceData.map((item) => item.absent_count),
-    },
-  ];
+  const groupSeries = getGroupGraphSeries(groupAttendanceData);
+  const barGraphOptions = getBarGraphOptionsForGroups(groupGrades);
+  
 
   // 모달 핸들러
   const openStudentModal = () => setIsStudentModalOpen(true);
@@ -212,7 +197,7 @@ const AdminPage = () => {
                   <Spin size="large" />
                 </div>
               ) : (
-                <Chart options={barChartOptions} series={groupSeries} type="bar" height={350} />
+                <Chart options={barGraphOptions} series={groupSeries} type="bar" height={350} />
               )}
             </TabPane>
 
@@ -453,3 +438,15 @@ export default AdminPage;
 // };
 
 // export default AdminPage;
+
+// 학생별 출석 데이터 가져오기
+  // const loadAttendanceData = async () => {
+  //   try {
+  //     const { students, attendance } = await fetchMemberAttendanceData(selectedYear);
+  //     setStudents(students);
+  //     setMemberAttendanceData(attendance);
+  //   } catch (error) {
+  //     console.error("Error fetching member attendance data:", error);
+  //     message.error("출석 데이터를 가져오는 데 실패했습니다.");
+  //   }
+  // };

@@ -33,7 +33,7 @@ body {
 }
 
 .login-container .login-form-item {
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* 아이템 간 간격을 줄여 전체 공간 효율성 증가 */
 }
 
 .login-container .login-input,
@@ -43,6 +43,29 @@ body {
 }
 
 .login-container .login-submit-button {
-  height: 40px;
-  font-size: 16px;
+  height: 34px; /* 버튼 높이를 줄임 */
+  font-size: 14px; /* 텍스트 크기 조정 */
+  line-height: 1.5; /* 텍스트 정렬 개선 */
+  padding: 0 12px; /* 버튼 내부 여백 조정 */
+  border-radius: 4px; /* 둥근 모서리 유지 */
+}
+
+.login-container .login-signup-button {
+  height: 34px; /* 버튼 높이를 줄임 */
+  font-size: 14px; /* 텍스트 크기 조정 */
+  line-height: 1.5; /* 텍스트 정렬 개선 */
+  padding: 0 12px; /* 버튼 내부 여백 조정 */
+  border-radius: 4px; /* 둥근 모서리 유지 */
+}
+
+
+
+.kakao-login-image {
+  display: block;
+  width: 100%; /* 너비를 부모 요소에 맞춤 */
+  height: auto; /* 이미지의 원본 비율 유지 */
+  border-radius: 4px; /* 다른 버튼과 동일한 둥근 모서리 */
+  margin: 0 auto; /* 중앙 정렬 */
+  cursor: pointer; /* 클릭 가능한 버튼처럼 보이게 설정 */
+  background-color: transparent; /* 배경색 제거 */
 }

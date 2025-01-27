@@ -2,6 +2,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from . import views
 from . import api
+from . import kakao
 from django.urls import path, include
 from .views import get_csrf_token
 
@@ -15,6 +16,8 @@ urlpatterns = [
     # ),  # dj_rest_auth login test 해당 라인 추가, http://127.0.0.1:8000/api/login -> common으로 이동할 것
     # path("get-csrf-token/", get_csrf_token, name="get_csrf_token"),
     path("login/", api.CustomLoginView.as_view()),
+    path("kakao/login", kakao.KakaoLoginAPIView.as_view(), name="kakao-login"),
+    path("kakao/register", kakao.KakaoRegisterAPIView.as_view(), name="kakao-register"),
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("accounts/", include("allauth.urls")),

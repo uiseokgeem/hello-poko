@@ -16,6 +16,7 @@ from accounts.models import CustomUser
 class CustomUserAdmin(UserAdmin):
     list_display = [
         "id",
+        "kakao_id",
         "email",
         "full_name",
         "is_staff",

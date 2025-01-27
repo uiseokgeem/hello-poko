@@ -14,7 +14,9 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=4)
     birth_date = models.DateField(null=True, blank=True)
     registration_number = models.CharField(max_length=6, null=True, blank=True)
-    # registration_number : 발급된 인증번호로 중복가입 방지를 위해 변수 설정.
+    kakao_id = models.CharField(
+        max_length=100, unique=True, null=True, blank=True
+    )  # Kakao ID 필드 추가
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

@@ -81,6 +81,24 @@ export const register = async (urlCode, emailCode, fullName, birthDate) => {
   }
 };
 
+export const kakaoRegister = async (fullName, birthDate) => {
+  try {
+    const response = await axios.patch(
+      `${API_URL}kakao/register`, // Django KakaoRegisterAPIView의 엔드포인트
+      { full_name: fullName, birth_date: birthDate },
+      {
+        withCredentials: true, // 쿠키 기반 인증 사용
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data.message; // 성공 메시지 반환
+  } catch (error) {
+    handleError(error); // 에러 처리
+  }
+};
+
 const handleError = (error) => {
   if (error.response) {
     throw new Error(error.response.data.message || '요청 실패');

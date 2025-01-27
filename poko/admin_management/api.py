@@ -60,7 +60,6 @@ class GroupAttendanceViewSet(ModelViewSet):
     def attendance_by_week(self, request):
         # 쿼리 파라미터에서 날짜 가져오기
         week = request.query_params.get("week")
-        # print("Received week parameter:", week)
 
         if not week:
             return Response({"error": "Week parameter is required"}, status=400)
@@ -76,8 +75,6 @@ class GroupAttendanceViewSet(ModelViewSet):
                 )
                 .order_by("name__grade")  # 학년 기준 정렬
             )
-
-            # print(attendance_data)
 
             return Response(attendance_data)  # 결과 반환
 
