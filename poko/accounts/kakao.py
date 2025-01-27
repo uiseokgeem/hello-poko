@@ -58,9 +58,7 @@ class KakaoLoginAPIView(APIView):
             email=email,
             defaults={
                 "kakao_id": kakao_id,
-                "full_name": user_data.get("properties", {}).get(
-                    "nickname", "Kakao User"
-                ),
+                "full_name": user_data.get("properties", {}).get("nickname", "카카오"),
             },
         )
 
