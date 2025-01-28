@@ -32,6 +32,7 @@ const AttendancePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
+  const [mode, setMode] = useState("attendance"); // 모드 상태 추가
 
   // 데이터 새로고침 함수
   const refreshData = async () => {
@@ -53,9 +54,10 @@ const AttendancePage = () => {
   // 컴포넌트 마운트 시 초기 데이터 로드
   useEffect(() => {
     fetchTeachers().then(setTeachers);
+
     refreshData();
   }, [selectedYear]);
-
+  // console.log(teachers)
   const handleCheck = (studentId) => {
     setCheckedStudents((prev) =>
       prev.includes(studentId)
@@ -134,7 +136,7 @@ const AttendancePage = () => {
       <Content className="page-container">
         <h1 className="page-title">출석부</h1>
         <TeacherInfo
-          teacherName={teachers?.teacher_name || "Unknown"}
+          teacherName={teachers?.name || "Unknown"}
           className="미정"
           attendanceRate={attendanceStats?.result_stats || []}
         />
@@ -190,7 +192,8 @@ const AttendancePage = () => {
           isOpen={isStudentModalOpen}
           onClose={closeStudentModal}
           addStudent={addStudent}
-          teachers={teachers}
+          teachers={[teachers]}
+          mode="attendance" // attendance 모드로 설정
         />
       </Content>
     </Layout>

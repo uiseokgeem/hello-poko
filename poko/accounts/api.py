@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLoginView(LoginView):
     serializer_class = CustomLoginSerializer
+    authentication_classes = []  # JWT 인증을 명시적으로 제외
 
 
 # @method_decorator(csrf_exempt, name="dispatch") : 개발 시에만 사용.

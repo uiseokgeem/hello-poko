@@ -37,7 +37,7 @@ export const fetchStudents = async () => {
     }
 };
 
-// 선생님 데이터를 가져오는 함수
+// 단일 선생님 데이터를 가져오는 함수
 export const fetchTeachers = async () => {
     try {
         const response = await axios.get(`${API_URL}teachers/`,{
@@ -46,9 +46,21 @@ export const fetchTeachers = async () => {
                 'Content-Type': 'application/json'
             }
         });
+        // console.log('fetchTeachers', response.data)
         return response.data;
     } catch (error) {
         console.error('Error fetching teachers:', error);
+        throw error;
+    }
+};
+
+// 모든 선생님 리스트 가져오기
+export const fetchAllTeachers = async () => {
+    try {
+        const response = await axios.get(`${API_URL}teachers/all-teachers/`, { withCredentials: true });
+        return response.data; // 선생님 리스트 반환
+    } catch (error) {
+        console.error("Error fetching all teachers:", error);
         throw error;
     }
 };
@@ -140,16 +152,5 @@ export const createStudent = async (studentData) => {
     } catch (error) {
         console.error('Error creating student:', error); // 에러 로그 출력
         throw error; // 에러를 호출한 쪽으로 전달
-    }
-};
-
-// 모든 선생님 리스트 가져오기
-export const fetchAllTeachers = async () => {
-    try {
-        const response = await axios.get(`${API_URL}teachers/all-teachers/`, { withCredentials: true });
-        return response.data; // 선생님 리스트 반환
-    } catch (error) {
-        console.error("Error fetching all teachers:", error);
-        throw error;
     }
 };

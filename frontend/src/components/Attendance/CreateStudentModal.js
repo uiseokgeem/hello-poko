@@ -1,126 +1,149 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Button, Select, Checkbox, message, Radio } from "antd";
-import { fetchAllTeachers } from "../../api/attendanceApi";
+import { Modal, Form, Input, Button, Select, message, Radio } from "antd";
+import { fetchAllTeachers,
+          fetchTeachers,
+ } from "../../api/attendanceApi";
 import "./CreateStudentModal.css";
-import {getNearestSunday} from "../../utils/dateUtils";
+import { getNearestSunday } from "../../utils/dateUtils";
 
 const { Option } = Select;
 
-const CreateStudentModal = ({ isOpen, onClose, addStudent }) => {
-    const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
-    const [teachers, setTeachers] = useState([]);
+const CreateStudentModal = ({ isOpen, onClose, addStudent, mode, teachers }) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [allTeachers, setAllTeachers] = useState([]);
 
-    // 모든 선생님 리스트 가져오기
-    useEffect(() => {
-        const getAllTeachers = async () => {
-            try {
-                const data = await fetchAllTeachers();
-                setTeachers(data); // 리스트 형태로 teachers 저장
-            } catch (error) {
-                console.error("Error fetching all teachers:", error);
-                setTeachers([]);
-            }
-        };
-        getAllTeachers();
-    }, []);
-
-    const handleSubmit = async () => {
+  // 모든 선생님 리스트 가져오기
+  useEffect(() => {
+    const fetchTeachersData = async () => {
+      if (mode === "admin") {
+        // Admin 모드: 모든 선생님 데이터 가져오기
         try {
-            const values = await form.validateFields();
-            const nearestSunday = getNearestSunday(); // 가장 가까운 일요일 계산
-    
-            const studentData = {
-                ...values,
-                gender: values.gender[0],
-                attendance_count: 0,
-                absent_count: 0,
-                initial_attendance_date: nearestSunday, // 최근 일요일을 추가
-            };
-    
-            setLoading(true);
-            await addStudent(studentData); // 수정된 데이터를 전달
-            form.resetFields();
-            onClose();
+          const data = await fetchAllTeachers();
+          console.log("Admin mode: all teachers", data);
+          setAllTeachers(data); // 모든 선생님 저장
         } catch (error) {
-            message.error("학생 추가 중 오류가 발생했습니다.");
-        } finally {
-            setLoading(false);
+          console.error("Error fetching all teachers:", error);
+          setAllTeachers([]);
         }
+      } else if (mode === "attendance") {
+        console.log("Attendance mode: teacher", teachers);
+        setAllTeachers(teachers); // 전달된 teachers를 바로 사용
+      }
     };
+  
+    fetchTeachersData();
+  }, [mode, teachers]);
 
-    return (
-        <Modal
-            title="새 친구 등록"
-            open={isOpen}
-            onCancel={onClose}
-            footer={null}
-            destroyOnClose
-            centered
-            width={400}
+  // UI 표시를 위한
+  const teacherName =
+    mode === "attendance" && allTeachers.length > 0
+      ? allTeachers[0]?.name || "Unknown"
+      : "";
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const nearestSunday = getNearestSunday(); // 가장 가까운 일요일 계산
+
+      // Student 데이터 생성
+      const studentData = {
+        ...values,
+        attendance_count: 0,
+        absent_count: 0,
+        initial_attendance_date: nearestSunday,
+        teacher: mode === "attendance" ? allTeachers[0]?.id : values.teacher, // Attendance 모드에서는 고정된 teacher ID 사용
+      };
+
+      setLoading(true);
+      await addStudent(studentData);
+      form.resetFields();
+      onClose();
+    } catch (error) {
+      message.error("학생 추가 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="새 친구 등록"
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      destroyOnClose
+      centered
+      width={400}
+    >
+      <Form layout="vertical" form={form}>
+        <Form.Item
+          label="이름"
+          name="name"
+          rules={[{ required: true, message: "이름을 입력해주세요!" }]}
         >
-            <Form layout="vertical" form={form}>
-                <Form.Item
-                    label="이름"
-                    name="name"
-                    rules={[{ required: true, message: "이름을 입력해주세요!" }]}
-                >
-                    <Input placeholder="이름 입력" />
-                </Form.Item>
-                <Form.Item
-                    label="학년"
-                    name="grade"
-                    rules={[{ required: true, message: "학년을 선택해주세요!" }]}
-                >
-                    <Select placeholder="학년 선택">
-                        {["중1", "중2", "중3", "고1", "고2", "고3"].map((grade) => (
-                            <Option key={grade} value={grade}>
-                                {grade}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-                    <Form.Item
-                        label="성별"
-                        name="gender"
-                        rules={[{ required: true, message: "성별을 선택해주세요!" }]}
-                    >
-                        <Radio.Group>
-                            <Radio value="남">남</Radio>
-                            <Radio value="여">여</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-                <Form.Item
-                    label="담당 선생님"
-                    name="teacher"
-                    rules={[{ required: true, message: "담당 선생님을 선택해주세요!" }]}
-                >
-                    <Select placeholder="선생님 선택">
-                        {teachers.length > 0
-                            ? teachers.map((teacher) => (
-                                <Option key={teacher.id} value={teacher.id}>
-                                    {teacher.name}
-                                </Option>
-                            ))
-                            : <Option disabled>선생님 없음</Option>}
-                    </Select>
-                </Form.Item>
-                <div className="modal-footer">
-                    <Button onClick={onClose} className="cancel-btn">
-                        취소
-                    </Button>
-                    <Button
-                        type="primary"
-                        loading={loading}
-                        onClick={handleSubmit}
-                        className="submit-btn"
-                    >
-                        등록
-                    </Button>
-                </div>
-            </Form>
-        </Modal>
-    );
+          <Input placeholder="이름 입력" />
+        </Form.Item>
+        <Form.Item
+          label="학년"
+          name="grade"
+          rules={[{ required: true, message: "학년을 선택해주세요!" }]}
+        >
+          <Select placeholder="학년 선택">
+            {["중1", "중2", "중3", "고1", "고2", "고3"].map((grade) => (
+              <Option key={grade} value={grade}>
+                {grade}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          label="성별"
+          name="gender"
+          rules={[{ required: true, message: "성별을 선택해주세요!" }]}
+        >
+          <Radio.Group>
+            <Radio value="남">남</Radio>
+            <Radio value="여">여</Radio>
+          </Radio.Group>
+        </Form.Item>
+        {mode === "attendance" ? (
+          // Attendance 모드에서는 단순히 이름만 출력
+          <div>
+            <strong>담당 :</strong> {teacherName} 선생님
+          </div>
+        ) : (
+          // admin 모드에서는 Select로 선택 가능
+          <Form.Item
+            label="담당 선생님"
+            name="teacher"
+            rules={[{ required: true, message: "담당 선생님을 선택해주세요!" }]}
+          >
+            <Select placeholder="선생님 선택">
+              {allTeachers.map((teacher) => (
+                <Option key={teacher.id} value={teacher.id}>
+                  {teacher.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
+        <div className="modal-footer">
+          <Button onClick={onClose} className="cancel-btn">
+            취소
+          </Button>
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={handleSubmit}
+            className="submit-btn"
+          >
+            등록
+          </Button>
+        </div>
+      </Form>
+    </Modal>
+  );
 };
 
 export default CreateStudentModal;

@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from attendance.models import Attendance, Member
 from .serializer import (
     WeeklyAttendanceSerializer,
@@ -113,19 +115,19 @@ class MemberAttendanceViewSet(ModelViewSet):
         queryset = self.get_queryset()
 
         # Print the raw queryset for debugging
-        print("Queryset before grouping:")
-        for record in queryset:
-            print(
-                {
-                    "id": record.id,
-                    "name_id": record.name.id,
-                    "name": record.name.name,
-                    "grade": record.name.grade,
-                    "gender": record.name.gender,
-                    "date": record.date,
-                    "attendance": record.attendance,
-                }
-            )
+        # print("Queryset before grouping:")
+        # for record in queryset:
+        #     print(
+        #         {
+        #             "id": record.id,
+        #             "name_id": record.name.id,
+        #             "name": record.name.name,
+        #             "grade": record.name.grade,
+        #             "gender": record.name.gender,
+        #             "date": record.date,
+        #             "attendance": record.attendance,
+        #         }
+        #     )
 
         # 데이터를 날짜별로 그룹화
         attendance_data = defaultdict(list)
@@ -166,8 +168,8 @@ class MemberAttendanceViewSet(ModelViewSet):
         }
 
         # Print the final response data for debugging
-        print("Response Data:")
-        print(response_data)
+        # print("Response Data:")
+        # print(response_data)
 
         return Response(response_data)
 

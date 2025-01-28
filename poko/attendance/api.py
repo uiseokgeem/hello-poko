@@ -24,9 +24,6 @@ import pandas as pd
 
 # 선생님 정보 조회
 @method_decorator(csrf_exempt, name="dispatch")
-# Django의 기본 CSRF 보호를 비활성화
-#  CSRF 검사가 수행되지 않기 때문에 CSRF 토큰 없이 POST 요청을 보낼 수 있다.
-# 실제 배포환경에서는 삭제 후 기본 Django의 기본 CSRF 보호 기능을 그대로 사용한다.
 class TeachersViewSet(ViewSet):
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticated]
@@ -35,11 +32,14 @@ class TeachersViewSet(ViewSet):
     def list(self, request):
         user = request.user
         if user.is_authenticated:
-            teacher_name = user.full_name  # 로그인된 경우 사용자 이름 반환
-
+            teacher_name = user.full_name  # 로그인된 사용자 이름
+            teacher_id = user.id  # 로그인된 사용자 ID
         else:
-            teacher_name = "Failed Authentication"  # 로그인되지 않은 경우 처리
-        return Response({"teacher_name": teacher_name})
+            teacher_name = "Failed Authentication"
+            teacher_id = None  # 로그인되지 않은 경우 ID 없음
+
+        # 응답에 ID와 이름을 함께 반환
+        return Response({"id": teacher_id, "name": teacher_name})
 
     # 새친구 등록 시 모든 선생님들의 리스트 반환
     @action(detail=False, methods=["get"], url_path="all-teachers")

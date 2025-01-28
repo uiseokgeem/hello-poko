@@ -34,6 +34,8 @@ const AdminPage = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [students, setStudents] = useState([]);
+  const [mode, setMode] = useState("admin"); // AdminPage의 모드를 "admin"으로 설정
+
 
   // 주간 출석 데이터 가져오기
   const fetchData = async () => {
@@ -228,6 +230,7 @@ const AdminPage = () => {
           isOpen={isStudentModalOpen}
           onClose={closeStudentModal}
           addStudent={addStudent}
+          mode={mode} // "admin" 모드 전달
         />
       </Content>
     </Layout>
