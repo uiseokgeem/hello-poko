@@ -16,14 +16,15 @@ const KakaoAuthHandler = () => {
       // Django 서버로 인가 코드 전달
       axios.post(`${API_URL}kakao/login`, { code }, { withCredentials: true }) // 쿠키 사용
         .then((response) => {
-          const { additional_info_required } = response.data;
+          const { additional_info_required, is_admin } = response.data;
           console.log(additional_info_required);
 
           if (additional_info_required) {
             navigate('/register'); // 추가 정보 입력 페이지로 이동
+          } else if (is_admin) {
+            navigate('/admin-page'); // 관리자인 경우 관리자 페이지로 이동
           } else {
-            alert('카카오 로그인 성공');
-            navigate('/attendance'); // 추가 정보 입력 페이지로 이동
+            navigate('/attendance'); // 일반 사용자는 출석 페이지로 이동
           }
         })
         .catch((error) => {

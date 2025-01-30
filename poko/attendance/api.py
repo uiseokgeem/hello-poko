@@ -38,6 +38,10 @@ class TeachersViewSet(ViewSet):
             teacher_name = "Failed Authentication"
             teacher_id = None  # 로그인되지 않은 경우 ID 없음
 
+        # print("API request.user, User Info:", request.user)  # 인증된 사용자 정보 출력
+        # print("API request.user.is_staff, is_staff:", request.user.is_staff)
+        # print("API request.user.is_authenticated", request.user.is_authenticated)
+
         # 응답에 ID와 이름을 함께 반환
         return Response({"id": teacher_id, "name": teacher_name})
 

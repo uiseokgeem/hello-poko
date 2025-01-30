@@ -81,6 +81,10 @@ class KakaoLoginAPIView(APIView):
             value=str(refresh),
         )
 
+        # print("kakao User Info:", user)  # 인증된 사용자 정보 출력
+        # print("kakao is_staff:", user.is_staff)
+        # print("kakao user.is_authenticated", request.user.is_authenticated)
+
         # 6. 추가 정보 확인 (브라우저에 쿠키 전달 후 추가 작업 지시)
         if not user.full_name or not user.birth_date:
             response.data = {
@@ -93,6 +97,7 @@ class KakaoLoginAPIView(APIView):
         response.data = {
             "message": "카카오 로그인 성공",
             "additional_info_required": False,
+            "is_admin": user.is_staff,
         }
         return response
 
