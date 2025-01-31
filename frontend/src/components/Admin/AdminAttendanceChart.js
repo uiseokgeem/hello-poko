@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Table } from "antd";
+import AbsentListModal from "./AbsentListModal";
 import "./AdminAttendanceChart.css";
 
 const mapAttendanceForStudent = (student, data) => {
@@ -17,7 +18,7 @@ const mapAttendanceForStudent = (student, data) => {
   return attendance;
 };
 
-const AdminAttendanceChart = ({ data, openModal }) => {
+const AdminAttendanceChart = ({ data }) => {
   const errorIconPath = `${process.env.PUBLIC_URL}/images/variant=error@3x.png`;
   const successIconPath = `${process.env.PUBLIC_URL}/images/variant=sucess@3x.png`;
 
@@ -35,7 +36,7 @@ const AdminAttendanceChart = ({ data, openModal }) => {
   // 학생 리스트 추출
   const students = useMemo(() => {
     const allStudents = new Map();
-  
+
     data.forEach((dateEntry) => {
       dateEntry.attendance.forEach((record) => {
         allStudents.set(record.id, {
@@ -46,13 +47,41 @@ const AdminAttendanceChart = ({ data, openModal }) => {
         });
       });
     });
-  
-    // 학년을 기준으로 정렬
+
     return Array.from(allStudents.values()).sort((a, b) => {
-      const gradeOrder = ["중1", "중2", "중3", "고1", "고2", "고3"]; // 학년 정렬 우선순위
+      const gradeOrder = ["중1", "중2", "중3", "고1", "고2", "고3"];
       return gradeOrder.indexOf(a.grade) - gradeOrder.indexOf(b.grade);
     });
   }, [data]);
+
+  // 모달 상태 관리
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [absentStudents, setAbsentStudents] = useState([]);
+
+  // 모달 열기
+  const openModal = (date) => {
+    const filteredStudents = students.filter((student) => {
+      const attendanceRecord = data.find((entry) => entry.date === date);
+      if (!attendanceRecord) return false;
+
+      const record = attendanceRecord.attendance.find(
+        (item) => item.id === student.id
+      );
+      return record && !record.attendance; // 결석 데이터만 포함
+    });
+
+    setSelectedDate(formatDate(date));
+    setAbsentStudents(filteredStudents);
+    setIsModalVisible(true);
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setSelectedDate("");
+    setAbsentStudents([]);
+  };
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -82,15 +111,15 @@ const AdminAttendanceChart = ({ data, openModal }) => {
     const dateColumns = sortedData.map((dateEntry) => ({
       title: (
         <a
-          onClick={() => openModal(dateEntry.date, "edit")}
-          style={{ cursor: "default", color: "#333333" }}
+          onClick={() => openModal(dateEntry.date)} // 클릭 시 모달 열기
+          style={{ cursor: "pointer", color: "#333333" }}
         >
           {formatDate(dateEntry.date)}
         </a>
       ),
       dataIndex: dateEntry.date,
       key: dateEntry.date,
-      width: 140,
+      width: 120,
       render: (attendance) => (
         <span>
           {attendance ? (
@@ -111,7 +140,7 @@ const AdminAttendanceChart = ({ data, openModal }) => {
     }));
 
     return [...baseColumns, ...dateColumns];
-  }, [sortedData, openModal]);
+  }, [sortedData]);
 
   const dataSource = useMemo(() => {
     return students.map((student) => {
@@ -127,14 +156,22 @@ const AdminAttendanceChart = ({ data, openModal }) => {
   }, [students, sortedData]);
 
   return (
-    <Table
-      className="admin-attendance-chart"
-      columns={columns}
-      dataSource={dataSource}
-      pagination={false}
-      scroll={{ x: "max-content" }}
-      sticky
-    />
+    <>
+      <Table
+        className="admin-attendance-chart"
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+        scroll={{ x: "max-content" }}
+        sticky
+      />
+      <AbsentListModal
+        isVisible={isModalVisible}
+        onClose={closeModal}
+        date={selectedDate}
+        absentStudents={absentStudents}
+      />
+    </>
   );
 };
 

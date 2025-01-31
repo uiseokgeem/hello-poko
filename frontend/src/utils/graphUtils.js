@@ -88,6 +88,7 @@ export const getLineGraphOptions = () => ({
   },
   legend: {
     position: "top",
+    horizontalAlign: "left", // 왼쪽 정렬
   },
 });
 

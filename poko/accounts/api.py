@@ -58,9 +58,9 @@ class CustomLoginView(LoginView):
         # print("request.user.is_authenticated", request.user.is_authenticated)
 
         user = self.serializer.validated_data["user"]
-        tokens = generate_jwt_token(user, login_type="default")
+        # tokens = generate_jwt_token(user, login_type="default")
 
-        response.data["tokens"] = tokens
+        # response.data["tokens"] = tokens
         response.data["is_admin"] = user.is_staff  # 관리자인지 여부 추가
 
         # print("validated_data User Info:", user)  # 인증된 사용자 정보 출력
