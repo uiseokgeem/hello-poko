@@ -1,4 +1,6 @@
 from collections import defaultdict
+from datetime import datetime, timedelta, date  # date를 import
+
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -22,9 +24,6 @@ import pandas as pd
 
 # 선생님 정보 조회
 @method_decorator(csrf_exempt, name="dispatch")
-# Django의 기본 CSRF 보호를 비활성화
-#  CSRF 검사가 수행되지 않기 때문에 CSRF 토큰 없이 POST 요청을 보낼 수 있다.
-# 실제 배포환경에서는 삭제 후 기본 Django의 기본 CSRF 보호 기능을 그대로 사용한다.
 class TeachersViewSet(ViewSet):
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticated]
@@ -33,11 +32,18 @@ class TeachersViewSet(ViewSet):
     def list(self, request):
         user = request.user
         if user.is_authenticated:
-            teacher_name = user.full_name  # 로그인된 경우 사용자 이름 반환
-
+            teacher_name = user.full_name  # 로그인된 사용자 이름
+            teacher_id = user.id  # 로그인된 사용자 ID
         else:
-            teacher_name = "Failed Authentication"  # 로그인되지 않은 경우 처리
-        return Response({"teacher_name": teacher_name})
+            teacher_name = "Failed Authentication"
+            teacher_id = None  # 로그인되지 않은 경우 ID 없음
+
+        # print("API request.user, User Info:", request.user)  # 인증된 사용자 정보 출력
+        # print("API request.user.is_staff, is_staff:", request.user.is_staff)
+        # print("API request.user.is_authenticated", request.user.is_authenticated)
+
+        # 응답에 ID와 이름을 함께 반환
+        return Response({"id": teacher_id, "name": teacher_name})
 
     # 새친구 등록 시 모든 선생님들의 리스트 반환
     @action(detail=False, methods=["get"], url_path="all-teachers")
@@ -50,6 +56,21 @@ class TeachersViewSet(ViewSet):
 
 
 # 학생 목록 조회 및 생성, 특정 학생 정보 조회 및 수정
+def get_sundays_for_year(year, end_date=None):
+    """주어진 연도의 모든 일요일 리스트를 반환."""
+    first_day_of_year = date(year, 1, 1)  # `date`를 사용
+    # 해당 연도의 첫 번째 일요일 찾기
+    first_sunday = first_day_of_year + timedelta(days=(6 - first_day_of_year.weekday()))
+    sundays = []
+    current_sunday = first_sunday
+    while current_sunday.year == year:
+        if end_date and current_sunday > end_date:  # end_date와 비교
+            break
+        sundays.append(current_sunday)
+        current_sunday += timedelta(weeks=1)
+    return sundays
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class MembersViewSet(ModelViewSet):
     serializer_class = MemberSerializer
@@ -58,7 +79,6 @@ class MembersViewSet(ModelViewSet):
 
     # 로그인한 사용자의 반에 속한 학생만 필터링
     def get_queryset(self):
-        # user = "teacher1@example.com"
         user = self.request.user
         return Member.objects.filter(teacher__email=user)
 
@@ -69,14 +89,50 @@ class MembersViewSet(ModelViewSet):
             return FullMemberSerializer
         return super().get_serializer_class()
 
+    def create(self, request, *args, **kwargs):
+        student_data = request.data
+        nearest_sunday_str = student_data.pop("initial_attendance_date", None)
+
+        if nearest_sunday_str:
+            nearest_sunday = datetime.strptime(
+                nearest_sunday_str, "%Y-%m-%d"
+            ).date()  # `date` 타입으로 변환
+        else:
+            return Response(
+                {"error": "initial_attendance_date is required"}, status=400
+            )
+
+        # 학생 생성
+        serializer = self.get_serializer(data=student_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # Attendance 모델에 기본 출석 데이터 생성
+        member_instance = serializer.instance
+
+        # 해당 연도의 첫 일요일부터 nearest_sunday 이전의 모든 일요일 리스트 생성
+        year = nearest_sunday.year
+        sundays = get_sundays_for_year(year, end_date=nearest_sunday)
+
+        # Attendance에 기본 출석 데이터 저장
+        Attendance.objects.bulk_create(
+            [
+                Attendance(name=member_instance, attendance=False, date=sunday)
+                for sunday in sundays
+            ]
+        )
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
+
 
 # 단일 출석 데이터 목록 조회 및 생성
 # 데코레이터와 인증 충돌 확인, login api에서는 post 요청 정상 작동
 @method_decorator(csrf_exempt, name="dispatch")
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get_serializer_context(self):
         # context에 request 정보를 포함하여 Serializer에 전달

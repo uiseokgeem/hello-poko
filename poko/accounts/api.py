@@ -1,3 +1,4 @@
+from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -19,6 +20,8 @@ from rest_framework.permissions import AllowAny
 # 로그인
 from dj_rest_auth.views import LoginView
 from .serializers import CustomLoginSerializer
+from .CustomJWTCookieAuth import CustomJWTCookieAuthentication
+from .utils import generate_jwt_token
 
 # email test
 import logging
@@ -40,6 +43,30 @@ logger = logging.getLogger(__name__)
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLoginView(LoginView):
     serializer_class = CustomLoginSerializer
+    permission_classes = [AllowAny]  # 인증 불필요
+    authentication_classes = []
+
+    # 액세스 토큰 json 응답이 포함시킬지 결정 필요
+    # 리프래시는 httponly 설정으로 쿠키에 저장
+    # response.data.pop("access", None) 해당 코드 추가 고려
+    def post(self, request, *args, **kwargs):
+        # 기존 로그인 로직 실행
+        response = super().post(request, *args, **kwargs)
+        # 인증된 사용자 확인
+        # print("request.user, User Info:", request.user)  # 인증된 사용자 정보 출력
+        # print("request.user.is_staff, is_staff:", request.user.is_staff)
+        # print("request.user.is_authenticated", request.user.is_authenticated)
+
+        user = self.serializer.validated_data["user"]
+        # tokens = generate_jwt_token(user, login_type="default")
+
+        # response.data["tokens"] = tokens
+        response.data["is_admin"] = user.is_staff  # 관리자인지 여부 추가
+
+        # print("validated_data User Info:", user)  # 인증된 사용자 정보 출력
+        # print("validated_data is_staff:", user.is_staff)
+
+        return response  # 기존 응답 데이터 유지
 
 
 # @method_decorator(csrf_exempt, name="dispatch") : 개발 시에만 사용.

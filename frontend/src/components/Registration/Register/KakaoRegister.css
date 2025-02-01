@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    background-color: #f0f2f5;
+}
+
+.register-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    max-width: 360px;
+    margin: 50px auto;
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+.register-form {
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.register-form .ant-form-item {
+    margin-bottom: 20px;
+}
+
+.register-form .ant-btn {
+    height: 40px;
+    font-size: 16px;
+}

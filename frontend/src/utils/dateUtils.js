@@ -33,3 +33,19 @@ export const getNearestSunday = () => {
 //   // YYYY-MM-DD 형식으로 반환
 //   return sundayDate.toISOString().split("T")[0];
 // };
+
+/**
+ * 가장 가까운 일요일 기준으로 2주 전까지의 날짜를 반환합니다.
+ * @param {string} nearestSunday - 가장 가까운 일요일 ("YYYY-MM-DD" 형식)
+ * @returns {Array<string>} - 3개의 날짜 배열 (현재, 1주 전, 2주 전)
+ */
+export const getLastTwoWeeks = (nearestSunday) => {
+  const dates = [];
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(nearestSunday);
+    date.setDate(date.getDate() - i * 7); // 1주 간격으로 이전 날짜 계산
+    const formattedDate = date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+    dates.push(formattedDate);
+  }
+  return dates;
+};

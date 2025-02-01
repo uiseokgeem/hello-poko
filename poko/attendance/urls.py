@@ -14,11 +14,25 @@ app_name = "attendance"
 
 # DRF
 router = DefaultRouter()
-router.register(r"teachers", TeachersViewSet, basename="teachers")
-router.register(r"members", MembersViewSet, basename="member")
-router.register(r"attendance-records", AttendanceViewSet, basename="attendance-records")
 router.register(
-    r"attendance-stats", AttendanceStatsViewSet, basename="attendance-stats"
+    r"teachers",
+    TeachersViewSet,
+    basename="teachers",
+)
+router.register(
+    r"members",
+    MembersViewSet,
+    basename="member",
+)
+router.register(
+    r"attendance-records",
+    AttendanceViewSet,
+    basename="attendance-records",
+)
+router.register(
+    r"attendance-stats",
+    AttendanceStatsViewSet,
+    basename="attendance-stats",
 )
 
 urlpatterns = [

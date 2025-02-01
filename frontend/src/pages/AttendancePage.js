@@ -21,7 +21,6 @@ const { Content } = Layout;
 const { Option } = Select;
 
 const AttendancePage = () => {
-  // State Management
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -33,22 +32,32 @@ const AttendancePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
+  const [mode, setMode] = useState("attendance"); // 모드 상태 추가
 
-  // Fetch Data
+  // 데이터 새로고침 함수
+  const refreshData = async () => {
+    try {
+      const [stats, attendance, studentList] = await Promise.all([
+        fetchAttendanceStats(),
+        fetchAttendanceData(selectedYear),
+        fetchStudents(),
+      ]);
+      setAttendanceStats(stats || []);
+      setAttendanceData(attendance || []);
+      setStudents(studentList || []);
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      message.error("데이터 새로고침에 실패했습니다.");
+    }
+  };
+
+  // 컴포넌트 마운트 시 초기 데이터 로드
   useEffect(() => {
     fetchTeachers().then(setTeachers);
-    fetchStudents().then(setStudents);
-    fetchAttendanceData(selectedYear).then(setAttendanceData);
 
-    fetchAttendanceStats()
-      .then((data) => {
-        if (data) setAttendanceStats(data);
-        else console.error("Failed to fetch attendance stats");
-      })
-      .catch((error) => console.error("Error fetching attendance stats:", error));
+    refreshData();
   }, [selectedYear]);
-
-  // Handle Attendance Modal
+  // console.log(teachers)
   const handleCheck = (studentId) => {
     setCheckedStudents((prev) =>
       prev.includes(studentId)
@@ -67,15 +76,12 @@ const AttendancePage = () => {
       if (modalMode === "edit") {
         await patchAttendanceData(selectedDate, attendanceData);
       } else {
-        await postAttendanceData(nearestSunday, attendanceData);
+        await postAttendanceData(selectedDate || nearestSunday, attendanceData);
       }
-
-      const updatedAttendanceData = await fetchAttendanceData(selectedYear);
-      setAttendanceData(updatedAttendanceData);
       message.success("출석 데이터가 성공적으로 저장되었습니다!");
+      refreshData(); // 데이터 새로고침
     } catch (error) {
       console.error("Error posting attendance data:", error);
-
       if (error.response?.data?.detail) {
         Modal.error({
           title: "출석 데이터 중복",
@@ -109,15 +115,14 @@ const AttendancePage = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // Handle Student Modal
   const openStudentModal = () => setIsStudentModalOpen(true);
   const closeStudentModal = () => setIsStudentModalOpen(false);
 
   const addStudent = async (studentData) => {
     try {
-      const newStudent = await createStudent(studentData);
-      setStudents((prev) => [...prev, newStudent]);
+      await createStudent(studentData);
       message.success("학생이 성공적으로 추가되었습니다!");
+      refreshData(); // 데이터 새로고침
       closeStudentModal();
     } catch (error) {
       console.error("Error adding student:", error);
@@ -129,19 +134,19 @@ const AttendancePage = () => {
     <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       <AppHeader />
       <Content className="page-container">
-        <h1>출석부</h1>
+        <h1 className="page-title">출석부</h1>
         <TeacherInfo
-          teacherName={teachers?.teacher_name || "Unknown"}
-          className="보류"
+          teacherName={teachers?.name || "Unknown"}
+          className="미정"
           attendanceRate={attendanceStats?.result_stats || []}
         />
-        <div className="header-section">
+        <div className="attendance-header-section">
           <Select
             defaultValue={selectedYear}
             onChange={(value) => setSelectedYear(value)}
             className="year-select"
           >
-            {[2022, 2023, 2024].map((year) => (
+            {[2022, 2023, 2024, 2025].map((year) => (
               <Option key={year} value={year}>
                 {year}
               </Option>
@@ -160,7 +165,7 @@ const AttendancePage = () => {
               onClick={openStudentModal}
               className="add-student-button"
             >
-             + 새친구 등록
+              + 새친구 등록
             </Button>
           </div>
         </div>
@@ -179,6 +184,7 @@ const AttendancePage = () => {
           handleCheck={handleCheck}
           handleSubmit={handleSubmit}
           selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
           nearestSunday={nearestSunday}
           mode={modalMode}
         />
@@ -186,7 +192,8 @@ const AttendancePage = () => {
           isOpen={isStudentModalOpen}
           onClose={closeStudentModal}
           addStudent={addStudent}
-          teachers={teachers} // teachers 데이터를 전달
+          teachers={[teachers]}
+          mode="attendance" // attendance 모드로 설정
         />
       </Content>
     </Layout>
@@ -194,3 +201,35 @@ const AttendancePage = () => {
 };
 
 export default AttendancePage;
+
+
+
+// 등록날짜 고정 시 handleSubmit 코드
+// const handleSubmit = async () => {
+//   const attendanceData = students.map((student) => ({
+//     id: student.id,
+//     attendance: checkedStudents.includes(student.id),
+//   }));
+
+//   try {
+//     if (modalMode === "edit") {
+//       await patchAttendanceData(selectedDate, attendanceData);
+//     } else {
+//       await postAttendanceData(nearestSunday, attendanceData);
+//     }
+
+//     const updatedAttendanceData = await fetchAttendanceData(selectedYear);
+//     setAttendanceData(updatedAttendanceData);
+//     message.success("출석 데이터가 성공적으로 저장되었습니다!");
+//   } catch (error) {
+//     console.error("Error posting attendance data:", error);
+
+//     if (error.response?.data?.detail) {
+//       Modal.error({
+//         title: "출석 데이터 중복",
+//         content: error.response.data.detail,
+//       });
+//     }
+//   }
+//   setIsModalOpen(false);
+// };

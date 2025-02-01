@@ -1,38 +1,40 @@
 .page-container {
   padding: 40px 20px; /* 상단과 하단 여백을 40px로 설정 */
-  background-color: #fff;
+  background-color: #fff; /* 배경색 흰색 */
   margin: 0 auto; /* 외부 여백 제거 및 중앙 정렬 */
   max-width: 1200px; /* 페이지의 최대 너비를 제한 */
-  min-height: 100vh;
+  min-height: 100vh; /* 최소 높이를 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 요소 크기에 포함 */
 }
 
-.header-section {
+.attendance-header-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: space-between; /* 버튼과 드롭다운 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  margin-bottom: 20px; /* 하단 여백 */
+  width: 100%; /* 전체 너비 설정 */
 }
 
-.year-select {
-  width: 120px;
-}
-
-.new-attendance-button {
-  margin-left: 20px;
-}
-
-.add-student-button {
-  margin-left: 10px; /* 새 출석부 버튼과 학생 추가 버튼 간격 */
+.attendance-year-select {
+  width: 120px; /* 연도 선택 드롭다운 너비 */
 }
 
 .attendance-buttons {
   display: flex;
-  gap: 10px; /* 버튼 간격 조정을 위해 gap 사용 */
+  gap: 10px; /* 버튼 간격 */
+  justify-content: flex-end; /* 버튼들을 오른쪽 정렬 */
+}
+
+.new-attendance-button {
+  margin-left: 0; /* 개별 마진 제거 */
+}
+
+.add-student-button {
+  margin-left: 0; /* 개별 마진 제거 */
 }
 
 .attendance-chart-container {
-  margin-top: 30px; /* 차트와 버튼 섹션 간의 간격 */
+  margin-top: 30px; /* 차트와 버튼 섹션 간격 */
 }
 
 /* 전역 button 스타일 방지 */

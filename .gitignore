@@ -9,6 +9,7 @@ env
 .env.development
 .env.production
 .env.local
+.env.kakao
 letsencrypt.sh
 backup
 backup.sh
