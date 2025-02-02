@@ -60,6 +60,7 @@ const AbsentListModal = ({ isVisible, onClose, date, absentStudents }) => {
           pagination={false}
           className="absent-table"
           rowKey="id"
+          scroll={{ y: 500 }} // 세로 스크롤을 300px로 설정
         />
         <div className="modal-footer">
           <Button
