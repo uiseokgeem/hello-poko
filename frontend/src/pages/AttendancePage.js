@@ -160,13 +160,13 @@ const AttendancePage = () => {
             >
               + 새 출석부
             </Button>
-            <Button
+            {/* <Button
               type="default"
               onClick={openStudentModal}
               className="add-student-button"
             >
               + 새친구 등록
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="attendance-chart-container">

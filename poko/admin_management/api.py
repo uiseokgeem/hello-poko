@@ -189,6 +189,6 @@ class WeeklyListView(ListAPIView):
                 "date", flat=True
             ).distinct()
 
-        sorted_dates = sorted(attendance_dates)
+        sorted_dates = sorted(attendance_dates, reverse=True)
 
         return Response(sorted_dates)
