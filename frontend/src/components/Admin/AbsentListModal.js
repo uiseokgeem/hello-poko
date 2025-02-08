@@ -45,13 +45,13 @@ const AbsentListModal = ({ isVisible, onClose, date, absentStudents }) => {
                 onClick={() => saveAsText(absentStudents, date)}
                 title="텍스트 저장"
             />
-            <CameraOutlined
+            {/* <CameraOutlined
                 className="icon-button"
                 onClick={() =>
                 saveAsImage(".modal-container", [".modal-footer button", ".icon-group"])
                 }
                 title="이미지 저장"
-            />
+            /> */}
           </div>
         </div>
         <Table
@@ -60,6 +60,7 @@ const AbsentListModal = ({ isVisible, onClose, date, absentStudents }) => {
           pagination={false}
           className="absent-table"
           rowKey="id"
+          scroll={{ y: 300 }} // 세로 스크롤을 300px로 설정
         />
         <div className="modal-footer">
           <Button
