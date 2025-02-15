@@ -20,6 +20,7 @@ from .serializers import (
     BulkAttendanceSerializer,
 )
 import pandas as pd
+from .utils import filter_by_year
 
 
 # 선생님 정보 조회
@@ -80,7 +81,12 @@ class MembersViewSet(ModelViewSet):
     # 로그인한 사용자의 반에 속한 학생만 필터링
     def get_queryset(self):
         user = self.request.user
-        return Member.objects.filter(teacher__email=user)
+
+        # 정교사-부교사 확인
+        if user.role == "HEAD":
+            return Member.objects.filter(teacher__email=user)
+        else:
+            return Member.objects.filter(teacher__email=user.head_teacher)
 
     def get_serializer_class(self):
         if self.action in ["list", "retrieve"]:
@@ -134,18 +140,23 @@ class AttendanceViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
+    # context에 request 정보를 포함하여 Serializer에 전달
     def get_serializer_context(self):
-        # context에 request 정보를 포함하여 Serializer에 전달
         return {"request": self.request}
 
     def get_queryset(self):
-        # user = "token@toen.com"
         user = self.request.user
-        queryset = Attendance.objects.filter(name__teacher__email=user)
-        year = self.request.query_params.get("year", None)
-        if year is not None:
-            queryset = queryset.filter(date__year=year)
-        return queryset
+        user_email = (
+            user.email
+            if user.role == "HEAD"
+            else (user.head_teacher.email if user.head_teacher else None)
+        )
+
+        if user_email is None:
+            return Attendance.objects.none()
+
+        queryset = Attendance.objects.filter(name__teacher__email=user_email)
+        return filter_by_year(queryset, self.request)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -196,7 +207,13 @@ class AttendanceStatsViewSet(ViewSet):
 
     def list(self, request, *args, **kwargs):
         user = self.request.user
-        queryset = Attendance.objects.filter(name__teacher__email=user).values(
+        user_email = (
+            user.email
+            if user.role == "HEAD"
+            else (user.head_teacher.email if user.head_teacher else None)
+        )
+
+        queryset = Attendance.objects.filter(name__teacher__email=user_email).values(
             "date",
             "attendance",
             "name_id",
