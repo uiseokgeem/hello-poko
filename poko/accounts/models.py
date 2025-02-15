@@ -36,9 +36,10 @@ class CustomUser(AbstractUser):
         #     print(assistant.full_name)  # 출력: 이부교1, 박부교2
         limit_choices_to={"role": "HEAD"},
         # 제한 조건: {"role": "HEAD"}
-        # role 필드의 값이 "HEAD"(정교사)인 객체만 선택 가능.
+        # role 필드의 값이 "HEAD"(정교사)인 객체만 선택하여 head_teacher 필드에 저장할 수 있다.
+        # admin의 select 에서도 head_teacher 값이 "정교사"인 계정만 출력된다.
         # 즉, role 필드가 "ASSISTANT"(부교사)인 객체는 선택할 수 없습니다.
-        # 부교사를 정교사로 설정하는 실수를 방지.
+        # 부교사를 정교사로 설정하는 실수를 방지하기 위해 사용.
     )
 
     def __str__(self):

@@ -52,19 +52,16 @@ class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         # 기존 로그인 로직 실행
         response = super().post(request, *args, **kwargs)
-        # 인증된 사용자 확인
-        # print("request.user, User Info:", request.user)  # 인증된 사용자 정보 출력
-        # print("request.user.is_staff, is_staff:", request.user.is_staff)
-        # print("request.user.is_authenticated", request.user.is_authenticated)
-
+        # 로그인 시점에는 인증된 상태가 아니기때문에
+        # 검증이 끝난 validated_data를 통해서 user정보를 가져온다.
+        # user에 대한 인증 정보 확인이 가능하다
+        # 이후에는 request.user 객체를 통해 인증 정보 확인이 가능하다.
         user = self.serializer.validated_data["user"]
-        # tokens = generate_jwt_token(user, login_type="default")
 
-        # response.data["tokens"] = tokens
-        response.data["is_admin"] = user.is_staff  # 관리자인지 여부 추가
-
-        # print("validated_data User Info:", user)  # 인증된 사용자 정보 출력
-        # print("validated_data is_staff:", user.is_staff)
+        response.data["is_active"] = user.is_active  # 미승인 일반유저 권한
+        response.data["is_superuser"] = user.is_superuser  # 승인 관리자 권한
+        response.data["is_staff"] = user.is_staff  # 승인 일반유저 권한
+        response.data["role"] = user.role
 
         return response  # 기존 응답 데이터 유지
 
