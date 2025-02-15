@@ -18,6 +18,8 @@ class CustomUserAdmin(UserAdmin):
         "id",
         "kakao_id",
         "email",
+        "role",
+        "head_teacher",
         "full_name",
         "is_staff",
         "is_active",
@@ -29,6 +31,15 @@ class CustomUserAdmin(UserAdmin):
         (
             "Personal info",
             {"fields": ("full_name", "birth_date", "registration_number")},
+        ),
+        (
+            "Role",
+            {
+                "fields": (
+                    "role",
+                    "head_teacher",
+                )
+            },
         ),
         (
             "Permissions",
