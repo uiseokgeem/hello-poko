@@ -77,13 +77,13 @@ const AttendanceChart = ({ data, students, openModal }) => {
           </span>
       ),
     })),
-    {
-      title: '정보',
-      key: 'info',
-      fixed: 'right',
-      width: 100,
-      render: () => <a href="#">보기</a>,
-    }
+    // {
+    //   title: '정보',
+    //   key: 'info',
+    //   fixed: 'right',
+    //   width: 100,
+    //   render: () => <a href="#">보기</a>,
+    // }
   ], [sortedData, openModal]);
 
   const dataSource = useMemo(() => {
