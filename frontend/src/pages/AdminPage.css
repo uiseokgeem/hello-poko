@@ -16,6 +16,7 @@
   align-items: center;
   width: 100%;
   margin-top: 16px;
+  margin-bottom: 24px; /* ✅ 버튼과 차트 사이의 간격 조정 */
 }
 
 .tabs-section {

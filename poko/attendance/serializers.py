@@ -64,20 +64,12 @@ class BulkAttendanceSerializer(serializers.Serializer):
         attendance_list = validated_data.get("attendance")
 
         # context를 통해 요청한 사용자 정보 가져오기
-        user = self.context["request"].user
+        queryset = self.context["queryset"]
 
-        if user.role == "HEAD":
-            if Attendance.objects.filter(name__teacher=user, date=date).exists():
-                raise serializers.ValidationError(
-                    {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
-                )
-        else:
-            if Attendance.objects.filter(
-                name__teacher=user.head_teacher, date=date
-            ).exists():
-                raise serializers.ValidationError(
-                    {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
-                )
+        if queryset.filter(date=date).exists():
+            raise serializers.ValidationError(
+                {"detail": f"이미 {date}의 출석 데이터가 저장되어있습니다."},
+            )
 
         for attendance_data in attendance_list:
             member_id = attendance_data.get("id")

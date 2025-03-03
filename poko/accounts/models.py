@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
     birth_date = models.DateField(null=True, blank=True)
     registration_number = models.CharField(max_length=6, null=True, blank=True)
     kakao_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
-
+    class_name = models.CharField(max_length=8, null=True, blank=True)
     ROLE_CHOICES = (
         ("HEAD", "정교사"),
         ("ASSISTANT", "부교사"),

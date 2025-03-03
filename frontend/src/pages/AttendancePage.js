@@ -137,7 +137,7 @@ const AttendancePage = () => {
         <h1 className="page-title">출석부</h1>
         <TeacherInfo
           teacherName={teachers?.name || "Unknown"}
-          className="미정"
+          className={teachers?.class || "Unknown"}
           attendanceRate={attendanceStats?.result_stats || []}
         />
         <div className="attendance-header-section">

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Button, Select, message, Radio } from "antd";
 import { fetchAllTeachers,
-          fetchTeachers,
  } from "../../api/attendanceApi";
 import "./CreateStudentModal.css";
 import { getNearestSunday } from "../../utils/dateUtils";
+import { createStudent } from "../../api/attendanceApi";
 
 const { Option } = Select;
 
-const CreateStudentModal = ({ isOpen, onClose, addStudent, mode, teachers }) => {
+const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [allTeachers, setAllTeachers] = useState([]);
@@ -44,21 +44,20 @@ const CreateStudentModal = ({ isOpen, onClose, addStudent, mode, teachers }) => 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      const nearestSunday = getNearestSunday(); // 가장 가까운 일요일 계산
-
-      // Student 데이터 생성
       const studentData = {
         ...values,
         attendance_count: 0,
         absent_count: 0,
-        initial_attendance_date: nearestSunday,
-        teacher: mode === "attendance" ? allTeachers[0]?.id : values.teacher, // Attendance 모드에서는 고정된 teacher ID 사용
+        initial_attendance_date: getNearestSunday(),
+        teacher: mode === "attendance" ? allTeachers[0]?.id : values.teacher,
       };
 
       setLoading(true);
-      await addStudent(studentData);
+      await createStudent(studentData);
+      message.success("학생이 성공적으로 추가되었습니다!");
       form.resetFields();
       onClose();
+      onStudentAdded && onStudentAdded();
     } catch (error) {
       message.error("학생 추가 중 오류가 발생했습니다.");
     } finally {

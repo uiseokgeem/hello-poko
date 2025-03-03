@@ -18,6 +18,7 @@ class CustomUserAdmin(UserAdmin):
         "id",
         "kakao_id",
         "email",
+        "class_name",
         "role",
         "head_teacher",
         "full_name",
@@ -36,6 +37,7 @@ class CustomUserAdmin(UserAdmin):
             "Role",
             {
                 "fields": (
+                    "class_name",
                     "role",
                     "head_teacher",
                 )

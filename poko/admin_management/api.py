@@ -70,12 +70,12 @@ class GroupAttendanceViewSet(ModelViewSet):
             # 요청된 날짜를 필터링
             attendance_data = (
                 Attendance.objects.filter(date=week)  # 요청된 날짜 필터링
-                .values("name__grade")  # 학년 기준 그룹화
+                .values("name__teacher__class_name")  # class_name 별 분류
                 .annotate(
                     attendance_count=Count("id", filter=Q(attendance=True)),  # 출석 수
                     absent_count=Count("id", filter=Q(attendance=False)),  # 결석 수
                 )
-                .order_by("name__grade")  # 학년 기준 정렬
+                .order_by("name__teacher__class_name")  # 학년 기준 정렬
             )
 
             return Response(attendance_data)  # 결과 반환
@@ -114,21 +114,6 @@ class MemberAttendanceViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
-        # Print the raw queryset for debugging
-        # print("Queryset before grouping:")
-        # for record in queryset:
-        #     print(
-        #         {
-        #             "id": record.id,
-        #             "name_id": record.name.id,
-        #             "name": record.name.name,
-        #             "grade": record.name.grade,
-        #             "gender": record.name.gender,
-        #             "date": record.date,
-        #             "attendance": record.attendance,
-        #         }
-        #     )
-
         # 데이터를 날짜별로 그룹화
         attendance_data = defaultdict(list)
 
@@ -166,10 +151,6 @@ class MemberAttendanceViewSet(ModelViewSet):
             ],
             "students": students,
         }
-
-        # Print the final response data for debugging
-        # print("Response Data:")
-        # print(response_data)
 
         return Response(response_data)
 
