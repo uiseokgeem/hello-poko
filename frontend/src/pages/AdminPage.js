@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Typography, Tabs } from "antd";
-import AppHeader from "../components/Header/Header";
+import AdminAppHeader from "../components/Admin/AdminHeader";
 import WeeklyAttendanceTab from "../components/Admin/WeeklyAttendanceTab";
 import GroupAttendanceTab from "../components/Admin/GroupAttendanceTab";
 import StudentAttendanceTab from "../components/Admin/StudentAttendanceTab";
 import CreateStudentModal from "../components/Attendance/CreateStudentModal";
-import useWeeklyAttendance from "../hooks/admin/useWeeklyAttendance"; // ✅ 주간 출석 훅
-import useGroupAttendance from "../hooks/admin/useGroupAttendance"; // ✅ 반별 출석 훅
+import useWeeklyAttendance from "../hooks/admin/useWeeklyAttendance"; 
+import useGroupAttendance from "../hooks/admin/useGroupAttendance"; 
 import "./AdminPage.css";
 
 const { Content } = Layout;
@@ -34,7 +34,7 @@ const AdminPage = () => {
 
   return (
     <Layout style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
-    <AppHeader />
+    <AdminAppHeader />
     <Content className="admin-content">
       <div className="header-section">
         <Title level={2}>출석부</Title>
@@ -44,7 +44,7 @@ const AdminPage = () => {
               weeklyAttendanceData={weeklyAttendanceData}
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
-              loading={weeklyLoading} // ✅ 수정
+              loading={weeklyLoading}
               openStudentModal={openStudentModal}
             />
           </TabPane>
@@ -54,14 +54,14 @@ const AdminPage = () => {
               selectedWeek={selectedWeek}
               setSelectedWeek={setSelectedWeek}
               weekOptions={weekOptions}
-              loading={groupLoading} // ✅ 수정
+              loading={groupLoading}
               openStudentModal={openStudentModal}
             />
           </TabPane>
           <TabPane tab="학생별 출결" key="3">
             <StudentAttendanceTab
               memberAttendanceData={memberAttendanceData}
-              loading={weeklyLoading} // ✅ 수정
+              loading={weeklyLoading}
               openStudentModal={openStudentModal}
             />
           </TabPane>
