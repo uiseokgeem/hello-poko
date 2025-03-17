@@ -1,0 +1,25 @@
+.teachers-table-container { 
+  width: 100%;
+  max-width: 1228px; 
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 0 auto; 
+}
+
+/* 테이블 스타일 */
+.teachers-table .ant-table {
+  width: 100%;
+}
+
+/* 테이블 헤더 스타일 */
+.teachers-table .ant-table-thead > tr > th {
+  background: #f8f9fa;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 테이블 행 정렬 */
+.teachers-table .ant-table-tbody > tr > td {
+  text-align: center;
+}

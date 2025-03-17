@@ -1,22 +1,71 @@
 from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
+from docutils.nodes import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
+from accounts.models import CustomUser
 from attendance.models import Attendance, Member
+from . import serializer
 from .serializer import (
     WeeklyAttendanceSerializer,
     GroupAttendanceSerializer,
     MemberAttendanceSerializer,
+    TeacherSerializer,
 )
 
 from django.db.models import Count, Q, Prefetch
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
+
+
+class AdminTeacherViewSet(ViewSet):
+    # list
+    def list(self, request):
+        teachers = CustomUser.objects.all()
+        serializer = TeacherSerializer(teachers, many=True)
+        return Response(serializer.data)
+
+    # partial_update
+    def partial_update(self, request, pk=None):
+        teacher = get_object_or_404(CustomUser, pk=pk)
+        serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+
+        # 현재 role과 request.data의 role이 같은 다른 경우
+        if teacher.role != request.data.role:
+            # 1. 정교사에서 부교사로 변경 되는 경우
+            # - 역참조를 통해 정교사를 참조하는 부교사 객체를 호출
+            # - 부교사의 head_teacher필드를 null로 수정
+            if teacher.role == "HEAD":
+                assistants = teacher.assistants.all()
+                # assistants.update(role=None)
+                assistants.role = "null"
+
+                teacher.role = "ASSISTANT"
+
+            # 2. 부교사에서 졍교사로 변경되는 경우
+            # - role 필드를 정교사로 수정
+            if teacher.role == "ASSISTANT":
+                teacher.role = request.data.role
+
+        # 현재 role과 request.data의 role이 같은 경우
+        # - 로직 추가될 필요 없음
+        pass
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # destroy
+    def destroy(self, request, pk=None):
+        teacher = get_object_or_404(CustomUser, pk=pk)
+        teacher.delete()
+        return Response({"message": "삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class WeeklyAttendanceViewSet(ModelViewSet):

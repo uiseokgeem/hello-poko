@@ -12,7 +12,7 @@ const LoginPage = () => {
 
             // is_admin 값에 따라 리다이렉트
             if (response.is_superuser) {
-                navigate('/admin-page'); // 관리자 페이지로 리다이렉트
+                navigate('/admin'); // 관리자 페이지로 리다이렉트
             } else {
                 navigate('/attendance'); // 일반 사용자 페이지로 리다이렉트
             }

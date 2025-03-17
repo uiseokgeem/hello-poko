@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Typography, Tabs } from "antd";
-import AdminAppHeader from "../components/Admin/AdminHeader";
-import WeeklyAttendanceTab from "../components/Admin/WeeklyAttendanceTab";
-import GroupAttendanceTab from "../components/Admin/GroupAttendanceTab";
-import StudentAttendanceTab from "../components/Admin/StudentAttendanceTab";
-import CreateStudentModal from "../components/Attendance/CreateStudentModal";
-import useWeeklyAttendance from "../hooks/admin/useWeeklyAttendance"; 
-import useGroupAttendance from "../hooks/admin/useGroupAttendance"; 
+import AdminAppHeader from "../../components/Admin/AdminHeader";
+import WeeklyAttendanceTab from "../../components/Admin/WeeklyAttendanceTab";
+import GroupAttendanceTab from "../../components/Admin/GroupAttendanceTab";
+import StudentAttendanceTab from "../../components/Admin/StudentAttendanceTab";
+import CreateStudentModal from "../../components/Attendance/CreateStudentModal";
+import useWeeklyAttendance from "../../hooks/admin/useWeeklyAttendance"; 
+import useGroupAttendance from "../../hooks/admin/useGroupAttendance"; 
 import "./AdminPage.css";
 
 const { Content } = Layout;
