@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
-from docutils.nodes import status
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, get_object_or_404
@@ -34,27 +34,6 @@ class AdminTeacherViewSet(ViewSet):
     def partial_update(self, request, pk=None):
         teacher = get_object_or_404(CustomUser, pk=pk)
         serializer = TeacherSerializer(teacher, data=request.data, partial=True)
-
-        # 현재 role과 request.data의 role이 같은 다른 경우
-        if teacher.role != request.data.role:
-            # 1. 정교사에서 부교사로 변경 되는 경우
-            # - 역참조를 통해 정교사를 참조하는 부교사 객체를 호출
-            # - 부교사의 head_teacher필드를 null로 수정
-            if teacher.role == "HEAD":
-                assistants = teacher.assistants.all()
-                # assistants.update(role=None)
-                assistants.role = "null"
-
-                teacher.role = "ASSISTANT"
-
-            # 2. 부교사에서 졍교사로 변경되는 경우
-            # - role 필드를 정교사로 수정
-            if teacher.role == "ASSISTANT":
-                teacher.role = request.data.role
-
-        # 현재 role과 request.data의 role이 같은 경우
-        # - 로직 추가될 필요 없음
-        pass
 
         if serializer.is_valid():
             serializer.save()

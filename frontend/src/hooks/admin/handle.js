@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteTeacher, updateTeacherPartial } from "../../api/adminApi";
+import { deleteTeacher, updateTeacherPartial, registerTeacher } from "../../api/adminApi";
 
 // 수정 버튼 클릭 시 모달 열기 및 닫기
 export const useHandleEdit = () => {
@@ -38,18 +38,40 @@ export const useHandleUpdate = (loadTeacherList, handleCloseModal) => {
 };
 
 // ✅ 등록 모달 핸들링 추가
-export const useHandleRegister = () => {
+export const useHandleRegister = (loadTeacherList) => {
     const [registerModalVisible, setRegisterModalVisible] = useState(false);
+    const [registeringTeacher, setRegisteringTeacher] = useState(null);
 
-    const handleRegister = () => {
+    const handleRegister = (teacher) => {
+        setRegisteringTeacher(teacher);
         setRegisterModalVisible(true);
     };
 
     const handleCloseRegisterModal = () => {
         setRegisterModalVisible(false);
+        setRegisteringTeacher(null);
     };
 
-    return { registerModalVisible, handleRegister, handleCloseRegisterModal };
+    const submitRegister = async (formData) => {
+        try {
+            await registerTeacher(registeringTeacher.id, {
+                ...formData,
+                reference_teacher: registeringTeacher.id, // 핵심
+            });
+            await loadTeacherList(); // 테이블 갱신
+            handleCloseRegisterModal(); // 모달 닫기
+        } catch (error) {
+            console.error("등록 실패:", error);
+        }
+    };
+
+    return {
+        registerModalVisible,
+        registeringTeacher,
+        handleRegister,
+        handleCloseRegisterModal,
+        submitRegister,
+    };
 };
 
 // 삭제 핸들링 커스텀 훅

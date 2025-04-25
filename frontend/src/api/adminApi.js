@@ -73,13 +73,14 @@ export const deleteTeacher = async (teacherId) => {
   }
 };
 
-// 특정 선생님 부분 업데이트하는 API
+// HEAD 선생님 부분 수정 API
 export const updateTeacherPartial = async (teacherId, updateData) => {
   try {
     const response = await axiosInstance.patch(
-      `admin-management/teachers/${teacherId}`,
+      `admin-management/teachers/${teacherId}/`,
       updateData
     );
+    console.log("수정 api 작동");
     return response.data;
   } catch (error) {
     console.error(`선생님 정보 수정 중 오류 발생 (ID: ${teacherId}):`, error);
@@ -87,4 +88,30 @@ export const updateTeacherPartial = async (teacherId, updateData) => {
   }
 };
 
+// ASSISTANT 선생님 등록 API
+export const registerTeacher = async (teacherId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `admin-management/teachers/${teacherId}/`,
+      formData
+    );
+    console.log("등록 api 작동");
+    return response.data;
+  } catch (error) {
+    console.error(`선생님 정보 등록 중 오류 발생 (ID: ${teacherId}):`, error);
+    throw error;
+  }
+};
 
+// API로 모든 HEAD 선생님 리스트를 불러오는 fetch 함수 추가
+export const fetchHeadTeachers = async () => {
+  try {
+    const response = await axiosInstance.get("admin-management/teachers", {
+      params: { role: "HEAD" }, // 필터링 가능하도록 백엔드 구현 필요
+    });
+    return response.data;
+  } catch (error) {
+    console.error("HEAD 선생님 목록 오류:", error);
+    return [];
+  }
+};

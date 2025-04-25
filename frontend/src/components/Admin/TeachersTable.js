@@ -32,7 +32,7 @@ const TeachersTable = () => {
     const handleUpdate = useHandleUpdate(loadTeacherList, handleCloseModal);
 
     // 새롭게 추가된 등록 핸들링
-    const { registerModalVisible, handleRegister, handleCloseRegisterModal } = useHandleRegister();
+    const { registerModalVisible, handleRegister, handleCloseRegisterModal, submitRegister } = useHandleRegister(loadTeacherList);
 
 
     const columns = [
@@ -99,6 +99,7 @@ const TeachersTable = () => {
                 onClose={modalVisible ? handleCloseModal : handleCloseRegisterModal} 
                 teacher={selectedTeacher}
                 onUpdate={handleUpdate} 
+                onRegister={submitRegister}
                 onDelete={showDeleteModal}
                 isRegisterMode={registerModalVisible}
             />
