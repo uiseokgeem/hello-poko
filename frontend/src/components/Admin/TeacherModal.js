@@ -30,13 +30,13 @@ const TeacherModal = ({
             form.setFieldsValue({
                 role: teacher.role || "ASSISTANT",
                 class_name: teacher.class_name || "",
-                reference_teacher: "",
+                head_teacher: "",
             });
         } else {
             form.setFieldsValue({
                 role: "ASSISTANT",
                 class_name: "",
-                reference_teacher: "",
+                head_teacher: "",
             });
         }
     }, [teacher, form, visible]);
@@ -47,7 +47,7 @@ const TeacherModal = ({
             const values = await form.validateFields();
     
             if (values.role === "ASSISTANT") {
-                const reference = headOptions.find(t => t.id === values.reference_teacher);
+                const reference = headOptions.find(t => t.id === values.head_teacher);
                 values.class_name = reference ? reference.class_name : null;
             }
     
@@ -101,7 +101,7 @@ const TeacherModal = ({
                 {/* 참조 선생님 */}
                 {role === "ASSISTANT" && (
                     <Form.Item
-                        name="reference_teacher"
+                        name="head_teacher"
                         label="참조 선생님"
                         rules={[{ required: false, message: "참조 선생님을 선택하세요." }]}
                     >

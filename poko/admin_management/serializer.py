@@ -34,4 +34,11 @@ class MemberAttendanceSerializer(serializers.ModelSerializer):
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["id", "full_name", "email", "class_name", "role"]
+        fields = [
+            "id",
+            "full_name",
+            "email",
+            "class_name",
+            "head_teacher",
+            "role",
+        ]

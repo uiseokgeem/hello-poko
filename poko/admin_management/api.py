@@ -2,15 +2,12 @@ from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 from rest_framework import status
-from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 
 from accounts.models import CustomUser
 from attendance.models import Attendance, Member
-from . import serializer
 from .serializer import (
     WeeklyAttendanceSerializer,
     GroupAttendanceSerializer,
@@ -19,6 +16,7 @@ from .serializer import (
 )
 
 from django.db.models import Count, Q, Prefetch
+from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
@@ -36,6 +34,16 @@ class AdminTeacherViewSet(ViewSet):
         serializer = TeacherSerializer(teacher, data=request.data, partial=True)
 
         if serializer.is_valid():
+            with transaction.atomic():
+                if teacher.role == "HEAD" and request.data.get("role") == "ASSISTANT":
+                    CustomUser.objects.filter(head_teacher=teacher).update(
+                        head_teacher=None,
+                        class_name=None,
+                    )
+
+            if teacher.role == "ASSISTANT" and request.data.get("role") == "HEAD":
+                pass
+
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -25,7 +25,7 @@ export const useHandleUpdate = (loadTeacherList, handleCloseModal) => {
         try {
             console.log("업데이트 버튼 클릭 - ID:", updatedTeacher.id);
             const response = await updateTeacherPartial(updatedTeacher.id, updatedTeacher);
-    
+
             console.log("업데이트 성공!", response);
             loadTeacherList(); 
             handleCloseModal();
