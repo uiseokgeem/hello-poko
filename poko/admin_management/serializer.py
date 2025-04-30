@@ -42,3 +42,15 @@ class TeacherSerializer(serializers.ModelSerializer):
             "head_teacher",
             "role",
         ]
+
+
+class HeadsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "full_name",
+            "class_name",
+            "head_teacher",
+            "role",
+        ]

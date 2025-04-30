@@ -13,6 +13,7 @@ from .serializer import (
     GroupAttendanceSerializer,
     MemberAttendanceSerializer,
     TeacherSerializer,
+    HeadsSerializer,
 )
 
 from django.db.models import Count, Q, Prefetch
@@ -28,6 +29,13 @@ class AdminTeacherViewSet(ViewSet):
         serializer = TeacherSerializer(teachers, many=True)
         return Response(serializer.data)
 
+    # head filter
+    @action(detail=False, methods=["get"])
+    def heads(self, request):
+        heads = CustomUser.objects.filter(role="HEAD")
+        serializer = HeadsSerializer(heads, many=True)
+        return Response(serializer.data)
+
     # partial_update
     def partial_update(self, request, pk=None):
         teacher = get_object_or_404(CustomUser, pk=pk)
@@ -41,8 +49,8 @@ class AdminTeacherViewSet(ViewSet):
                         class_name=None,
                     )
 
-            if teacher.role == "ASSISTANT" and request.data.get("role") == "HEAD":
-                pass
+                elif teacher.role == "ASSISTANT" and request.data.get("role") == "HEAD":
+                    teacher.head_teacher = None
 
             serializer.save()
             return Response(serializer.data)
