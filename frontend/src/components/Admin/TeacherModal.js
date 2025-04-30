@@ -20,7 +20,10 @@ const TeacherModal = ({
 
     useEffect(() => {
         if (visible && role === "ASSISTANT") {
-            fetchHeadTeachers().then(data => setHeadOptions(data));
+            fetchHeadTeachers().then(data => {
+                console.log("불러온 정교사 목록:", data);
+                setHeadOptions(data);
+            });
         }
     }, [visible, role]);
 

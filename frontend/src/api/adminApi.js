@@ -106,8 +106,7 @@ export const registerTeacher = async (teacherId, formData) => {
 // API로 모든 HEAD 선생님 리스트를 불러오는 fetch 함수 추가
 export const fetchHeadTeachers = async () => {
   try {
-    const response = await axiosInstance.get("admin-management/teachers", {
-      params: { role: "HEAD" }, // 필터링 가능하도록 백엔드 구현 필요
+    const response = await axiosInstance.get("admin-management/teachers/heads/", {
     });
     return response.data;
   } catch (error) {
