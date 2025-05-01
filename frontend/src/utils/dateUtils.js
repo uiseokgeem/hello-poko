@@ -49,3 +49,12 @@ export const getLastTwoWeeks = (nearestSunday) => {
   }
   return dates;
 };
+
+export const getYearOptions = (range = 2) => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i < range; i++) {
+    years.push(String(currentYear - i));
+  }
+  return years;
+};

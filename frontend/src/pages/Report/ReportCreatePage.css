@@ -1,0 +1,11 @@
+.report-create-container {
+    background-color: #fff;
+    min-height: 100vh;
+  }
+  
+  .form-wrapper {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    padding-bottom: 60px; /* ✅ 하단 여백 추가 */
+  }

@@ -43,12 +43,13 @@ class AdminTeacherViewSet(ViewSet):
 
         if serializer.is_valid():
             with transaction.atomic():
+                # HEAD -> ASSISTANT
                 if teacher.role == "HEAD" and request.data.get("role") == "ASSISTANT":
                     CustomUser.objects.filter(head_teacher=teacher).update(
                         head_teacher=None,
                         class_name=None,
                     )
-
+                # ASSISTANT -> HEAD
                 elif teacher.role == "ASSISTANT" and request.data.get("role") == "HEAD":
                     teacher.head_teacher = None
 
