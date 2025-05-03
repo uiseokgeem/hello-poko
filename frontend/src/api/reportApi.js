@@ -1,25 +1,13 @@
-import axios from 'axios';
+import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = 'http://your-api-base-url'; // 실제 API 베이스 URL로 변경하세요
-
-export const saveDraft = async (data) => {
+export const fetchReportAttendanceData = async (nearestSunday) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/member-check/draft`, data);
+    const response = await axiosInstance.get("/report/initial/", {
+      params: { nearestSunday }, // 파라미터 추가
+    });
     return response.data;
   } catch (error) {
+    console.error("Error fetching report attendance data:", error);
     throw error;
   }
-};
-
-export const submitCheck = async (data) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/member-check/submit`, data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const fetchStudents = async () => {
-  return axios.get('/api/students');
 };

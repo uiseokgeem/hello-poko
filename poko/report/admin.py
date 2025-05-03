@@ -8,10 +8,10 @@ class UserCheckAdmin(admin.ModelAdmin):
         "id",
         "teacher",
         "title",
-        "worship",
-        "qt",
-        "pray",
-        "meeting",
+        "worship_attendance",
+        "qt_count",
+        "pray_count",
+        "meeting_attendance",
         "status",
         "date_sunday",
     )
@@ -23,33 +23,29 @@ class UserCheckAdmin(admin.ModelAdmin):
 
 @admin.register(Pray)
 class PrayAdmin(admin.ModelAdmin):
-    list_display = ("id", "pray_Dept", "pray_group", "pray_user")
-    search_fields = ("pray_Dept", "pray_group", "pray_user")
+    list_display = ("id", "pray_dept", "pray_group", "pray_teacher")
+    search_fields = ("pray_dept", "pray_group", "pray_teacher")
 
 
 @admin.register(MemberCheck)
 class MemberCheckAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "member_name",
+        "member",
         "user_check",
         "gqs_attendance",
         "status",
         "date_sunday",
     )
     list_filter = ("status", "date_sunday", "gqs_attendance")
-    search_fields = ("member_name__name", "user_check__title")
+    search_fields = ("member__name", "user_check__title")
     readonly_fields = ("date", "date_sunday", "week_number")
     ordering = ("-date",)
 
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ("id", "teacher", "member_check", "feedback", "date")
+    list_display = ("id", "teacher", "user_check", "feedback", "date")
     list_filter = ("teacher", "date")
-    search_fields = (
-        "feedback",
-        "teacher__full_name",
-        "member_check__member_name__name",
-    )
+    search_fields = ("feedback", "teacher__full_name", "user_check__title")
     readonly_fields = ("date",)

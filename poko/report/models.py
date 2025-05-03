@@ -43,34 +43,38 @@ class UserCheck(models.Model):
         on_delete=models.CASCADE,
         related_name="usercheck",
     )
-    pray = models.OneToOneField(
-        "Pray",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="usercheck",
-    )
 
-    title = models.CharField(max_length=30, null=True, default=None)
-    worship = models.IntegerField(
+    title = models.CharField(
+        max_length=30,
+        null=True,
+        default=None,
+    )
+    worship_attendance = models.IntegerField(
         null=True,
         default=None,
         choices=worship_choice,
     )
-    qt = models.IntegerField(
+    # 교사모임 참석 여부
+    meeting_attendance = models.BooleanField(
+        default=True,
+        choices=meeting_choice,
+    )
+    qt_count = models.IntegerField(
         null=True,
         default=None,
         choices=qt_choice,
     )
-    pray = models.IntegerField(
+    pray_count = models.IntegerField(
         null=True,
         default=None,
         choices=pray_choice,
     )
-    meeting = models.BooleanField(default=True, choices=meeting_choice)  # 교사모임 참석 여부
+    # 작성시점 날짜
     date = models.DateTimeField(default=timezone.now)
+    # 작성시점 날짜의 주차
     date_sunday = models.DateField(null=True, blank=True)
-    week_number = models.IntegerField(null=True, blank=True)  # date_sunday 기준 주차별 정보
+    # date_sunday 기준 주차별 정보
+    week_number = models.IntegerField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     def save(self, *args, **kwargs):
@@ -82,12 +86,18 @@ class UserCheck(models.Model):
 
 
 class Pray(models.Model):
+    user_check = models.OneToOneField(
+        UserCheck,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
     # 청소년부를 위한 기도
-    pray_Dept = models.CharField(max_length=300, null=True, default=None)
+    pray_dept = models.CharField(max_length=300, null=True, default=None)
     # 반 모임을 위한 기도
     pray_group = models.CharField(max_length=300, null=True, default=None)
     # 사용자에 대한 기도
-    pray_user = models.CharField(max_length=300, null=True, default=None)
+    pray_teacher = models.CharField(max_length=300, null=True, default=None)
 
 
 class MemberCheck(models.Model):
@@ -98,7 +108,8 @@ class MemberCheck(models.Model):
 
     gqs_choice = [(False, "불참"), (True, "참석")]
 
-    member_name = models.ForeignKey(
+    # 학생
+    member = models.ForeignKey(
         Member,
         related_name="membercheck",
         on_delete=models.CASCADE,
@@ -135,8 +146,11 @@ class Feedback(models.Model):
         on_delete=models.CASCADE,
         related_name="comments",
     )
-    member_check = models.ForeignKey(
-        MemberCheck, on_delete=models.CASCADE, related_name="comment"
+    user_check = models.OneToOneField(
+        UserCheck,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="feedback",
     )
     feedback = models.CharField(max_length=500)
     date = models.DateTimeField(default=timezone.now)

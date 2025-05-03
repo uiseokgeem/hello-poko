@@ -15,3 +15,14 @@ class TitleListSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_optimized_queryset(request) -> QuerySet[UserCheck]:
         return UserCheck.objects.filter(teacher=request.user).only("id", "title")
+
+
+class MemberAttendanceSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    attendance = serializers.BooleanField()
+
+
+class ReportInitialDataSerializer(serializers.Serializer):
+    # nearest_sunday = serializers.DateField()
+    students = MemberAttendanceSerializer(many=True)
