@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Table, Button } from "antd";
-import { FileTextOutlined, CameraOutlined } from "@ant-design/icons"; // 아이콘 import
-import { saveAsText, saveAsImage } from "../../utils/saveUtils";
+import { FileTextOutlined } from "@ant-design/icons"; // 아이콘 import
+import { saveAsText } from "../../utils/saveUtils";
 import "./AbsentListModal.css";
 
 const AbsentListModal = ({ isVisible, onClose, date, absentStudents }) => {

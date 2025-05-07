@@ -69,6 +69,8 @@ class UserCheck(models.Model):
         default=None,
         choices=pray_choice,
     )
+    # 문의사항/긴급사항
+    issue = models.CharField(max_length=300, null=True, default=None)
     # 작성시점 날짜
     date = models.DateTimeField(default=timezone.now)
     # 작성시점 날짜의 주차
@@ -122,8 +124,6 @@ class MemberCheck(models.Model):
     gqs_attendance = models.BooleanField(default=False)
     # 목양일지 세부내용
     care_note = models.TextField(null=True, blank=True)
-    # 문의사항/긴급사항
-    issue = models.CharField(max_length=300, null=True, default=None)
     # 작성 시점 날짜
     date = models.DateTimeField(default=timezone.now)
     # 작성 시점 가까운 일요일

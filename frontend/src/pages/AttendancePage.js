@@ -32,7 +32,7 @@ const AttendancePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
-  const [mode, setMode] = useState("attendance"); // 모드 상태 추가
+
 
   // 데이터 새로고침 함수
   const refreshData = async () => {

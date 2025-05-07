@@ -25,8 +25,9 @@ const StudentReportCard = ({ student }) => {
         </div>
 
         <Form.Item
-            name={["students", student.id, "attendedGqs"]}
+            name={["students", String(student.id), "attendedGqs"]}
             valuePropName="checked"
+            initialValue={false}
             style={{ marginBottom: 0 }}
         >
             <Checkbox>GQS 참석</Checkbox>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Select } from "antd";
 import { reportColumns } from "./ReportColumns";
+import {fetchReportSummary} from "../../../api/reportApi"
 import { getYearOptions } from "../../../utils/dateUtils";
 import "./ReportMain.css";
 
@@ -14,15 +15,22 @@ const ReportMain = () => {
   const yearOptions = getYearOptions(); // 기본: 최근 5년
 
   useEffect(() => {
-    setData([
-      {
-        key: "1",
-        date: "2025-05-01",
-        title: "5월 첫째주 목양",
-        state: "작성 완료",
-      },
-    ]);
-  }, []);
+    const loadData = async () => {
+      try {
+        const reports = await fetchReportSummary(selectedYear);
+        const formatted = reports.map((item) => ({
+          key: item.id,
+          date: item.date,
+          title: item.title,
+          state: item.status === 1 ? "작성 완료" : "작성 중",
+        }));
+        setData(formatted);
+      } catch (error) {
+        console.error("목양일지 목록 불러오기 실패:", error);
+      }
+    };
+    loadData();
+  }, [selectedYear]);
 
   return (
     <div className="report-main-container">

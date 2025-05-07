@@ -13,6 +13,7 @@ class UserCheckAdmin(admin.ModelAdmin):
         "pray_count",
         "meeting_attendance",
         "status",
+        "issue",
         "date_sunday",
     )
     list_filter = ("teacher", "status", "date_sunday")
