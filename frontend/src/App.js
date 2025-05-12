@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ReportPage from './pages/Report/ReportPage';
 import ReportCreatePage from './pages/Report/ReportCreatePage';
+import ReportDetailPage from './pages/Report/ReportDetailPage';
 import AttendancePage from './pages/AttendancePage';
 import HomePage from './pages/HomePage';
 import Adminpage from './pages/Admin/AdminPage';
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/report" element={<ReportPage />} />
         <Route path="/report/create" element={<ReportCreatePage />} />
+        <Route path="/report/detail/:id" element={<ReportDetailPage />} />
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/auth/kakao" element={<KakaoAuthHandler />} /> {/* 추가된 경로 */}
       </Routes>

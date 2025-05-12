@@ -1,7 +1,7 @@
 // src/pages/Report/ReportCreatePage.js
 import React, { useState, useEffect, useMemo } from "react";
 import { Form, message, Typography } from "antd";
-import { fetchReportAttendanceData, submitReport } from "../../api/reportApi";
+import { fetchReportAttendanceData, submitReport, submitDraftReport } from "../../api/reportApi";
 import { getNearestSunday } from "../../utils/dateUtils";
 import { buildReportPayload } from "../../utils/reportUtils";
 import ReportForm from "../../components/Report/ReportForm/ReportForm";
@@ -34,16 +34,15 @@ const ReportCreatePage = () => {
   }, [nearestSunday]);
 
   const handleFinish = (values) => {
-    console.log("values.students", values); // ⬅️ 여기
 
     const payload = buildReportPayload(values, formattedTitle, isDraft);
-    console.log("values.students", payload); // ⬅️ 여기
+    console.log("values.students", payload);
     if (isDraft) {
-      console.log("임시 저장 데이터:", payload);
+      submitDraftReport(payload, nearestSunday)
       message.success("임시 저장 완료");
     } else {
       submitReport(payload, nearestSunday);
-      message.success("제출 완료");
+      message.success("목양일지 제출 완료");
     }
   };
 
@@ -60,6 +59,7 @@ const ReportCreatePage = () => {
           setIsDraft={setIsDraft}
           nearestSunday={nearestSunday}
           formattedTitle={formattedTitle}
+          readOnly={false}
         />
       </div>
     </div>

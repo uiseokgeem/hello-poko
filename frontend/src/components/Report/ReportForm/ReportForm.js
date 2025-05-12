@@ -1,17 +1,28 @@
 // components/Report/ReportForm.js
-import React, { useMemo } from "react";
+import React from "react";
 import { Form, Input, Select, Radio, Button, Typography } from "antd";
 import StudentReportCard from "../ReportCreate/StudentReportCard";
-import dayjs from "dayjs";
 
 const { TextArea } = Input;
 const { Option } = Select;
 const { Title } = Typography;
 
-const ReportForm = ({ form, students, onFinish, isDraft, setIsDraft, nearestSunday }) => {
-  const formattedTitle = useMemo(() => {
-    return dayjs(nearestSunday).format("YYYY년 MM월 DD일 목양일지");
-  }, [nearestSunday]);
+const ReportForm = ({
+  form,
+  students = [],
+  onFinish,
+  isDraft,
+  setIsDraft,
+  nearestSunday,
+  readOnly = false,
+  formattedTitle
+}) => {
+
+  // {readOnly ? (
+  //   <Typography.Text>{표시할값}</Typography.Text>
+  // ) : (
+  //   <Input />
+  // )}
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish}>
@@ -22,9 +33,18 @@ const ReportForm = ({ form, students, onFinish, isDraft, setIsDraft, nearestSund
       </Form.Item>
 
       {/* 하나님 앞에서 */}
-      <Title level={4}>하나님 앞에서</Title>
-      <Form.Item label="기도 횟수" name="prayCount" rules={[{ required: true }]}> 
-        <Select>{[...Array(8)].map((_, i) => (<Option key={i} value={i}>{i}회</Option>))}</Select>
+      <Form.Item label="기도 횟수" name="prayCount">
+        {readOnly ? (
+          <Typography.Text>{form.getFieldValue("prayCount")}회</Typography.Text>
+        ) : (
+          <Select>
+            {[...Array(8)].map((_, i) => (
+              <Option key={i} value={i}>
+                {i}회
+              </Option>
+            ))}
+          </Select>
+        )}
       </Form.Item>
 
       <Form.Item label="QT 횟수" name="qtCount" rules={[{ required: true }]}> 
@@ -52,6 +72,12 @@ const ReportForm = ({ form, students, onFinish, isDraft, setIsDraft, nearestSund
       <Form.Item name="prayYouth" label="사귐의교회(청소년부)"><TextArea rows={3} /></Form.Item>
       <Form.Item name="prayNew" label="GQS/새친구반"><TextArea rows={3} /></Form.Item>
       <Form.Item name="prayPersonal" label="선생님 본인"><TextArea rows={3} /></Form.Item>
+
+      {/* <Title level={4}>기도제목</Title>
+      <Form.Item name={["pray","pray_dept" ]} label="사귐의교회(청소년부)"><TextArea rows={3} /></Form.Item>
+      <Form.Item name={["pray","pray_group" ]} label="GQS/새친구반"><TextArea rows={3} /></Form.Item>
+      <Form.Item name={["pray","pray_teacher" ]} label="선생님 본인"><TextArea rows={3} /></Form.Item> */}
+
 
       {/* 목양일지 */}
       {students.map((student) => (<StudentReportCard key={student.id} student={student} />))}

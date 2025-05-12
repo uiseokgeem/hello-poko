@@ -14,6 +14,10 @@ const ReportMain = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const yearOptions = getYearOptions(); // 기본: 최근 5년
 
+  const handleRowClick = (record) => {
+    navigate(`/report/detail/${record.key}`);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -54,8 +58,15 @@ const ReportMain = () => {
           + 새 목양일지
         </Button>
       </div>
-
-      <Table columns={reportColumns} dataSource={data} pagination={{ pageSize: 10 }} />
+      <Table
+        columns={reportColumns}
+        dataSource={data}
+        pagination={{ pageSize: 10 }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+          style: { cursor: "pointer" },
+        })}
+      />
     </div>
   );
 };

@@ -26,6 +26,17 @@ export const fetchReportAttendanceData = async (nearestSunday) => {
   }
 };
 
+// 목양일지 조화하기
+export const fetchReportDetail = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/report/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching detail report:", error);
+    throw error;
+  }
+};
+
 // 목양일지 제출하기
 export const submitReport = async (formData, nearestSunday) => {
   try {
@@ -40,6 +51,17 @@ export const submitReport = async (formData, nearestSunday) => {
 };
 
 // 목양일지 임시저장 API
+export const submitDraftReport = async (formData, nearestSunday) => {
+  try {
+    const response = await axiosInstance.post("/report/draft/", formData, {
+      params: { nearestSunday },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating draft report:", error);
+    throw error;
+  }
+};
 
 // 목양일지 수정하기 API
 

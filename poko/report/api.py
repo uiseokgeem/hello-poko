@@ -52,6 +52,7 @@ class ReportInitialDataViewSet(ViewSet):
         return Response(serializer.data)
 
 
+# 목양일지 CRUD ViewSet
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = UserCheck.objects.all()
     serializer_class = UserCheckSerializer
@@ -81,6 +82,43 @@ class ReportViewSet(viewsets.ModelViewSet):
 
         return Response(result, status=status.HTTP_200_OK)
 
+    # POST : /api/report/draft/
+    @action(detail=False, methods=["post"])
+    def draft(self, request):
+        user = request.user
+        data = request.data
+        nearest_sunday = request.query_params.get("nearestSunday")
+
+        user_check = UserCheck.objects.create(
+            teacher=user,
+            # title : 제목을 nearestSunday으로 자동화할 경우 불필요한 필드
+            title=nearest_sunday,
+            worship_attendance=data.get("worship_attendance"),
+            meeting_attendance=data.get("meeting_attendance"),
+            qt_count=data.get("qt_count"),
+            pray_count=data.get("prayer_count"),
+            issue=data.get("issue"),
+            status=data.get("status"),
+        )
+
+        pray_data = data.get("pray", {})
+        Pray.objects.create(
+            user_check=user_check,
+            pray_dept=pray_data.get("pray_dept"),
+            pray_group=pray_data.get("pray_group"),
+            pray_teacher=pray_data.get("pray_teacher"),
+        )
+
+        for student in data.get("students", []):
+            MemberCheck.objects.create(
+                member_id=student.get("member"),
+                user_check=user_check,
+                gqs_attendance=student.get("gqs_attendance"),
+                care_note=student.get("care_note"),
+            )
+
+        return Response({"message": "임시 저장 완료"}, status=status.HTTP_201_CREATED)
+
     # URL: POST /api/report/
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -89,7 +127,8 @@ class ReportViewSet(viewsets.ModelViewSet):
 
         user_check = UserCheck.objects.create(
             teacher=user,
-            title=nearest_sunday,  # 제목을 nearestSunday으로 자동화할 경우 불필요한 필드
+            # title : 제목을 nearestSunday으로 자동화할 경우 불필요한 필드
+            title=nearest_sunday,
             worship_attendance=data.get("worship_attendance"),
             meeting_attendance=data.get("meeting_attendance"),
             qt_count=data.get("qt_count"),
@@ -104,7 +143,7 @@ class ReportViewSet(viewsets.ModelViewSet):
             user_check=user_check,
             pray_dept=pray_data.get("pray_dept"),
             pray_group=pray_data.get("pray_group"),
-            # pray_teacher -> pray_user로 변경
+            # pray_teacher -> pray_user로 변경 필요
             pray_teacher=pray_data.get("pray_teacher"),
         )
 
@@ -117,5 +156,5 @@ class ReportViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            {"message": "보고서가 성공적으로 저장되었습니다."}, status=status.HTTP_201_CREATED
+            {"message": "목양일지가 성공적으로 저장되었습니다."}, status=status.HTTP_201_CREATED
         )
