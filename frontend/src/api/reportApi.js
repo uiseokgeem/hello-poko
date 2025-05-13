@@ -27,12 +27,14 @@ export const fetchReportAttendanceData = async (nearestSunday) => {
 };
 
 // 목양일지 조화하기
-export const fetchReportDetail = async (id) => {
+export const fetchReportDetail = async (id, nearestSunday) => {
   try {
-    const response = await axiosInstance.get(`/report/${id}/`);
+    const response = await axiosInstance.get("/report/initial/detail/", {
+      params: { id, nearestSunday },
+    });
     return response.data;
   } catch (error) {
-    console.error("Error fetching detail report:", error);
+    console.error("Error fetching report detail:", error);
     throw error;
   }
 };

@@ -7,15 +7,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ViewSet
 from attendance.models import Member, Attendance
 from report.models import UserCheck, Pray, MemberCheck
-from report.serializers import ReportInitialDataSerializer, UserCheckSerializer
+from report.serializers import (
+    ReportInitialDataSerializer,
+    UserCheckSerializer,
+    ReportDetailSerializer,
+)
 
 
 # 목양일지 작성 시 필요한 초기데이터를 관리하는 API viewset
 # attednace model 사용
 class ReportInitialDataViewSet(ViewSet):
-    serializer_class = ReportInitialDataSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
+
+    def get_serializer_class(self):
+        if self.action == "detail_report_data":
+            return ReportDetailSerializer
+        return ReportInitialDataSerializer
 
     def list(self, request):
         teacher = request.user
@@ -50,6 +58,64 @@ class ReportInitialDataViewSet(ViewSet):
 
         serializer = ReportInitialDataSerializer(result)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="detail")
+    def detail_report_data(self, request):
+        user = request.user
+        report_id = request.query_params.get("id")
+        nearest_sunday = request.query_params.get("nearestSunday")
+
+        try:
+            report = UserCheck.objects.get(id=report_id, teacher=user)
+        except UserCheck.DoesNotExist:
+            return Response({"detail": "Report not found"}, status=404)
+
+        # 해당 교사의 학생 목록
+        students = Member.objects.filter(teacher=user)
+        student_info_map = {s.id: {"name": s.name} for s in students}
+
+        # 저장된 report 내 student 데이터
+        member_checks = report.membercheck_set.all()
+        student_data = []
+        for check in member_checks:
+            sid = check.member_id
+            student_data.append(
+                {
+                    "id": sid,
+                    "name": student_info_map.get(sid, {}).get("name", ""),
+                    "attendance": Attendance.objects.filter(
+                        name_id=sid, date=nearest_sunday
+                    )
+                    .first()
+                    .attendance
+                    if Attendance.objects.filter(
+                        name_id=sid, date=nearest_sunday
+                    ).exists()
+                    else False,
+                    "gqs_attendance": check.gqs_attendance,
+                    "care_note": check.care_note,
+                }
+            )
+
+        # 응답 구조
+        response_data = {
+            "id": report.id,
+            "title": report.title,
+            "worship_attendance": report.worship_attendance,
+            "meeting_attendance": report.meeting_attendance,
+            "qt_count": report.qt_count,
+            "pray_count": report.pray_count,
+            "status": report.status,
+            "pray": {
+                "pray_dept": report.pray.pray_dept if report.pray else "",
+                "pray_group": report.pray.pray_group if report.pray else "",
+                "pray_teacher": report.pray.pray_teacher if report.pray else "",
+            },
+            "issue": report.issue,
+            "students": student_data,
+        }
+
+        return Response(response_data, status=200)
 
 
 # 목양일지 CRUD ViewSet
@@ -132,7 +198,7 @@ class ReportViewSet(viewsets.ModelViewSet):
             worship_attendance=data.get("worship_attendance"),
             meeting_attendance=data.get("meeting_attendance"),
             qt_count=data.get("qt_count"),
-            pray_count=data.get("prayer_count"),
+            pray_count=data.get("pray_count"),
             issue=data.get("issue"),
             status=data.get("status"),
         )

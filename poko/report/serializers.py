@@ -3,6 +3,18 @@ from rest_framework import serializers
 from report.models import UserCheck, Pray, MemberCheck
 
 
+class PraySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pray
+        fields = ["pray_dept", "pray_group", "pray_teacher"]
+
+
+class MemberCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberCheck
+        fields = ["member", "gqs_attendance", "care_note"]
+
+
 class TitleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCheck
@@ -28,16 +40,24 @@ class ReportInitialDataSerializer(serializers.Serializer):
     students = MemberAttendanceSerializer(many=True)
 
 
-class PraySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Pray
-        fields = ["pray_dept", "pray_group", "pray_teacher"]
+class ReportDetailSerializer(serializers.ModelSerializer):
+    pray = PraySerializer()
+    students = MemberCheckSerializer(source="membercheck_set", many=True)
 
-
-class MemberCheckSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MemberCheck
-        fields = ["member", "gqs_attendance", "care_note"]
+        model = UserCheck
+        fields = [
+            "id",
+            "title",
+            "worship_attendance",
+            "meeting_attendance",
+            "qt_count",
+            "pray_count",
+            "status",
+            "pray",
+            "issue",
+            "students",
+        ]
 
 
 class UserCheckSerializer(serializers.ModelSerializer):

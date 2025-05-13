@@ -36,6 +36,8 @@ const ReportCreatePage = () => {
   const handleFinish = (values) => {
 
     const payload = buildReportPayload(values, formattedTitle, isDraft);
+    console.log("🙏 prayCount 확인:", typeof values.prayCount, values.prayCount);
+    
     console.log("values.students", payload);
     if (isDraft) {
       submitDraftReport(payload, nearestSunday)
