@@ -41,22 +41,22 @@ class ReportInitialDataViewSet(ViewSet):
             is_attended = attendance.attendance
             attendance_map[student_id] = is_attended
 
-            # 딕셔너리 구조로 students 구성
-            student_data = {
-                student.id: {
-                    "id": student.id,
-                    "name": student.name,
-                    "attendance": attendance_map.get(student.id, False),
-                }
-                for student in students
+        # 딕셔너리 구조로 students 구성
+        student_data = {
+            student.id: {
+                "id": student.id,
+                "name": student.name,
+                "attendance": attendance_map.get(student.id, False),
             }
+            for student in students
+        }
 
-            result = {
-                "students": student_data,
-            }
+        result = {
+            "students": student_data,
+        }
 
-            serializer = ReportInitialDataSerializer(result)
-            return Response(serializer.data)
+        serializer = ReportInitialDataSerializer(result)
+        return Response(serializer.data)
 
     @action(detail=False, methods=["get"], url_path="detail")
     def detail_report_data(self, request):
