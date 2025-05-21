@@ -33,7 +33,7 @@ const StudentReportCard = ({ student, readOnly = false }) => {
         </div>
 
         <Form.Item
-          name={["students", String(student.id), "attendedGqs"]}
+          name={["students", String(student.id), "attende_gqs"]}
           valuePropName="checked"
           initialValue={false}
           style={{ marginBottom: 0 }}
@@ -49,12 +49,14 @@ const StudentReportCard = ({ student, readOnly = false }) => {
       </div>
 
       <Form.Item
-        name={["students", String(student.id), "careNote"]}
+        name={["students", String(student.id), "care_note"]}
         label="세부 내용"
         style={{ marginTop: "8px" }}
       >
         {readOnly ? (
-          <Typography.Text>{student?.care_note || "-"}</Typography.Text>
+          <Typography.Text>
+          {student?.care_note || "-"}
+          </Typography.Text>
         ) : (
           <TextArea rows={2} placeholder="격려, 질문, 관찰 등" />
         )}

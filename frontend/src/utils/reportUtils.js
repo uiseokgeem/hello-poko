@@ -28,16 +28,16 @@ export const buildReportPayload = (values, formattedTitle, isDraft) => {
   export const UpdateBuildReportPayload = (values, formattedTitle, isDraft) => {
     return {
       title: formattedTitle,
-      worship_attendance: values.worship,
-      meeting_attendance: values.teacherMeeting,
-      qt_count: values.qtCount,
-      pray_count: values.prayCount,
+      worship_attendance: values.worship_attendance,
+      meeting_attendance: values.meeting_attendance,
+      qt_count: values.qt_count,
+      pray_count: values.pray_count,
       status: isDraft ? 0 : 1,
       pray: values.pray,
       students: Object.entries(values.students || {}).map(([id, data]) => ({
         member: parseInt(id),
-        gqs_attendance: data.attendedGqs || false,
-        care_note: data.careNote,
+        gqs_attendance: data.gqs_attendance || false,
+        care_note: data.care_note || "",
       })),
       issue: values.issue,
 

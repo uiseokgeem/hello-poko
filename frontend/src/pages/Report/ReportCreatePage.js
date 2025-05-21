@@ -1,9 +1,10 @@
 // src/pages/Report/ReportCreatePage.js
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, message, Typography } from "antd";
 import { fetchReportAttendanceData, submitReport, submitDraftReport } from "../../api/reportApi";
 import { getNearestSunday } from "../../utils/dateUtils";
-import { buildReportPayload } from "../../utils/reportUtils";
+import { buildReportPayload, UpdateBuildReportPayload } from "../../utils/reportUtils";
 import ReportForm from "../../components/Report/ReportForm/ReportForm";
 import AppHeader from "../../components/Header/Header";
 import "./ReportCreatePage.css";
@@ -15,6 +16,7 @@ const ReportCreatePage = () => {
   const [students, setStudents] = useState([]);
   const [nearestSunday] = useState(getNearestSunday());
   const [isDraft, setIsDraft] = useState(false);
+  const navigate = useNavigate();
 
   const formattedTitle = useMemo(() => {
     const date = new Date(nearestSunday);
@@ -35,16 +37,17 @@ const ReportCreatePage = () => {
 
   const handleFinish = (values) => {
 
-    const payload = buildReportPayload(values, formattedTitle, isDraft);
-    console.log("🙏 prayCount 확인:", typeof values.prayCount, values.prayCount);
+    const payload = UpdateBuildReportPayload(values, formattedTitle, isDraft);
     
-    console.log("values.students", payload);
     if (isDraft) {
       submitDraftReport(payload, nearestSunday)
       message.success("임시 저장 완료");
+      navigate(`/report`);  
+      
     } else {
       submitReport(payload, nearestSunday);
       message.success("목양일지 제출 완료");
+      navigate(`/report`);  
     }
   };
 

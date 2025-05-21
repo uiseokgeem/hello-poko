@@ -1,6 +1,7 @@
 // components/Report/ReportForm.js
 import React, { useEffect } from "react";
 import { Form, Input, Select, Radio, Button, Typography } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
 import StudentReportCard from "../ReportCreate/StudentReportCard";
 
 const { TextArea } = Input;
@@ -11,6 +12,8 @@ const ReportForm = ({
   form,
   students = [],
   onFinish,
+  isEdit,
+  setIsEdit,
   isDraft,
   setIsDraft,
   nearestSunday,
@@ -21,7 +24,7 @@ const ReportForm = ({
 
   useEffect(() => {
     if (initialValues) {
-      console.log("✅ 초기값 세팅", initialValues);
+      // console.log("✅ 초기값 세팅", initialValues);
       form.setFieldsValue(initialValues);
     }
   }, [form, initialValues]);
@@ -31,6 +34,8 @@ const ReportForm = ({
     //   ) : (
     //     <Input />
     //   )}
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   return (
     <Form layout="vertical" 
@@ -130,7 +135,7 @@ const ReportForm = ({
       {/* 기도제목 */}
       <Title level={4}>기도제목</Title>
 
-      <Form.Item name="pray_dept" label="사귐의교회(청소년부)">
+      <Form.Item name={["pray", "pray_dept"]} label="사귐의교회(청소년부)">
         {readOnly ? (
           <Typography.Text>
             {initialValues?.pray?.pray_dept ?? "-"}
@@ -140,7 +145,7 @@ const ReportForm = ({
         )}
       </Form.Item>
 
-      <Form.Item name="pray_group" label="GQS/새친구반">
+      <Form.Item name={["pray", "pray_group"]}  label="GQS/새친구반">
         {readOnly ? (
           <Typography.Text>
             {initialValues?.pray?.pray_group ?? "-"}
@@ -150,7 +155,7 @@ const ReportForm = ({
         )}
       </Form.Item>
 
-      <Form.Item name="pray_teacher" label="선생님 본인">
+      <Form.Item name={["pray", "pray_teacher"]} label="선생님 본인">
         {readOnly ? (
           <Typography.Text>
             {initialValues?.pray?.pray_teacher ?? "-"}
@@ -165,8 +170,20 @@ const ReportForm = ({
       <Form.Item name={["pray","pray_group" ]} label="GQS/새친구반"><TextArea rows={3} /></Form.Item>
       <Form.Item name={["pray","pray_teacher" ]} label="선생님 본인"><TextArea rows={3} /></Form.Item> */}
 
+      {/* <Title level={4}>목양일지</Title>
+      {(readOnly
+        ? Object.values(initialValues?.students || {})
+        : students || []
+      ).map((student) => (
+        <StudentReportCard
+          key={student.id}
+          student={student}
+          readOnly={readOnly}
+        />
+      ))} */}
+
       <Title level={4}>목양일지</Title>
-      {(readOnly ? initialValues?.students : students)?.map((student) => (
+      {Object.values((readOnly ? initialValues?.students : students) || {}).map((student) => (
         <StudentReportCard
           key={student.id}
           student={student}
@@ -192,24 +209,54 @@ const ReportForm = ({
         )}
       </Form.Item>
 
-      {/* submit (readOnly일 때는 버튼 숨김) */}
-      {!readOnly && (
-        <Form.Item style={{ textAlign: "right" }}>
-          <Button
-            style={{ marginRight: "10px" }}
-            onClick={() => {
-              setIsDraft(true);
-              form.submit();
-            }}
-          >
-            임시저장
-          </Button>
-          <Button type="primary" htmlType="submit" onClick={() => setIsDraft(false)}>
-            제출하기
-          </Button>
-        </Form.Item>
-      )}
-    </Form>
+      {/* submit (read{/* 버튼 렌더링 조건 */}
+{!readOnly && (
+  <Form.Item style={{ textAlign: "right" }}>
+    {isEdit ? (
+      <>
+        <Button
+          type="primary"
+          onClick={() => {
+            form.submit();
+            setIsEdit(false); 
+          }}
+        >
+          수정하기
+        </Button>
+        <Button
+          danger
+          style={{ marginLeft: "10px" }}
+          onClick={() => {
+            setIsEdit(false);           
+            form.resetFields();         
+            navigate(`/report/detail/${id}`);  
+          }}
+        >
+          수정 취소
+        </Button>
+      </>
+    ) : (
+      <>
+        <Button
+          style={{ marginRight: "10px" }}
+          onClick={() => {
+            setIsDraft(true);
+            form.submit();
+          }}
+        >
+          임시저장
+        </Button>
+        <Button
+          type="primary"
+          htmlType="submit"
+          onClick={() => setIsDraft(false)}
+        >
+          제출하기
+        </Button>
+      </>
+    )}
+  </Form.Item>
+)}    </Form>
   );
 };
 
