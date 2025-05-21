@@ -41,23 +41,22 @@ class ReportInitialDataViewSet(ViewSet):
             is_attended = attendance.attendance
             attendance_map[student_id] = is_attended
 
-        # 학생별 출석 정보 조합
-        student_data = []
-        for student in students:
-            student_data.append(
-                {
+            # 딕셔너리 구조로 students 구성
+            student_data = {
+                student.id: {
                     "id": student.id,
                     "name": student.name,
                     "attendance": attendance_map.get(student.id, False),
                 }
-            )
+                for student in students
+            }
 
-        result = {
-            "students": student_data,
-        }
+            result = {
+                "students": student_data,
+            }
 
-        serializer = ReportInitialDataSerializer(result)
-        return Response(serializer.data)
+            serializer = ReportInitialDataSerializer(result)
+            return Response(serializer.data)
 
     @action(detail=False, methods=["get"], url_path="detail")
     def detail_report_data(self, request):
@@ -76,26 +75,22 @@ class ReportInitialDataViewSet(ViewSet):
 
         # 저장된 report 내 student 데이터
         member_checks = report.membercheck_set.all()
-        student_data = []
+        student_data = {}
         for check in member_checks:
             sid = check.member_id
-            student_data.append(
-                {
-                    "id": sid,
-                    "name": student_info_map.get(sid, {}).get("name", ""),
-                    "attendance": Attendance.objects.filter(
-                        name_id=sid, date=nearest_sunday
-                    )
-                    .first()
-                    .attendance
-                    if Attendance.objects.filter(
-                        name_id=sid, date=nearest_sunday
-                    ).exists()
-                    else False,
-                    "gqs_attendance": check.gqs_attendance,
-                    "care_note": check.care_note,
-                }
-            )
+            student_data[sid] = {
+                "id": sid,
+                "name": student_info_map.get(sid, {}).get("name", ""),
+                "attendance": Attendance.objects.filter(
+                    name_id=sid, date=nearest_sunday
+                )
+                .first()
+                .attendance
+                if Attendance.objects.filter(name_id=sid, date=nearest_sunday).exists()
+                else False,
+                "gqs_attendance": check.gqs_attendance,
+                "care_note": check.care_note,
+            }
 
         # 응답 구조
         response_data = {
@@ -162,7 +157,7 @@ class ReportViewSet(viewsets.ModelViewSet):
             worship_attendance=data.get("worship_attendance"),
             meeting_attendance=data.get("meeting_attendance"),
             qt_count=data.get("qt_count"),
-            pray_count=data.get("prayer_count"),
+            pray_count=data.get("pray_count"),
             issue=data.get("issue"),
             status=data.get("status"),
         )
@@ -224,3 +219,51 @@ class ReportViewSet(viewsets.ModelViewSet):
         return Response(
             {"message": "목양일지가 성공적으로 저장되었습니다."}, status=status.HTTP_201_CREATED
         )
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        report_id = kwargs.get("pk")
+        data = request.data
+        nearest_sunday = request.query_params.get("nearestSunday")
+
+        try:
+            user_check = UserCheck.objects.get(id=report_id, teacher=user)
+        except UserCheck.DoesNotExist:
+            return Response({"detail": "Report not found"}, status=404)
+
+        # UserCheck 업데이트
+        user_check.title = nearest_sunday
+        user_check.worship_attendance = data.get("worship_attendance")
+        user_check.meeting_attendance = data.get("meeting_attendance")
+        user_check.qt_count = data.get("qt_count")
+        user_check.pray_count = data.get("pray_count")
+        user_check.issue = data.get("issue")
+        user_check.status = data.get("status")
+        user_check.save()
+
+        # Pray 업데이트
+        pray_data = data.get("pray", {})
+        if hasattr(user_check, "pray"):
+            user_check.pray.pray_dept = pray_data.get("pray_dept")
+            user_check.pray.pray_group = pray_data.get("pray_group")
+            user_check.pray.pray_teacher = pray_data.get("pray_teacher")
+            user_check.pray.save()
+        else:
+            Pray.objects.create(
+                user_check=user_check,
+                pray_dept=pray_data.get("pray_dept"),
+                pray_group=pray_data.get("pray_group"),
+                pray_teacher=pray_data.get("pray_teacher"),
+            )
+
+        # 기존 MemberCheck 삭제 후 재생성
+        user_check.membercheck_set.all().delete()
+        for student in data.get("students", []):
+            MemberCheck.objects.create(
+                member_id=student.get("member"),
+                user_check=user_check,
+                gqs_attendance=student.get("gqs_attendance"),
+                care_note=student.get("care_note"),
+            )
+
+        return Response({"message": "목양일지가 수정되었습니다."}, status=status.HTTP_200_OK)

@@ -36,8 +36,7 @@ class MemberAttendanceSerializer(serializers.Serializer):
 
 
 class ReportInitialDataSerializer(serializers.Serializer):
-    # nearest_sunday = serializers.DateField()
-    students = MemberAttendanceSerializer(many=True)
+    students = serializers.DictField(child=MemberAttendanceSerializer())
 
 
 class ReportDetailSerializer(serializers.ModelSerializer):
