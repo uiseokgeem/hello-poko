@@ -1,12 +1,19 @@
 import React from "react";
 import { Layout, Button } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./AdminHeader.css"; // 버튼 스타일 import
 
 const { Header } = Layout;
 
 const AdminAppHeader = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
+
+  const menuItems = [
+    // { label: "홈", path: "/" },
+    { label: "출석 관리", path: "/admin" },
+    { label: "목양일지 관리", path: "/admin/report" },
+    { label: "선생님 관리", path: "/admin/teachers" },
+  ];
 
   return (
     <Header
@@ -19,23 +26,34 @@ const AdminAppHeader = () => {
       }}
     >
       {/* 로고 */}
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         <Link to="/">
           <img
             src={`${process.env.PUBLIC_URL}/images/poko_logo.png`}
             alt="Logo"
-            style={{ height: "35px" }}
+            style={{ height: "30px" }}
           />
+
         </Link>
+        {/* 메뉴 목록 */}
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            style={{
+              color: location.pathname === item.path ? "#1890ff" : "#000",
+              fontWeight: location.pathname === item.path ? "bold" : "normal",
+              fontSize: "14px",
+              textDecoration: "none",
+            }}
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       {/* 우측 버튼 영역 */}
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {/* 선생님 관리 버튼 */}
-        <Button className="teacher-button" onClick={() => navigate('/admin/teachers')}>
-          선생님 관리
-        </Button>
-
         {/* 로그아웃 버튼 */}
         <Button className="logout-button">로그아웃</Button>
       </div>

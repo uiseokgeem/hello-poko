@@ -15,6 +15,18 @@ const ReportPage = () => {
           <h1>목양일지</h1>
         </div>
         <ReportMain />
+        {/* <ReportTableMain
+            fetchFunction={fetchReportSummary}
+            columns={reportColumns}
+            showCreateButton={true}
+            onRowClick={(record) => {
+              if (record.isNew) {
+                navigate("/report/create");
+              } else {
+                navigate(`/report/detail/${record.key}`);
+              }
+            }}
+          /> */}
 
 
       </Content>

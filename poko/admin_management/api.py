@@ -1,13 +1,15 @@
 from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from accounts.models import CustomUser
 from attendance.models import Attendance, Member
+from report.models import UserCheck
 from .serializer import (
     WeeklyAttendanceSerializer,
     GroupAttendanceSerializer,
@@ -218,3 +220,28 @@ class WeeklyListView(ListAPIView):
         sorted_dates = sorted(attendance_dates, reverse=True)
 
         return Response(sorted_dates)
+
+
+class AdminReportViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
+    queryset = UserCheck.objects.all()
+
+    @action(detail=False, methods=["get"])
+    def summary(self, request):
+        year = request.query_params.get("year")
+
+        if year:
+            reports = UserCheck.objects.filter(date__year=year)
+
+        result = [
+            {
+                "id": report.id,
+                "date": report.date.strftime("%Y-%m-%d"),
+                "teacher_name": report.teacher.full_name,
+                "status": report.status,
+            }
+            for report in reports.order_by("-date")
+        ]
+
+        return Response(result, status=status.HTTP_200_OK)
