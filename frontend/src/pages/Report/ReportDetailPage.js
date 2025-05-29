@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Form, Typography, Spin, message, Button } from "antd";
+import { Form, Typography, Spin, message } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchReportDetail } from "../../api/reportApi";
 import AppHeader from "../../components/Header/Header";
 import ReportForm from "../../components/Report/ReportForm/ReportForm";
 import { getNearestSunday } from "../../utils/dateUtils";
+import CustomButton from "../../utils/Button";
 import "./ReportDetailPage.css";
 
 
@@ -48,19 +49,19 @@ const ReportDetailPage = () => {
       <div className="detail-header">
         <Title level={2}>목양일지 상세보기</Title>
         <div className="detail-header-buttons">
-          <Button
-            className="custom-secondary-button"
+        <CustomButton
+            type="default"
+            label="목록으로 가기"
+            variant="list"
             onClick={() => navigate("/report")}
-          >
-            목록으로 가기
-          </Button>
-          <Button
+          />
+
+          <CustomButton
             type="primary"
-            className="custom-primary-button"
+            label="수정하기"
+            variant="edit"
             onClick={() => navigate(`/report/edit/${id}`)}
-          >
-            수정하기
-          </Button>
+          />
         </div>
       </div>
 

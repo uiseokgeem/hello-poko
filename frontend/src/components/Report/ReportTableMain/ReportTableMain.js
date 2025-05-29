@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Select } from "antd";
+import CustomButton from "../../../utils/Button";
 import { getYearOptions } from "../../../utils/dateUtils";
 import "./ReportTableMain.css";
 
@@ -15,6 +16,11 @@ const ReportTableMain = ({
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const yearOptions = getYearOptions();
 
+  const formatKoreanDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${year}년 ${month}월 ${day}일`;
+  };
+  
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -23,9 +29,10 @@ const ReportTableMain = ({
           reports.map((item) => ({
             key: item.id,
             date: item.date,
-            title: item.title,
+            title: `${formatKoreanDate(item.date_sunday)}, ${item.week_number}주차 목양일지`,
+            week: item.week_number,
             teacher: item.teacher_name,
-            status: item.status === 1 ? "답변 완료" : "답변 대기",
+            status: item.status === 1 ? "작성완료" : "작성중",
           }))
         );
       } catch (error) {
@@ -50,9 +57,12 @@ const ReportTableMain = ({
         </div>
 
         {showCreateButton && (
-          <Button type="primary" className="new-report-button" onClick={() => onRowClick({ isNew: true })}>
-            + 새 목양일지
-          </Button>
+           <CustomButton
+           type="primary"
+           label="+ 새 목양일지"
+           onClick={() => onRowClick({ isNew: true })}
+           variant="new"
+         />
         )}
       </div>
 
@@ -64,6 +74,7 @@ const ReportTableMain = ({
           onClick: () => onRowClick(record),
           style: { cursor: "pointer" },
         })}
+        scroll={{ x: 1000 }}
       />
     </div>
   );

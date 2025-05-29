@@ -227,6 +227,7 @@ class AdminReportViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTCookieAuthentication]
     queryset = UserCheck.objects.all()
 
+    # 목양일지 목록 리스트에 정보 날짜 / 선생님 / 제목 / 작성 상태 API
     @action(detail=False, methods=["get"])
     def summary(self, request):
         year = request.query_params.get("year")
@@ -238,6 +239,8 @@ class AdminReportViewSet(viewsets.ModelViewSet):
             {
                 "id": report.id,
                 "date": report.date.strftime("%Y-%m-%d"),
+                "date_sunday": report.date_sunday.strftime("%Y-%m-%d"),
+                "week_number": report.week_number,
                 "teacher_name": report.teacher.full_name,
                 "status": report.status,
             }
@@ -245,3 +248,56 @@ class AdminReportViewSet(viewsets.ModelViewSet):
         ]
 
         return Response(result, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"], url_path="detail")
+    def admin_detail_report_data(self, request):
+        report_id = request.query_params.get("id")
+        nearest_sunday = request.query_params.get("nearestSunday")
+
+        try:
+            report = UserCheck.objects.get(id=report_id)
+        except UserCheck.DoesNotExist:
+            return Response({"detail": "Report not found"}, status=404)
+
+        # 해당 교사의 학생 목록
+        students = Member.objects.all()
+        student_info_map = {s.id: {"name": s.name} for s in students}
+
+        # 저장된 report 내 student 데이터
+        member_checks = report.membercheck_set.all()
+        student_data = {}
+        for check in member_checks:
+            sid = check.member_id
+            student_data[sid] = {
+                "id": sid,
+                "name": student_info_map.get(sid, {}).get("name", ""),
+                "attendance": Attendance.objects.filter(
+                    name_id=sid, date=nearest_sunday
+                )
+                .first()
+                .attendance
+                if Attendance.objects.filter(name_id=sid, date=nearest_sunday).exists()
+                else False,
+                "gqs_attendance": check.gqs_attendance,
+                "care_note": check.care_note,
+            }
+
+        # 응답 구조
+        response_data = {
+            "id": report.id,
+            "title": report.title,
+            "worship_attendance": report.worship_attendance,
+            "meeting_attendance": report.meeting_attendance,
+            "qt_count": report.qt_count,
+            "pray_count": report.pray_count,
+            "status": report.status,
+            "pray": {
+                "pray_dept": report.pray.pray_dept if report.pray else "",
+                "pray_group": report.pray.pray_group if report.pray else "",
+                "pray_teacher": report.pray.pray_teacher if report.pray else "",
+            },
+            "issue": report.issue,
+            "students": student_data,
+        }
+
+        return Response(response_data, status=200)

@@ -1,12 +1,17 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import { Layout } from 'antd';
 import AppHeader from '../../components/Header/Header';
-import ReportMain from '../../components/Report/ReportMain/ReportMain';
+import ReportTableMain from "../../components/Report/ReportTableMain/ReportTableMain";
+import { fetchReportSummary } from "../../api/reportApi";
+import { reportColumns } from "../../components/Report/ReportTableMain/userColumns";
 import './ReportPage.css';
 
 const { Content } = Layout;
 
 const ReportPage = () => {
+  const navigate = useNavigate();
+
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
       <AppHeader />
@@ -14,8 +19,8 @@ const ReportPage = () => {
         <div className="header-section">
           <h1>목양일지</h1>
         </div>
-        <ReportMain />
-        {/* <ReportTableMain
+        
+        <ReportTableMain
             fetchFunction={fetchReportSummary}
             columns={reportColumns}
             showCreateButton={true}
@@ -26,7 +31,7 @@ const ReportPage = () => {
                 navigate(`/report/detail/${record.key}`);
               }
             }}
-          /> */}
+          />
 
 
       </Content>

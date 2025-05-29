@@ -80,9 +80,15 @@ class UserCheck(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     def save(self, *args, **kwargs):
-        self.date_sunday = self.date + datetime.timedelta(
-            days=(6 - self.date.weekday())
-        )
+        # 가장 가까운 과거 일요일을 date_sunday에 저장
+        if self.date.weekday() == 6:
+            self.date_sunday = self.date
+        else:
+            self.date_sunday = self.date - datetime.timedelta(
+                days=self.date.weekday() + 1
+            )
+
+        # 일요일 기준 주차 계산
         self.week_number = self.date_sunday.isocalendar()[1]
         super().save(*args, **kwargs)
 
@@ -133,9 +139,15 @@ class MemberCheck(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     def save(self, *args, **kwargs):
-        self.date_sunday = self.date + datetime.timedelta(
-            days=(6 - self.date.weekday())
-        )
+        # 가장 가까운 과거 일요일을 date_sunday에 저장
+        if self.date.weekday() == 6:
+            self.date_sunday = self.date
+        else:
+            self.date_sunday = self.date - datetime.timedelta(
+                days=self.date.weekday() + 1
+            )
+
+        # 일요일 기준 주차 계산
         self.week_number = self.date_sunday.isocalendar()[1]
         super().save(*args, **kwargs)
 

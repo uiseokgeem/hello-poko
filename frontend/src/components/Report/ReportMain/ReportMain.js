@@ -18,6 +18,11 @@ const ReportMain = () => {
     navigate(`/report/detail/${record.key}`);
   };
 
+  const formatKoreanDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${year}년 ${month}월 ${day}일`;
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -25,7 +30,7 @@ const ReportMain = () => {
         const formatted = reports.map((item) => ({
           key: item.id,
           date: item.date,
-          title: item.title,
+          title: `${formatKoreanDate(item.date_sunday)}, ${item.week_number}주차 목양일지`,
           state: item.status === 1 ? "작성 완료" : "작성 중",
         }));
         setData(formatted);
@@ -66,6 +71,7 @@ const ReportMain = () => {
           onClick: () => handleRowClick(record),
           style: { cursor: "pointer" },
         })}
+        scroll={{ x: 1000 }}
       />
     </div>
   );

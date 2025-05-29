@@ -33,7 +33,7 @@ const StudentReportCard = ({ student, readOnly = false }) => {
         </div>
 
         <Form.Item
-          name={["students", String(student.id), "attende_gqs"]}
+          name={["students", String(student.id), "gqs_attendance"]}
           valuePropName="checked"
           initialValue={false}
           style={{ marginBottom: 0 }}

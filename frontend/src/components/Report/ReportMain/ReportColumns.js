@@ -12,7 +12,7 @@ export const reportColumns = [
       width: "55%",
     },
     {
-      title: "현황",
+      title: "상태",
       dataIndex: "state",
       key: "state",
       width: "25%",

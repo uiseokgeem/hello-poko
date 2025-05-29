@@ -13,6 +13,7 @@ import AttendancePage from './pages/AttendancePage';
 import HomePage from './pages/HomePage';
 import Adminpage from './pages/Admin/AdminPage';
 import AdminReportPage from './pages/Admin/AdminReportPage';
+import AdminReportDetailPage from './pages/Admin/AdminReportDetailPage';
 import AdminTeacher from './pages/Admin/AdminTeacher';
 import KakaoRegisterPage from './pages/KakaoRegisterPage'
 import KakaoAuthHandler from './pages/KakaoAuthHandler';
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/admin" element={<Adminpage />} />
         <Route path="/admin/teachers" element={<AdminTeacher />} />
         <Route path="/admin/report" element={<AdminReportPage />} />
+        <Route path="/admin/report/detail/:id" element={<AdminReportDetailPage />} />
         <Route path="/send-email" element={<SendEmailPage />} />
         <Route path="/verify-email/:url_code/:email_code" element={<VerifyEmailPage />} />
         <Route path="/validate-pwd/:url_code/:email_code" element={<ValidatePwdPage />} />

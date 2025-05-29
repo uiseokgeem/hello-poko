@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { Form, Input, Select, Radio, Button, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
+import CustomButton from "../../../utils/Button";
 import StudentReportCard from "../ReportCreate/StudentReportCard";
 
 const { TextArea } = Input;
@@ -210,52 +211,60 @@ const ReportForm = ({
       </Form.Item>
 
       {/* submit (read{/* 버튼 렌더링 조건 */}
-{!readOnly && (
-  <Form.Item style={{ textAlign: "right" }}>
+      {!readOnly && (
+  <Form.Item>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      gap: "12px",
+      marginTop: "24px",
+    }}
+  >
     {isEdit ? (
       <>
-        <Button
+        <CustomButton
           type="primary"
+          variant="submit"
+          label="수정하기"
           onClick={() => {
             form.submit();
-            setIsEdit(false); 
+            setIsEdit(false);
           }}
-        >
-          수정하기
-        </Button>
-        <Button
-          danger
-          style={{ marginLeft: "10px" }}
+        />
+        <CustomButton
+          type="default"
+          variant="draft"
+          label="수정 취소"
           onClick={() => {
-            setIsEdit(false);           
-            form.resetFields();         
-            navigate(`/report/detail/${id}`);  
+            setIsEdit(false);
+            form.resetFields();
+            navigate(`/report/detail/${id}`);
           }}
-        >
-          수정 취소
-        </Button>
+        />
       </>
     ) : (
       <>
-        <Button
-          style={{ marginRight: "10px" }}
+        <CustomButton
+          type="default"
+          variant="draft"
+          label="임시저장"
           onClick={() => {
             setIsDraft(true);
             form.submit();
           }}
-        >
-          임시저장
-        </Button>
-        <Button
+        />
+        <CustomButton
           type="primary"
-          htmlType="submit"
+          variant="submit"
+          label="제출하기"
           onClick={() => setIsDraft(false)}
-        >
-          제출하기
-        </Button>
+        />
       </>
     )}
-  </Form.Item>
+  </div>
+</Form.Item>
 )}    </Form>
   );
 };

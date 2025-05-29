@@ -135,7 +135,9 @@ class ReportViewSet(viewsets.ModelViewSet):
             {
                 "id": report.id,
                 "date": report.date.strftime("%Y-%m-%d"),
-                "title": report.title,
+                "date_sunday": report.date_sunday.strftime("%Y-%m-%d"),
+                "week_number": report.week_number,
+                "teacher_name": report.teacher.full_name,
                 "status": report.status,
             }
             for report in reports.order_by("-date")

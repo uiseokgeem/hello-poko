@@ -27,6 +27,9 @@ export const fetchReportAttendanceData = async (nearestSunday) => {
 };
 
 // 목양일지 상세 조회하기
+// ReportEditPage.js
+// ReportDetailPage.js
+// ReportInitialDataViewSet, detail_report_data
 export const fetchReportDetail = async (id, nearestSunday) => {
   try {
     const response = await axiosInstance.get("/report/initial/detail/", {
@@ -88,6 +91,19 @@ export const fetchAdminReportSummary = async (year) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching report summary:", error);
+    throw error;
+  }
+};
+
+// admin에서 목양일지 상세 조회 API
+export const fetchAdminReportDetail = async (id, nearestSunday) => {
+  try {
+    const response = await axiosInstance.get("/admin-management/report/detail/", {
+      params: { id, nearestSunday },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching report detail:", error);
     throw error;
   }
 };
