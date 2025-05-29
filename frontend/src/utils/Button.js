@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "antd";
 
-const CustomButton = ({ type = "default", label, onClick, variant = "list" }) => {
+const CustomButton = ({ type = "default", label, onClick, variant = "list", htmlType = "button" }) => {
   const styles = {
     list: {
       height: "42px",
@@ -76,6 +76,7 @@ const CustomButton = ({ type = "default", label, onClick, variant = "list" }) =>
   return (
     <Button
       type={type}
+      htmlType={htmlType}
       style={styles[variant]}
       onClick={onClick}
     >

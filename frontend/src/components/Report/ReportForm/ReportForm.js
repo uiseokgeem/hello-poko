@@ -258,6 +258,7 @@ const ReportForm = ({
         <CustomButton
           type="primary"
           variant="submit"
+          htmlType="submit"
           label="제출하기"
           onClick={() => setIsDraft(false)}
         />
