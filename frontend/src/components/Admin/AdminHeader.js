@@ -10,9 +10,9 @@ const AdminAppHeader = () => {
 
   const menuItems = [
     // { label: "홈", path: "/" },
-    { label: "출석 관리", path: "/admin" },
-    { label: "목양일지 관리", path: "/admin/report" },
-    { label: "선생님 관리", path: "/admin/teachers" },
+    { label: "출석", path: "/admin" },
+    { label: "목양일지", path: "/admin/report" },
+    { label: "선생님", path: "/admin/teachers" },
   ];
 
   return (
