@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Select } from "antd";
 import CustomButton from "../../../utils/Button";
+import { getNearestSunday } from "../../../utils/dateUtils";
 import { getYearOptions } from "../../../utils/dateUtils";
+import { CheckWeekAttendance } from "../../../api/reportApi";
 import "./ReportTableMain.css";
 
 const { Option } = Select;
@@ -15,6 +17,7 @@ const ReportTableMain = ({
   const [data, setData] = useState([]); 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const yearOptions = getYearOptions();
+  const [nearestSunday] = useState(getNearestSunday());
 
   const formatKoreanDate = (dateString) => {
     const [year, month, day] = dateString.split("-");

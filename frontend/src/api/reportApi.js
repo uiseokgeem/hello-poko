@@ -107,3 +107,17 @@ export const fetchAdminReportDetail = async (id, nearestSunday) => {
     throw error;
   }
 };
+
+
+// 해당주차의 출석 입력 여부 확인 API
+export const CheckWeekAttendance = async (nearestSunday) => {
+  try {
+    const response = await axiosInstance.get("/report/attendance/", {
+      params: { nearestSunday },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching attendance :", error);
+    throw error;
+  }
+};
