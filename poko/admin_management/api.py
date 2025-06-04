@@ -1,22 +1,69 @@
 from collections import defaultdict
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
+from rest_framework.response import Response
 
+from accounts.models import CustomUser
 from attendance.models import Attendance, Member
+from report.models import UserCheck
 from .serializer import (
     WeeklyAttendanceSerializer,
     GroupAttendanceSerializer,
     MemberAttendanceSerializer,
+    TeacherSerializer,
+    HeadsSerializer,
 )
 
 from django.db.models import Count, Q, Prefetch
+from django.db import transaction
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
+
+
+class AdminTeacherViewSet(ViewSet):
+    # list
+    def list(self, request):
+        teachers = CustomUser.objects.all()
+        serializer = TeacherSerializer(teachers, many=True)
+        return Response(serializer.data)
+
+    # head filter
+    @action(detail=False, methods=["get"])
+    def heads(self, request):
+        heads = CustomUser.objects.filter(role="HEAD")
+        serializer = HeadsSerializer(heads, many=True)
+        return Response(serializer.data)
+
+    # partial_update
+    def partial_update(self, request, pk=None):
+        teacher = get_object_or_404(CustomUser, pk=pk)
+        serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            with transaction.atomic():
+                # HEAD -> ASSISTANT
+                if teacher.role == "HEAD" and request.data.get("role") == "ASSISTANT":
+                    CustomUser.objects.filter(head_teacher=teacher).update(
+                        head_teacher=None,
+                        class_name=None,
+                    )
+                # ASSISTANT -> HEAD
+                elif teacher.role == "ASSISTANT" and request.data.get("role") == "HEAD":
+                    teacher.head_teacher = None
+
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # destroy
+    def destroy(self, request, pk=None):
+        teacher = get_object_or_404(CustomUser, pk=pk)
+        teacher.delete()
+        return Response({"message": "삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class WeeklyAttendanceViewSet(ModelViewSet):
@@ -70,12 +117,12 @@ class GroupAttendanceViewSet(ModelViewSet):
             # 요청된 날짜를 필터링
             attendance_data = (
                 Attendance.objects.filter(date=week)  # 요청된 날짜 필터링
-                .values("name__grade")  # 학년 기준 그룹화
+                .values("name__teacher__class_name")  # class_name 별 분류
                 .annotate(
                     attendance_count=Count("id", filter=Q(attendance=True)),  # 출석 수
                     absent_count=Count("id", filter=Q(attendance=False)),  # 결석 수
                 )
-                .order_by("name__grade")  # 학년 기준 정렬
+                .order_by("name__teacher__class_name")  # 학년 기준 정렬
             )
 
             return Response(attendance_data)  # 결과 반환
@@ -113,21 +160,6 @@ class MemberAttendanceViewSet(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-
-        # Print the raw queryset for debugging
-        # print("Queryset before grouping:")
-        # for record in queryset:
-        #     print(
-        #         {
-        #             "id": record.id,
-        #             "name_id": record.name.id,
-        #             "name": record.name.name,
-        #             "grade": record.name.grade,
-        #             "gender": record.name.gender,
-        #             "date": record.date,
-        #             "attendance": record.attendance,
-        #         }
-        #     )
 
         # 데이터를 날짜별로 그룹화
         attendance_data = defaultdict(list)
@@ -167,10 +199,6 @@ class MemberAttendanceViewSet(ModelViewSet):
             "students": students,
         }
 
-        # Print the final response data for debugging
-        # print("Response Data:")
-        # print(response_data)
-
         return Response(response_data)
 
 
@@ -192,3 +220,84 @@ class WeeklyListView(ListAPIView):
         sorted_dates = sorted(attendance_dates, reverse=True)
 
         return Response(sorted_dates)
+
+
+class AdminReportViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
+    queryset = UserCheck.objects.all()
+
+    # 목양일지 목록 리스트에 정보 날짜 / 선생님 / 제목 / 작성 상태 API
+    @action(detail=False, methods=["get"])
+    def summary(self, request):
+        year = request.query_params.get("year")
+
+        if year:
+            reports = UserCheck.objects.filter(date__year=year)
+
+        result = [
+            {
+                "id": report.id,
+                "date": report.date.strftime("%Y-%m-%d"),
+                "date_sunday": report.date_sunday.strftime("%Y-%m-%d"),
+                "week_number": report.week_number,
+                "teacher_name": report.teacher.full_name,
+                "status": report.status,
+            }
+            for report in reports.order_by("-date")
+        ]
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"], url_path="detail")
+    def admin_detail_report_data(self, request):
+        report_id = request.query_params.get("id")
+        nearest_sunday = request.query_params.get("nearestSunday")
+
+        try:
+            report = UserCheck.objects.get(id=report_id)
+        except UserCheck.DoesNotExist:
+            return Response({"detail": "Report not found"}, status=404)
+
+        # 해당 교사의 학생 목록
+        students = Member.objects.all()
+        student_info_map = {s.id: {"name": s.name} for s in students}
+
+        # 저장된 report 내 student 데이터
+        member_checks = report.membercheck_set.all()
+        student_data = {}
+        for check in member_checks:
+            sid = check.member_id
+            student_data[sid] = {
+                "id": sid,
+                "name": student_info_map.get(sid, {}).get("name", ""),
+                "attendance": Attendance.objects.filter(
+                    name_id=sid, date=nearest_sunday
+                )
+                .first()
+                .attendance
+                if Attendance.objects.filter(name_id=sid, date=nearest_sunday).exists()
+                else False,
+                "gqs_attendance": check.gqs_attendance,
+                "care_note": check.care_note,
+            }
+
+        # 응답 구조
+        response_data = {
+            "id": report.id,
+            "title": report.title,
+            "worship_attendance": report.worship_attendance,
+            "meeting_attendance": report.meeting_attendance,
+            "qt_count": report.qt_count,
+            "pray_count": report.pray_count,
+            "status": report.status,
+            "pray": {
+                "pray_dept": report.pray.pray_dept if report.pray else "",
+                "pray_group": report.pray.pray_group if report.pray else "",
+                "pray_teacher": report.pray.pray_teacher if report.pray else "",
+            },
+            "issue": report.issue,
+            "students": student_data,
+        }
+
+        return Response(response_data, status=200)

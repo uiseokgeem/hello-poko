@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from accounts.models import CustomUser
 from attendance.models import Attendance
 
 
@@ -27,4 +28,29 @@ class MemberAttendanceSerializer(serializers.ModelSerializer):
             "name",
             "attendance",
             "date",
+        ]
+
+
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "full_name",
+            "email",
+            "class_name",
+            "head_teacher",
+            "role",
+        ]
+
+
+class HeadsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "full_name",
+            "class_name",
+            "head_teacher",
+            "role",
         ]

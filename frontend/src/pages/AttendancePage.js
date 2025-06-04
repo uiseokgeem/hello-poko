@@ -32,7 +32,7 @@ const AttendancePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalMode, setModalMode] = useState("create");
   const [nearestSunday] = useState(getNearestSunday());
-  const [mode, setMode] = useState("attendance"); // 모드 상태 추가
+
 
   // 데이터 새로고침 함수
   const refreshData = async () => {
@@ -137,7 +137,7 @@ const AttendancePage = () => {
         <h1 className="page-title">출석부</h1>
         <TeacherInfo
           teacherName={teachers?.name || "Unknown"}
-          className="미정"
+          className={teachers?.class || "Unknown"}
           attendanceRate={attendanceStats?.result_stats || []}
         />
         <div className="attendance-header-section">

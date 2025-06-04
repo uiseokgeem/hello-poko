@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { Table } from "antd";
 import AbsentListModal from "./AbsentListModal";
 import "./AdminAttendanceChart.css";
@@ -61,21 +61,21 @@ const AdminAttendanceChart = ({ data }) => {
   const [absentStudents, setAbsentStudents] = useState([]);
 
   // 모달 열기
-  const openModal = (date) => {
+  const openModal = useCallback((date) => {
     const filteredStudents = students.filter((student) => {
       const attendanceRecord = data.find((entry) => entry.date === date);
       if (!attendanceRecord) return false;
-
+  
       const record = attendanceRecord.attendance.find(
         (item) => item.id === student.id
       );
-      return record && !record.attendance; // 결석 데이터만 포함
+      return record && !record.attendance;
     });
-
+  
     setSelectedDate(formatDate(date));
     setAbsentStudents(filteredStudents);
     setIsModalVisible(true);
-  };
+  }, [data, students]);
 
   // 모달 닫기
   const closeModal = () => {
@@ -108,15 +108,23 @@ const AdminAttendanceChart = ({ data }) => {
         width: 80,
       },
     ];
-
+  
     const dateColumns = sortedData.map((dateEntry) => ({
       title: (
-        <a
-          onClick={() => openModal(dateEntry.date)} // 클릭 시 모달 열기
-          style={{ cursor: "pointer", color: "#333333" }}
+        <button
+          onClick={() => openModal(dateEntry.date)}
+          style={{
+            cursor: "pointer",
+            background: "none",
+            border: "none",
+            padding: 0,
+            color: "#333333",
+            font: "inherit",
+            textDecoration: "underline",
+          }}
         >
           {formatDate(dateEntry.date)}
-        </a>
+        </button>
       ),
       dataIndex: dateEntry.date,
       key: dateEntry.date,
@@ -124,30 +132,36 @@ const AdminAttendanceChart = ({ data }) => {
       render: (attendance) => (
         <span>
           {attendance === true ? (
-              <img
-                src={successIconPath}
-                alt="Success"
-                style={{ width: "20px", height: "20px" }}
-              />
-            ) : attendance === false ? (
-              <img
-                src={errorIconPath}
-                alt="Error"
-                style={{ width: "20px", height: "20px" }}
-              />
-            ) : (
-              <img
-                src={warningIconPath}
-                alt="Warning"
-                style={{ width: "20px", height: "20px" }}
-              />
-            )}
+            <img
+              src={successIconPath}
+              alt="Success"
+              style={{ width: "20px", height: "20px" }}
+            />
+          ) : attendance === false ? (
+            <img
+              src={errorIconPath}
+              alt="Error"
+              style={{ width: "20px", height: "20px" }}
+            />
+          ) : (
+            <img
+              src={warningIconPath}
+              alt="Warning"
+              style={{ width: "20px", height: "20px" }}
+            />
+          )}
         </span>
       ),
     }));
-
+  
     return [...baseColumns, ...dateColumns];
-  }, [sortedData]);
+  }, [
+    sortedData,
+    openModal,
+    errorIconPath,
+    successIconPath,
+    warningIconPath,
+  ]);
 
   const dataSource = useMemo(() => {
     return students.map((student) => {

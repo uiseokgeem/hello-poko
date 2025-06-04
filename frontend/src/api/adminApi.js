@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosInstance";
 
-// 주차별 전체 인원 출석/결석 인원 수 라인 그래프
+// 주차별 전체 인원 출석/결석 인원 수 라인 그래프 API
 export const fetchWeeklyAttendanceData = async (year) => {
   try {
     const response = await axiosInstance.get("admin-management/weekly-attendance/", {
@@ -13,7 +13,7 @@ export const fetchWeeklyAttendanceData = async (year) => {
   }
 };
 
-// 주차별 반 출석 데이터를 가져오는 함수
+// 주차별 반 출석 데이터를 가져오는 API
 export const fetchGroupAttendance = async (selectedWeek) => {
   try {
     const response = await axiosInstance.get("admin-management/group-attendance/attendance-by-week/", {
@@ -26,7 +26,7 @@ export const fetchGroupAttendance = async (selectedWeek) => {
   }
 };
 
-// 학생별 출석 데이터를 가져오는 함수
+// 학생별 출석 데이터를 가져오는 API
 export const fetchMemberAttendanceData = async (selectedYear) => {
   try {
     const response = await axiosInstance.get("admin-management/member-attendance/", {
@@ -39,7 +39,7 @@ export const fetchMemberAttendanceData = async (selectedYear) => {
   }
 };
 
-// 주차 리스트 데이터를 가져오는 함수
+// 주차 리스트 데이터를 가져오는 API
 export const fetchWeekList = async (year) => {
   try {
     const response = await axiosInstance.get("admin-management/weekly-list/", {
@@ -49,5 +49,68 @@ export const fetchWeekList = async (year) => {
   } catch (error) {
     console.error("Error fetching week list:", error);
     throw error;
+  }
+};
+
+// 등록 선생님의 모든 정보를 가져오는 API
+export const fetchTeacherList = async () => {
+  try {
+    const response = await axiosInstance.get("admin-management/teachers");
+    return response.data; 
+  } catch (error) {
+    console.error("선생님 목록을 불러오는 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 특정 선생님 삭제하는 API
+export const deleteTeacher = async (teacherId) => {
+  try {
+    await axiosInstance.delete(`admin-management/teachers/${teacherId}`);
+  } catch (error) {
+    console.error(`선생님 삭제 중 오류 발생 (ID: ${teacherId}):`, error);
+    throw error;
+  }
+};
+
+// HEAD 선생님 부분 수정 API
+export const updateTeacherPartial = async (teacherId, updateData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `admin-management/teachers/${teacherId}/`,
+      updateData
+    );
+    console.log("수정 api 작동");
+    return response.data;
+  } catch (error) {
+    console.error(`선생님 정보 수정 중 오류 발생 (ID: ${teacherId}):`, error);
+    throw error;
+  }
+};
+
+// ASSISTANT 선생님 등록 API
+export const registerTeacher = async (teacherId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `admin-management/teachers/${teacherId}/`,
+      formData
+    );
+    console.log("등록 api 작동");
+    return response.data;
+  } catch (error) {
+    console.error(`선생님 정보 등록 중 오류 발생 (ID: ${teacherId}):`, error);
+    throw error;
+  }
+};
+
+// API로 모든 HEAD 선생님 리스트를 불러오는 fetch 함수 추가
+export const fetchHeadTeachers = async () => {
+  try {
+    const response = await axiosInstance.get("admin-management/teachers/heads/", {
+    });
+    return response.data;
+  } catch (error) {
+    console.error("HEAD 선생님 목록 오류:", error);
+    return [];
   }
 };

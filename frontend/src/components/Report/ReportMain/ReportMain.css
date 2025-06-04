@@ -1,0 +1,21 @@
+.report-main-container {
+    padding: 20px;
+    background-color: #fff;
+  }
+  
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .report-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .report-count {
+    color: #888;
+  }

@@ -1,13 +1,19 @@
 import React from "react";
-import { Layout } from "antd";
-import { Link } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons";
+import { Layout, Button } from "antd";
+import { Link, useLocation } from "react-router-dom";
+import "./Header.css";
 
 const { Header } = Layout;
 
-// 인라인 스타일 css
-
 const AppHeader = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    // { label: "홈", path: "/" },
+    { label: "출석부", path: "/attendance" },
+    { label: "목양일지", path: "/report" },
+  ];
+
   return (
     <Header
       style={{
@@ -18,18 +24,35 @@ const AppHeader = () => {
         background: "#fff",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center" }}>
+      {/* 왼쪽 로고 및 메뉴 */}
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         <Link to="/">
           <img
             src={`${process.env.PUBLIC_URL}/images/poko_logo.png`}
             alt="Logo"
-            style={{ height: "35px" }}
+            style={{ height: "30px" }}
           />
         </Link>
+
+        {/* 메뉴 목록 */}
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            style={{
+              color: location.pathname === item.path ? "#1890ff" : "#000",
+              fontWeight: location.pathname === item.path ? "bold" : "normal",
+              fontSize: "14px",
+              textDecoration: "none",
+            }}
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
-      <div style={{ fontSize: "20px", cursor: "pointer" }}>
-        <UserOutlined />
-      </div>
+
+      {/* 오른쪽 로그아웃 버튼 */}
+      <Button className="logout-button">로그아웃</Button>
     </Header>
   );
 };

@@ -1,0 +1,24 @@
+/* 기존 유지 */
+.report-detail-container {
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+.form-wrapper {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+  padding-bottom: 60px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.detail-header-buttons {
+  display: flex;
+  gap: 8px;
+}

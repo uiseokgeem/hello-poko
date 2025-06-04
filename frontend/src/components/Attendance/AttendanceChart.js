@@ -1,19 +1,17 @@
 import React, { useMemo } from "react";
-import { Table } from 'antd';
+import { Table } from "antd";
 import "./AttendanceChart.css";
 
 const mapAttendanceForStudent = (student, data) => {
   const attendance = {};
-
-  data.forEach(dateEntry => {
+  data.forEach((dateEntry) => {
     const attendanceRecord = dateEntry.attendance.find(
-      item => item.id === student.id
+      (item) => item.id === student.id
     );
     attendance[dateEntry.date] = attendanceRecord
       ? attendanceRecord.attendance
       : null;
   });
-
   return attendance;
 };
 
@@ -33,28 +31,36 @@ const AttendanceChart = ({ data, students, openModal }) => {
     return [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
   }, [data]);
 
-  const columns = useMemo(() => [
-    {
-      title: '이름',
-      dataIndex: 'name',
-      key: 'name',
-      fixed: 'left',
-      width: 100,
-    },
-    ...sortedData.map(dateEntry => ({
-      title: (
-        <a
-          onClick={() => openModal(dateEntry.date, "edit")}
-          style={{ cursor: "pointer", color: "#1890ff" }}
-        >
-          {formatDate(dateEntry.date)}
-        </a>
-      ),
-      dataIndex: dateEntry.date,
-      key: dateEntry.date,
-      width: 120,
-      render: attendance => (
-        <span>
+  const columns = useMemo(() => {
+    return [
+      {
+        title: "이름",
+        dataIndex: "name",
+        key: "name",
+        fixed: "left",
+        width: 100,
+      },
+      ...sortedData.map((dateEntry) => ({
+        title: (
+          <button
+            onClick={() => openModal(dateEntry.date, "edit")}
+            style={{
+              cursor: "pointer",
+              background: "none",
+              border: "none",
+              color: "#1890ff",
+              padding: 0,
+              font: "inherit",
+            }}
+          >
+            {formatDate(dateEntry.date)}
+          </button>
+        ),
+        dataIndex: dateEntry.date,
+        key: dateEntry.date,
+        width: 120,
+        render: (attendance) => (
+          <span>
             {attendance === true ? (
               <img
                 src={successIconPath}
@@ -75,19 +81,13 @@ const AttendanceChart = ({ data, students, openModal }) => {
               />
             )}
           </span>
-      ),
-    })),
-    // {
-    //   title: '정보',
-    //   key: 'info',
-    //   fixed: 'right',
-    //   width: 100,
-    //   render: () => <a href="#">보기</a>,
-    // }
-  ], [sortedData, openModal]);
+        ),
+      })),
+    ];
+  }, [sortedData, openModal, errorIconPath, successIconPath, warningIconPath]);
 
   const dataSource = useMemo(() => {
-    return students.map(student => {
+    return students.map((student) => {
       const studentAttendance = mapAttendanceForStudent(student, sortedData);
       return {
         key: student.id,
@@ -103,10 +103,10 @@ const AttendanceChart = ({ data, students, openModal }) => {
       columns={columns}
       dataSource={dataSource}
       pagination={false}
-      scroll={{ x: 'max-content' }}
+      scroll={{ x: "max-content" }}
       sticky
-      bordered={false} 
-  />
+      bordered={false}
+    />
   );
 };
 

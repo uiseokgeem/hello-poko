@@ -1,38 +1,52 @@
 from django.contrib import admin
-from .models import MemberCheck, UserCheck, Comment
-
-
-@admin.register(MemberCheck)  # Register your models here.
-class MemberCheckAdmin(admin.ModelAdmin):
-    list_display = [
-        "id",
-        "name",
-        "status",
-        "pray_member",
-        "date",
-        "status",
-    ]
+from .models import UserCheck, Pray, MemberCheck, Feedback
 
 
 @admin.register(UserCheck)
 class UserCheckAdmin(admin.ModelAdmin):
-    list_display = [
+    list_display = (
         "id",
-        "title",
         "teacher",
-        "worship",
-        "meeting",
-        "qt",
-        "pray_Dept",
-        "pray_group",
-        "pray_user",
-        "pray_emergency",
-        "date",
+        "title",
+        "worship_attendance",
+        "qt_count",
+        "pray_count",
+        "meeting_attendance",
         "status",
-    ]
+        "issue",
+        "date_sunday",
+    )
+    list_filter = ("teacher", "status", "date_sunday")
+    search_fields = ("title", "teacher__full_name")
+    readonly_fields = ("date", "date_sunday", "week_number")
+    ordering = ("-date",)
 
 
-# Register your models here.
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ["id", "teacher", "member_check", "feedback", "date"]
+@admin.register(Pray)
+class PrayAdmin(admin.ModelAdmin):
+    list_display = ("id", "pray_dept", "pray_group", "pray_teacher")
+    search_fields = ("pray_dept", "pray_group", "pray_teacher")
+
+
+@admin.register(MemberCheck)
+class MemberCheckAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "member",
+        "user_check",
+        "gqs_attendance",
+        "status",
+        "date_sunday",
+    )
+    list_filter = ("status", "date_sunday", "gqs_attendance")
+    search_fields = ("member__name", "user_check__title")
+    readonly_fields = ("date", "date_sunday", "week_number")
+    ordering = ("-date",)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ("id", "teacher", "user_check", "feedback", "date")
+    list_filter = ("teacher", "date")
+    search_fields = ("feedback", "teacher__full_name", "user_check__title")
+    readonly_fields = ("date",)
