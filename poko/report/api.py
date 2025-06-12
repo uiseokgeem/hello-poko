@@ -25,11 +25,18 @@ class ReportInitialDataViewSet(ViewSet):
             return ReportDetailSerializer
         return ReportInitialDataSerializer
 
-    def list(self, request):
-        teacher = request.user
-        nearest_sunday = request.query_params.get("nearestSunday")
+    def get_queryset(self):
+        user = self.request.user
+        # 정교사-부교사 확인
+        if user.role == "HEAD":
+            return Member.objects.filter(teacher__email=user)
+        else:
+            return Member.objects.filter(teacher__email=user.head_teacher)
 
-        students = Member.objects.filter(teacher=teacher)
+    def list(self, request):
+        nearest_sunday = request.query_params.get("nearestSunday")
+        students = self.get_queryset()
+
         attendance_qs = Attendance.objects.filter(
             name__in=students, date=nearest_sunday
         )
@@ -70,7 +77,7 @@ class ReportInitialDataViewSet(ViewSet):
             return Response({"detail": "Report not found"}, status=404)
 
         # 해당 교사의 학생 목록
-        students = Member.objects.filter(teacher=user)
+        students = self.get_queryset()
         student_info_map = {s.id: {"name": s.name} for s in students}
 
         # 저장된 report 내 student 데이터
