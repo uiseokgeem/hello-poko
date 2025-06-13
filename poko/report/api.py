@@ -119,6 +119,19 @@ class ReportInitialDataViewSet(ViewSet):
 
         return Response(response_data, status=200)
 
+    # URL: /api/report/initial/check-exist/?nearestSunday=2025-06-16
+    @action(detail=False, methods=["get"], url_path="check-exist")
+    def check_exist(self, request):
+        nearestSunday = request.query_params.get("nearestSunday")
+        students = self.get_queryset()
+
+        exist_attendance = Attendance.objects.filter(
+            name__in=students, date=nearestSunday
+        ).exists()
+
+        if exist_attendance:
+            return Response({"exist_attendance": exist_attendance}, status=200)
+
 
 # 목양일지 CRUD ViewSet
 class ReportViewSet(viewsets.ModelViewSet):

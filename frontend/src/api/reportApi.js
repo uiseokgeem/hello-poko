@@ -109,15 +109,15 @@ export const fetchAdminReportDetail = async (id, nearestSunday) => {
 };
 
 
-// 해당주차의 출석 입력 여부 확인 API
-export const CheckWeekAttendance = async (nearestSunday) => {
+// 해당주차의 출석 입력 여부 및 user 별 중복작성 확인 API
+export const CheckExistData = async (nearestSunday) => {
   try {
     const response = await axiosInstance.get("/report/attendance/", {
       params: { nearestSunday },
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching attendance :", error);
+    console.error("Already Exist Data :", error);
     throw error;
   }
 };
