@@ -138,7 +138,7 @@ const ReportForm = ({
 
       <Form.Item name={["pray", "pray_dept"]} label="사귐의교회(청소년부)">
         {readOnly ? (
-          <Typography.Text>
+          <Typography.Text style={{ whiteSpace: 'pre-line' }}>
             {initialValues?.pray?.pray_dept ?? "-"}
           </Typography.Text>
         ) : (
@@ -148,7 +148,7 @@ const ReportForm = ({
 
       <Form.Item name={["pray", "pray_group"]}  label="GQS/새친구반">
         {readOnly ? (
-          <Typography.Text>
+          <Typography.Text style={{ whiteSpace: 'pre-line' }}>
             {initialValues?.pray?.pray_group ?? "-"}
           </Typography.Text>
         ) : (
@@ -158,7 +158,7 @@ const ReportForm = ({
 
       <Form.Item name={["pray", "pray_teacher"]} label="선생님 본인">
         {readOnly ? (
-          <Typography.Text>
+          <Typography.Text style={{ whiteSpace: 'pre-line' }}>
             {initialValues?.pray?.pray_teacher ?? "-"}
           </Typography.Text>
         ) : (
@@ -199,7 +199,7 @@ const ReportForm = ({
         label="이사, 진학, 유학 등 본인에 대한 특이사항이 있다면 알려주세요."
       >
         {readOnly ? (
-          <Typography.Text>
+          <Typography.Text style={{ whiteSpace: 'pre-line' }}>
             {initialValues?.issue ?? "없습니다."}
           </Typography.Text>
         ) : (

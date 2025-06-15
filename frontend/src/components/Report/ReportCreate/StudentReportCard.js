@@ -54,7 +54,7 @@ const StudentReportCard = ({ student, readOnly = false }) => {
         style={{ marginTop: "8px" }}
       >
         {readOnly ? (
-          <Typography.Text>
+          <Typography.Text style={{ whiteSpace: 'pre-line' }}>
           {student?.care_note || "-"}
           </Typography.Text>
         ) : (
