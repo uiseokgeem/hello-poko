@@ -3,7 +3,7 @@ import { Table, Button, Select } from "antd";
 import CustomButton from "../../../utils/Button";
 import { getNearestSunday } from "../../../utils/dateUtils";
 import { getYearOptions } from "../../../utils/dateUtils";
-import { CheckWeekAttendance } from "../../../api/reportApi";
+import { CheckExistData } from "../../../api/reportApi";
 import "./ReportTableMain.css";
 
 const { Option } = Select;
@@ -66,7 +66,7 @@ const ReportTableMain = ({
             const formattedDate = nearestSunday.toISOString().split("T")[0];
 
             try {
-              const result = await CheckWeekAttendance(formattedDate);
+              const result = await CheckExistData(formattedDate);
               if (result.exists) {
                 onRowClick({ isNew: true }); 
               } else {
