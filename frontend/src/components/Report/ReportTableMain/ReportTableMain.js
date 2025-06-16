@@ -59,35 +59,41 @@ const ReportTableMain = ({
           <span className="report-count">전체 {data.length}</span>
         </div>
         
-        {/* <CustomButton
+        <CustomButton
           type="primary"
           label="+ 새 목양일지"
           onClick={async () => {
+            const today = new Date();
+            const nearestSunday = new Date(today);
+            nearestSunday.setDate(today.getDate() - today.getDay());
+
             const formattedDate = nearestSunday.toISOString().split("T")[0];
 
             try {
-              const result = await CheckExistData(formattedDate);
-              if (result.exists) {
-                onRowClick({ isNew: true }); 
-              } else {
-                alert("해당 주차의 출석 정보가 아직 입력되지 않았습니다.");
-              }
+              await CheckExistData(formattedDate); // 200이면 통과
+
+              // 작성 가능한 상태
+              onRowClick({ isNew: true }); 
             } catch (error) {
-              console.error("출석 확인 중 오류:", error);
-              alert("출석 정보 확인에 실패했습니다.");
+              // 응답이 있는 경우 (400 등)
+              if (error.response && error.response.data?.detail) {
+                alert(error.response.data.detail);
+              } else {
+                alert("출석 정보 확인에 실패했습니다.");
+              }
             }
           }}
           variant="new"
-        /> */}
+        />
 
-        {showCreateButton && (
+        {/* {showCreateButton && (
            <CustomButton
            type="primary"
            label="+ 새 목양일지"
            onClick={() => onRowClick({ isNew: true })}
            variant="new"
          />
-        )}
+        )} */}
       </div>
 
       <Table

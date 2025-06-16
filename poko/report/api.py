@@ -122,15 +122,33 @@ class ReportInitialDataViewSet(ViewSet):
     # URL: /api/report/initial/check-exist/?nearestSunday=2025-06-16
     @action(detail=False, methods=["get"], url_path="check-exist")
     def check_exist(self, request):
-        nearestSunday = request.query_params.get("nearestSunday")
+        nearest_sunday = request.query_params.get("nearestSunday")
         students = self.get_queryset()
 
         exist_attendance = Attendance.objects.filter(
-            name__in=students, date=nearestSunday
+            name__in=students, date=nearest_sunday
         ).exists()
 
-        if exist_attendance:
-            return Response({"exist_attendance": exist_attendance}, status=200)
+        if not exist_attendance:
+            return Response(
+                {"detail": "먼저 출석 정보를 입력해주세요."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        exist_report = UserCheck.objects.filter(
+            date__in=nearest_sunday, teacher=request.user
+        ).exists()
+
+        if exist_report:
+            return Response(
+                {"detail": "이미 해당 주차의 목양일지가 존재합니다. 상세페이지의 수정하기를 사용하세요."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {"detail": "작성 가능한 상태입니다."},
+            status=status.HTTP_200_OK,
+        )
 
 
 # 목양일지 CRUD ViewSet
