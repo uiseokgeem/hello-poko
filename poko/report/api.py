@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
+from django.utils.timezone import make_aware
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -120,13 +123,17 @@ class ReportInitialDataViewSet(ViewSet):
         return Response(response_data, status=200)
 
     # URL: /api/report/initial/check-exist/?nearestSunday=2025-06-16
+    # https://velog.io/@uiseoo/출석이-입력되지-않은-상태에서-양육일지-작성-불가-추가
     @action(detail=False, methods=["get"], url_path="check-exist")
     def check_exist(self, request):
         nearest_sunday = request.query_params.get("nearestSunday")
+
+        nearest_sunday_date = datetime.strptime(nearest_sunday, "%Y-%m-%d").date()
         students = self.get_queryset()
 
+        # 출석 여부 확인
         exist_attendance = Attendance.objects.filter(
-            name__in=students, date=nearest_sunday
+            name__in=students, date=nearest_sunday_date
         ).exists()
 
         if not exist_attendance:
@@ -135,8 +142,9 @@ class ReportInitialDataViewSet(ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # 목양일지 작성 여부 확인
         exist_report = UserCheck.objects.filter(
-            date__in=nearest_sunday, teacher=request.user
+            date_sunday=nearest_sunday_date, teacher=request.user
         ).exists()
 
         if exist_report:

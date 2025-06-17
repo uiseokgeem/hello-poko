@@ -70,10 +70,10 @@ class UserCheck(models.Model):
         choices=pray_choice,
     )
     # 문의사항/긴급사항
-    issue = models.CharField(max_length=300, null=True, default=None)
+    issue = models.TextField(null=True, default=None)
     # 작성시점 날짜
     date = models.DateTimeField(default=timezone.now)
-    # 작성시점 날짜의 주차
+    # 작성시점 가까운 일요일
     date_sunday = models.DateField(null=True, blank=True)
     # date_sunday 기준 주차별 정보
     week_number = models.IntegerField(null=True, blank=True)
