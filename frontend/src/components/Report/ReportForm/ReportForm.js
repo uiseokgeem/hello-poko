@@ -56,7 +56,6 @@ const ReportForm = ({
       <Form.Item
         label="기도 횟수"
         name="pray_count"
-        rules={[{ required: true, message: "기도 횟수를 선택해주세요" }]}
       >
         {readOnly ? (
           <Typography.Text>
@@ -74,7 +73,7 @@ const ReportForm = ({
       </Form.Item>
       
       {/* QT 횟수 */}
-      <Form.Item label="QT 횟수" name="qt_count" rules={[{ required: true }]}> 
+      <Form.Item label="QT 횟수" name="qt_count"> 
         {readOnly ? (
           <Typography.Text>
           {initialValues?.qt_count ?? "-"}회
@@ -86,7 +85,7 @@ const ReportForm = ({
       </Form.Item>
       
       {/* 교사모임 참석 */}
-      <Form.Item label="교사모임 참석" name="meeting_attendance" rules={[{ required: true }]}> 
+      <Form.Item label="교사모임 참석" name="meeting_attendance"> 
         {readOnly ? 
           (
             <Typography.Text>
@@ -109,7 +108,6 @@ const ReportForm = ({
         <Form.Item
           label="주일예배 참석"
           name="worship_attendance"
-          rules={[{ required: true }]}
         > 
           {readOnly ? ( 
             <Typography.Text>
