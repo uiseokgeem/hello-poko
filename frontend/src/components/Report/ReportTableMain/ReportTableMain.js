@@ -18,6 +18,7 @@ const ReportTableMain = ({
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const yearOptions = getYearOptions();
   const [nearestSunday] = useState(getNearestSunday());
+  const env = process.env.REACT_APP_ENV;
 
   const formatKoreanDate = (dateString) => {
     const [year, month, day] = dateString.split("-");
@@ -45,6 +46,17 @@ const ReportTableMain = ({
     loadData();
   }, [fetchFunction, selectedYear]);
 
+  const handleProdClick = async () => {
+    const nearestSundayDate = new Date(nearestSunday);
+    const formattedDate = nearestSundayDate.toISOString().split("T")[0];
+    try {
+      await CheckExistData(formattedDate);
+      onRowClick({ isNew: true });
+    } catch (error) {
+      alert(error.response?.data?.detail || "출석 정보 확인에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="report-main-container">
       <div className="report-header">
@@ -58,35 +70,32 @@ const ReportTableMain = ({
           </Select>
           <span className="report-count">전체 {data.length}</span>
         </div>
-        
-        {/* <CustomButton
-          type="primary"
-          label="+ 새 목양일지"
-          onClick={async () => {
-            const formattedDate = nearestSunday.toISOString().split("T")[0];
 
-            try {
-              const result = await CheckExistData(formattedDate);
-              if (result.exists) {
-                onRowClick({ isNew: true }); 
-              } else {
-                alert("해당 주차의 출석 정보가 아직 입력되지 않았습니다.");
-              }
-            } catch (error) {
-              console.error("출석 확인 중 오류:", error);
-              alert("출석 정보 확인에 실패했습니다.");
-            }
-          }}
-          variant="new"
-        /> */}
+        {/* {showCreateButton && (
+          env === "production" ? (
+            <CustomButton
+              type="primary"
+              label="+ 새 목양일지"
+              onClick={handleProdClick}
+              variant="new"
+            />
+          ) : (
+            <CustomButton
+              type="primary"
+              label="+ 새 목양일지"
+              onClick={() => onRowClick({ isNew: true })}
+              variant="new"
+            />
+          )
+        )} */}
 
-        {showCreateButton && (
-           <CustomButton
-           type="primary"
-           label="+ 새 목양일지"
-           onClick={() => onRowClick({ isNew: true })}
-           variant="new"
-         />
+      {showCreateButton && (
+          <CustomButton
+            type="primary"
+            label="+ 새 목양일지"
+            onClick={() => onRowClick({ isNew: true })}
+            variant="new"
+          />
         )}
       </div>
 

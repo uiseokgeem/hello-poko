@@ -35,17 +35,17 @@ const ReportCreatePage = () => {
     fetchInitialReportData();
   }, [nearestSunday]);
 
-  const handleFinish = (values) => {
+  const handleFinish = async (values) => {
 
     const payload = UpdateBuildReportPayload(values, formattedTitle, isDraft);
     
     if (isDraft) {
-      submitDraftReport(payload, nearestSunday)
+      await submitDraftReport(payload, nearestSunday);
       message.success("임시 저장 완료");
       navigate(`/report`);  
       
     } else {
-      submitReport(payload, nearestSunday);
+      await submitReport(payload, nearestSunday);
       message.success("목양일지 제출 완료");
       navigate(`/report`);  
     }

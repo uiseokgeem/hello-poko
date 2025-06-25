@@ -13,6 +13,19 @@ export const fetchReportSummary = async (year) => {
   }
 };
 
+// 해당주차의 출석 입력 여부 및 user 별 중복작성 확인 API
+export const CheckExistData = async (nearestSunday) => {
+  try {
+    const response = await axiosInstance.get("/report/initial/check-exist/", {
+      params: { nearestSunday },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Already Exist Data :", error);
+    throw error;
+  }
+};
+
 // 목양일지 Form 초기 세팅을 위한 API
 export const fetchReportAttendanceData = async (nearestSunday) => {
   try {
@@ -104,20 +117,6 @@ export const fetchAdminReportDetail = async (id, nearestSunday) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching report detail:", error);
-    throw error;
-  }
-};
-
-
-// 해당주차의 출석 입력 여부 및 user 별 중복작성 확인 API
-export const CheckExistData = async (nearestSunday) => {
-  try {
-    const response = await axiosInstance.get("/report/check-exist/", {
-      params: { nearestSunday },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Already Exist Data :", error);
     throw error;
   }
 };
