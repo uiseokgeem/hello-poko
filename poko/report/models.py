@@ -56,6 +56,7 @@ class UserCheck(models.Model):
     )
     # 교사모임 참석 여부
     meeting_attendance = models.BooleanField(
+        null=True,
         default=True,
         choices=meeting_choice,
     )
