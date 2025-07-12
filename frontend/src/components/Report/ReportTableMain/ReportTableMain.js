@@ -71,24 +71,29 @@ const ReportTableMain = ({
           <span className="report-count">전체 {data.length}</span>
         </div>
 
-        {/* {showCreateButton && (
-          env === "production" ? (
+        {showCreateButton && (
+          <>
+            {/* dev / local 전용: 테스트용 버튼 */}
+            {(env === "development" || env === "local") && (
+              <CustomButton
+                type="default"
+                label="+ 테스트용"
+                onClick={() => onRowClick({ isNew: true })}
+                variant="new"
+              />
+            )}
+
+            {/* 공통: 검증 버튼 */}
             <CustomButton
               type="primary"
               label="+ 새 목양일지"
               onClick={handleProdClick}
               variant="new"
             />
-          ) : (
-            <CustomButton
-              type="primary"
-              label="+ 새 목양일지"
-              onClick={() => onRowClick({ isNew: true })}
-              variant="new"
-            />
-          )
-        )} */}
-
+          </>
+        )}
+     
+      {/* 
       {showCreateButton && (
           <CustomButton
             type="primary"
@@ -96,7 +101,7 @@ const ReportTableMain = ({
             onClick={() => onRowClick({ isNew: true })}
             variant="new"
           />
-        )}
+        )} */}
       </div>
 
       <Table
