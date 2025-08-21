@@ -7,6 +7,7 @@ from .api import (
     MemberAttendanceViewSet,
     AdminTeacherViewSet,
     AdminReportViewSet,
+    AdminFeedbackViewSet,
 )
 
 app_name = "admin_management"
@@ -30,6 +31,7 @@ router.register(
 
 router.register(r"teachers", AdminTeacherViewSet, basename="admin-teachers")
 router.register("report", AdminReportViewSet, basename="admin-report")
+router.register(r"feedbacks", AdminFeedbackViewSet, basename="admin-feedbacks")
 
 urlpatterns = [
     path("", include(router.urls)),

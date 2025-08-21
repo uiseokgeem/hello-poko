@@ -5,23 +5,25 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from accounts.models import CustomUser
 from attendance.models import Attendance, Member
-from report.models import UserCheck
+from report.models import UserCheck, Feedback
 from .serializer import (
     WeeklyAttendanceSerializer,
     GroupAttendanceSerializer,
     MemberAttendanceSerializer,
     TeacherSerializer,
     HeadsSerializer,
+    FeedbackWriteSerializer,
+    FeedbackReadSerializer,
 )
 
 from django.db.models import Count, Q, Prefetch
 from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from .permissions import IsAdminOrReadOnly
 
 
 class AdminTeacherViewSet(ViewSet):
@@ -301,3 +303,51 @@ class AdminReportViewSet(viewsets.ModelViewSet):
         }
 
         return Response(response_data, status=200)
+
+    @action(detail=True, methods=["get"], url_path="feedback")
+    def feedback(self, request, pk=None):  # pk = report_id
+        report = get_object_or_404(UserCheck, pk=pk)
+        fb = getattr(report, "feedback", None)
+        return Response(FeedbackReadSerializer(fb).data if fb else None, status=200)
+
+
+class AdminFeedbackViewSet(viewsets.ModelViewSet):
+    """
+    /admin-management/feedbacks/ (POST)
+    /admin-management/feedbacks/{id}/ (PATCH, DELETE)
+    """
+
+    queryset = Feedback.objects.select_related("teacher", "user_check")
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "partial_update"]:
+            return FeedbackWriteSerializer
+        return FeedbackReadSerializer
+
+    def create(self, request, *args, **kwargs):
+        report_id = request.query_params.get("report")
+        if not report_id:
+            return Response({"detail": "report(query param)가 필요합니다."}, status=400)
+        try:
+            uc = UserCheck.objects.get(pk=report_id)
+        except UserCheck.DoesNotExist:
+            return Response({"detail": "Report(user_check) 를 찾을 수 없습니다."}, status=404)
+
+        serializer = self.get_serializer(
+            data=request.data, context={"request": request, "user_check": uc}
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        out = FeedbackReadSerializer(instance).data
+        return Response(out, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return Response(FeedbackReadSerializer(instance).data)
