@@ -120,3 +120,51 @@ export const fetchAdminReportDetail = async (id, nearestSunday) => {
     throw error;
   }
 };
+
+// usercheck의 feedback 여부 확인 API
+export const fetchAdminReportFeedback = async (reportId) => {
+  const { data } = await axiosInstance.get(`/admin-management/report/${reportId}/feedback/`);
+  return data ?? null;
+};
+  // usercheck에서 feedback model 조회 
+  // 백엔드 'feedback' 함수를 생성 usercheck_id로 매칭된 feedback이 있는지 확인
+
+// params report = user_check_id
+export const createFeedback = async ({ report, body }) => {
+  try {
+    const response = await axiosInstance.post(
+      "/admin-management/feedbacks/",
+      { body },              // ← 본문을 객체로 보냄
+      { params: { report } } // ← report는 params
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating report feedback:", error);
+    throw error;
+  }
+};
+
+// params id = feedback_id
+export const updateFeedback = async ({ id, body }) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/admin-management/feedbacks/${id}/`, // 보통 DRF는 trailing slash 사용
+      { body }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating report feedback:", error);
+    throw error;
+  }
+};
+
+// 4) 삭제: DELETE 메서드 사용
+export const deleteFeedback = async ({ id }) => {
+  try {
+    const response = await axiosInstance.delete(`/admin-management/feedbacks/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting report feedback:", error);
+    throw error;
+  }
+};

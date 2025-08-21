@@ -37,7 +37,7 @@ export const useHandleUpdate = (loadTeacherList, handleCloseModal) => {
     return handleUpdate;
 };
 
-// ✅ 등록 모달 핸들링 추가
+// 등록 모달 핸들링 추가
 export const useHandleRegister = (loadTeacherList) => {
     const [registerModalVisible, setRegisterModalVisible] = useState(false);
     const [registeringTeacher, setRegisteringTeacher] = useState(null);
