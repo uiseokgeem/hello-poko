@@ -64,7 +64,12 @@ class FeedbackWriteSerializer(serializers.ModelSerializer):
     user_check는 query param(report)로 받고, create에서 주입.
     """
 
-    body = serializers.CharField(source="feedback", max_length=500)
+    body = serializers.CharField(
+        source="feedback",
+        allow_blank=False,
+        trim_whitespace=True,
+        required=True,
+    )
 
     class Meta:
         model = Feedback

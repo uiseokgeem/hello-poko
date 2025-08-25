@@ -33,7 +33,7 @@ export default function FeedbackViewer({ feedback, loading }) {
           {feedback.author_name} · {feedback.role} · {created}
         </Text>
       </div>
-      <Paragraph style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>
+      <Paragraph style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 8 }}>
         {feedback.body}
       </Paragraph>
     </Card>

@@ -142,7 +142,9 @@ const AdminReportDetailPage = () => {
                     </Popconfirm>
                   </Space>
                 </div>
-                <div style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>{feedback.body}</div>
+                <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 8 }}>
+                  {feedback.body}
+                </div>
               </Card>
             ) : (
               <Button type="primary" onClick={openCreate}>답변하기</Button>
