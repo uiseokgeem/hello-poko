@@ -175,5 +175,5 @@ class Feedback(models.Model):
         null=True,
         related_name="feedback",
     )
-    feedback = models.CharField(max_length=500)
+    feedback = models.TextField()
     date = models.DateTimeField(default=timezone.now)
