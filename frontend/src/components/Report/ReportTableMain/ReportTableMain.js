@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Select } from "antd";
+import { Table, Select } from "antd";
 import CustomButton from "../../../utils/Button";
 import { getNearestSunday } from "../../../utils/dateUtils";
 import { getYearOptions } from "../../../utils/dateUtils";
@@ -36,7 +36,14 @@ const ReportTableMain = ({
             title: `${formatKoreanDate(item.date_sunday)}, ${item.week_number}주차 목양일지`,
             week: item.week_number,
             teacher: item.teacher_name,
-            status: item.status === 1 ? "작성완료" : "작성중",
+            status:
+              item.status === 0
+                ? "작성중"
+                : item.status === 1
+                ? "작성완료"
+                : item.status === 2
+                ? "답변완료"
+                : "알 수 없음",
           }))
         );
       } catch (error) {
@@ -71,24 +78,29 @@ const ReportTableMain = ({
           <span className="report-count">전체 {data.length}</span>
         </div>
 
-        {/* {showCreateButton && (
-          env === "production" ? (
+        {showCreateButton && (
+          <>
+            {/* dev / local 전용: 테스트용 버튼 */}
+            {(env === "development" || env === "local") && (
+              <CustomButton
+                type="default"
+                label="+ 테스트용"
+                onClick={() => onRowClick({ isNew: true })}
+                variant="new"
+              />
+            )}
+
+            {/* 공통: 검증 버튼 */}
             <CustomButton
               type="primary"
               label="+ 새 목양일지"
               onClick={handleProdClick}
               variant="new"
             />
-          ) : (
-            <CustomButton
-              type="primary"
-              label="+ 새 목양일지"
-              onClick={() => onRowClick({ isNew: true })}
-              variant="new"
-            />
-          )
-        )} */}
-
+          </>
+        )}
+     
+      {/* 
       {showCreateButton && (
           <CustomButton
             type="primary"
@@ -96,7 +108,7 @@ const ReportTableMain = ({
             onClick={() => onRowClick({ isNew: true })}
             variant="new"
           />
-        )}
+        )} */}
       </div>
 
       <Table
