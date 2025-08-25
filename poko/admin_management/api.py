@@ -351,3 +351,15 @@ class AdminFeedbackViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         return Response(FeedbackReadSerializer(instance).data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance: Feedback = self.get_object()
+        uc = instance.user_check  # 연결된 UserCheck 인스턴스 확보
+
+        with transaction.atomic():
+            instance.delete()
+
+            if uc:
+                UserCheck.objects.filter(pk=uc.pk).update(status=1)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

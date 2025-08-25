@@ -1,8 +1,9 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from accounts.models import CustomUser
 from attendance.models import Attendance
-from report.models import Feedback
+from report.models import Feedback, UserCheck
 
 
 class WeeklyAttendanceSerializer(serializers.Serializer):
@@ -85,19 +86,27 @@ class FeedbackWriteSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         author = request.user
         user_check = self.context.get("user_check")
-        return Feedback.objects.create(
-            teacher=author,
-            user_check=user_check,
-            **validated_data,
-        )
+        with transaction.atomic():
+            feedback = Feedback.objects.create(
+                teacher=author,
+                user_check=user_check,
+                **validated_data,
+            )
+            if user_check and user_check.status != 2:
+                UserCheck.objects.filter(pk=user_check.pk).update(status=2)
+            return feedback
 
     def update(self, instance, validated_data):
-        # body(source="feedback") → validated_data에는 "feedback" 키로 들어옵니다.
-        if "feedback" in validated_data:
-            instance.feedback = validated_data["feedback"]
-        # 수정시각을 date에 반영하지 않으려면 아래 라인 생략
-        # instance.date = timezone.now()
-        instance.save(update_fields=["feedback"])  # date 갱신 안 할거면 feedback만
+        feedback_text = validated_data.get("feedback", instance.feedback)
+
+        with transaction.atomic():
+            instance.feedback = feedback_text
+            instance.save(update_fields=["feedback"])
+
+            uc = instance.user_check
+            if uc and uc.status != 2:
+                UserCheck.objects.filter(pk=uc.pk).update(status=2)
+
         return instance
 
 

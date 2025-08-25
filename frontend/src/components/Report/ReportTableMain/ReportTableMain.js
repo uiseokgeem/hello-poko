@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Select } from "antd";
+import { Table, Select } from "antd";
 import CustomButton from "../../../utils/Button";
 import { getNearestSunday } from "../../../utils/dateUtils";
 import { getYearOptions } from "../../../utils/dateUtils";
@@ -36,7 +36,14 @@ const ReportTableMain = ({
             title: `${formatKoreanDate(item.date_sunday)}, ${item.week_number}주차 목양일지`,
             week: item.week_number,
             teacher: item.teacher_name,
-            status: item.status === 1 ? "작성완료" : "작성중",
+            status:
+              item.status === 0
+                ? "작성중"
+                : item.status === 1
+                ? "작성완료"
+                : item.status === 2
+                ? "답변완료"
+                : "알 수 없음",
           }))
         );
       } catch (error) {

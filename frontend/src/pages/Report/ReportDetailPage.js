@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Form, Typography, Spin, message } from "antd";
+import { Form, Typography, Spin, message, Divider} from "antd";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchReportDetail } from "../../api/reportApi";
+import { fetchReportDetail,
+         fetchUserReportFeedback,
+ } from "../../api/reportApi";
 import AppHeader from "../../components/Header/Header";
 import ReportForm from "../../components/Report/ReportForm/ReportForm";
+import FeedbackViewer from "../../components/Report/Feedback/FeedbackViewr";
 import { getNearestSunday } from "../../utils/dateUtils";
 import CustomButton from "../../utils/Button";
 import "./ReportDetailPage.css";
@@ -18,6 +21,10 @@ const ReportDetailPage = () => {
   const [nearestSunday] = useState(getNearestSunday());
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // 피드백 상태
+  const [fbLoading, setFbLoading] = useState(true);
+  const [feedback, setFeedback] = useState(null); 
 
   const formattedTitle = useMemo(() => {
     const date = new Date(nearestSunday);
@@ -38,7 +45,21 @@ const ReportDetailPage = () => {
     loadReport();
   }, [id, nearestSunday]);
 
-
+   
+   useEffect(() => {
+    const loadFeedback = async () => {
+      try {
+        setFbLoading(true);
+        const data = await fetchUserReportFeedback(id);
+        setFeedback(data); // 없으면 null
+      } catch (e) {
+        message.error("관리자 피드백을 불러오는 데 실패했습니다.");
+      } finally {
+        setFbLoading(false);
+      }
+    };
+    if (id) loadFeedback();
+  }, [id]);
 
   if (loading) return <Spin />;
 
@@ -47,7 +68,7 @@ const ReportDetailPage = () => {
     <AppHeader />
     <div className="form-wrapper">
       <div className="detail-header">
-        <Title level={2}>목양일지 상세보기</Title>
+        <Title level={2}>상세보기</Title>
         <div className="detail-header-buttons">
         <CustomButton
             type="default"
@@ -71,6 +92,15 @@ const ReportDetailPage = () => {
         readOnly={true}
         initialValues={report}
       />
+
+      {/* 피드백 섹션 */}
+      <Divider />
+        <section>
+          <Title level={4} style={{ marginBottom: 12 }}>
+            목양일지 답변
+          </Title>
+          <FeedbackViewer feedback={feedback} loading={fbLoading} />
+        </section>
     </div>
   </div>
   );

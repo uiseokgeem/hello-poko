@@ -121,13 +121,20 @@ export const fetchAdminReportDetail = async (id, nearestSunday) => {
   }
 };
 
-// usercheck의 feedback 여부 확인 API
+// User에서 usercheck의 feedback 여부 확인 API
+export const fetchUserReportFeedback = async (reportId) => {
+  const { data } = await axiosInstance.get(
+    `/admin-management/report/${reportId}/feedback/`
+  );
+  return data ?? null; 
+};
+
+// Admin에서 usercheck의 feedback 여부 확인 API
 export const fetchAdminReportFeedback = async (reportId) => {
   const { data } = await axiosInstance.get(`/admin-management/report/${reportId}/feedback/`);
   return data ?? null;
 };
-  // usercheck에서 feedback model 조회 
-  // 백엔드 'feedback' 함수를 생성 usercheck_id로 매칭된 feedback이 있는지 확인
+  
 
 // params report = user_check_id
 export const createFeedback = async ({ report, body }) => {

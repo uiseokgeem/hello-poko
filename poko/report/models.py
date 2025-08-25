@@ -11,9 +11,15 @@ class UserCheck(models.Model):
     STATUS_CHOICES = [
         (0, "작성중"),
         (1, "작성완료"),
+        (2, "답변완료"),
     ]
 
-    worship_choice = [(0, "불참"), (1, "1부 예배"), (2, "2부 예배"), (3, "3부 예배")]
+    worship_choice = [
+        (0, "불참"),
+        (1, "1부 예배"),
+        (2, "2부 예배"),
+        (3, "3부 예배"),
+    ]
     qt_choice = [
         (0, "0회"),
         (1, "1회"),
@@ -113,9 +119,13 @@ class MemberCheck(models.Model):
     STATUS_CHOICES = [
         (0, "작성중"),
         (1, "작성완료"),
+        (2, "답변완료"),
     ]
 
-    gqs_choice = [(False, "불참"), (True, "참석")]
+    gqs_choice = [
+        (False, "불참"),
+        (True, "참석"),
+    ]
 
     # 학생
     member = models.ForeignKey(
