@@ -232,6 +232,8 @@ class AdminReportViewSet(viewsets.ModelViewSet):
     # 목양일지 목록 리스트에 정보 날짜 / 선생님 / 제목 / 작성 상태 API
     @action(detail=False, methods=["get"])
     def summary(self, request):
+        reports = UserCheck.objects.all()
+
         year = request.query_params.get("year")
 
         if year:
