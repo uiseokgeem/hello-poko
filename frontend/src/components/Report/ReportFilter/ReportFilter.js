@@ -11,7 +11,7 @@ export default function ReportFilter({ onChange, initialValues }) {
     const payload = {
       teacher: values.teacher || null,
       student: values.student || "",
-      status: values.status || null,
+      status: values.status !== undefined ? values.status : null,
       keyword: values.keyword || "",
       start_date: values.dateRange?.[0]?.format("YYYY-MM-DD") || null,
       end_date: values.dateRange?.[1]?.format("YYYY-MM-DD") || null,
@@ -57,8 +57,9 @@ export default function ReportFilter({ onChange, initialValues }) {
 
       <Form.Item name="status">
         <Select placeholder="상태" allowClear style={{ width: 140 }}>
-          <Select.Option value="draft">임시저장</Select.Option>
-          <Select.Option value="submitted">제출완료</Select.Option>
+          <Select.Option value={0}>작성중</Select.Option>
+          <Select.Option value={1}>작성완료</Select.Option>
+          <Select.Option value={2}>답변완료</Select.Option>
         </Select>
       </Form.Item>
 

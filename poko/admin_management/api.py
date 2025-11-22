@@ -234,10 +234,31 @@ class AdminReportViewSet(viewsets.ModelViewSet):
     def summary(self, request):
         reports = UserCheck.objects.all()
 
-        year = request.query_params.get("year")
+        teacher = request.query_params.get("teacher")
+        if teacher:
+            reports = reports.filter(teacher_id=teacher)
 
-        if year:
-            reports = UserCheck.objects.filter(date__year=year)
+        student = request.query_params.get("student")
+        if student:
+            reports = reports.filter(membercheck__member__name__icontains=student)
+
+        status_param = request.query_params.get("status")
+        if status_param:
+            reports = reports.filter(status=status_param)
+
+        start_date = request.query_params.get("start_date")
+        if start_date:
+            reports = reports.filter(date__gte=start_date)
+
+        end_date = request.query_params.get("end_date")
+        if end_date:
+            reports = reports.filter(date__lte=end_date)
+
+        keyword = request.query_params.get("search")
+        if keyword:
+            reports = reports.filter(
+                Q(body__icontains=keyword) | Q(prayer_topic__icontains=keyword)
+            )
 
         result = [
             {

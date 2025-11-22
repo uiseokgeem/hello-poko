@@ -1,5 +1,5 @@
 // pages/Admin/AdminReportPage.js
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "antd";
 import AdminAppHeader from "../../components/Admin/AdminHeader";
@@ -23,9 +23,11 @@ const AdminReportPage = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState(defaultFilters);
 
-  // ReportTableMain이 기대하는 fetchFunction 시그니처를 보존하기 위해 래퍼 사용
+  useEffect(() => {
+    setFilters(defaultFilters);
+  }, []);
+
   const fetchWithFilters = useMemo(() => {
-    // 필요 시 tableParams(페이지네이션/소팅) 합치도록 확장 가능
     return async () => {
       return await fetchAdminReportSummary(filters);
     };
