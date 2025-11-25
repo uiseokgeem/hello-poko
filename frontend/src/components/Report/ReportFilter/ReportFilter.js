@@ -1,12 +1,15 @@
 // components/Report/ReportFilter/ReportFilter.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Select, DatePicker, Input, Button, Space } from "antd";
+import { fetchTeacherList } from "../../../api//adminApi";
 
 const { RangePicker } = DatePicker;
 
 export default function ReportFilter({ onChange, initialValues }) {
   const [form] = Form.useForm();
+  const [teachers, setTeachers] = useState([]);
 
+  
   const handleFinish = (values) => {
     const payload = {
       teacher: values.teacher || null,
@@ -31,6 +34,20 @@ export default function ReportFilter({ onChange, initialValues }) {
     });
   };
 
+  useEffect(() => {
+    const loadTeachers = async () => {
+      try {
+        const data = await fetchTeacherList();
+        setTeachers(data);
+      } catch (err) {
+        console.error("교사 목록 불러오기 실패", err);
+      }
+    };
+
+    loadTeachers()
+
+  }, []);
+
   return (
     <Form
       form={form}
@@ -39,11 +56,14 @@ export default function ReportFilter({ onChange, initialValues }) {
       initialValues={initialValues}
       style={{ marginBottom: 16, gap: 8, flexWrap: "wrap" }}
     >
-      <Form.Item name="teacher">
+        {/* 교사 선택 */}
+        <Form.Item name="teacher">
         <Select placeholder="교사" allowClear style={{ width: 160 }}>
-          {/* 실제 옵션은 API로 채우는 것을 권장 */}
-          <Select.Option value="1">선생님A</Select.Option>
-          <Select.Option value="2">선생님B</Select.Option>
+          {teachers.map((t) => (
+            <Select.Option key={t.id} value={t.id}>
+              {t.full_name}
+            </Select.Option>
+          ))}
         </Select>
       </Form.Item>
 
@@ -57,7 +77,7 @@ export default function ReportFilter({ onChange, initialValues }) {
 
       <Form.Item name="status">
         <Select placeholder="상태" allowClear style={{ width: 140 }}>
-          <Select.Option value={0}>작성중</Select.Option>
+          <Select.Option value={0}>작성중</Select.Option>
           <Select.Option value={1}>작성완료</Select.Option>
           <Select.Option value={2}>답변완료</Select.Option>
         </Select>
