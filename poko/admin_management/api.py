@@ -254,11 +254,16 @@ class AdminReportViewSet(viewsets.ModelViewSet):
         if end_date:
             reports = reports.filter(date__lte=end_date)
 
-        keyword = request.query_params.get("search")
+        keyword = request.query_params.get("keyword")
+
         if keyword:
             reports = reports.filter(
-                Q(body__icontains=keyword) | Q(prayer_topic__icontains=keyword)
-            )
+                Q(issue__icontains=keyword)
+                | Q(pray__pray_dept__icontains=keyword)
+                | Q(pray__pray_group__icontains=keyword)
+                | Q(pray__pray_teacher__icontains=keyword)
+                | Q(membercheck__care_note__icontains=keyword)
+            ).distinct()
 
         result = [
             {

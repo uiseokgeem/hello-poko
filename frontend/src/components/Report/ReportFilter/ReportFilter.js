@@ -56,14 +56,14 @@ export default function ReportFilter({ onChange, initialValues }) {
       initialValues={initialValues}
       style={{ marginBottom: 16, gap: 8, flexWrap: "wrap" }}
     >
-        {/* 교사 선택 */}
-        <Form.Item name="teacher">
-        <Select placeholder="교사" allowClear style={{ width: 160 }}>
-          {teachers.map((t) => (
-            <Select.Option key={t.id} value={t.id}>
-              {t.full_name}
-            </Select.Option>
-          ))}
+      {/* 교사 선택 */}
+      <Form.Item name="teacher">
+      <Select placeholder="교사" allowClear style={{ width: 160 }}>
+        {teachers.map((t) => (
+          <Select.Option key={t.id} value={t.id}>
+            {t.full_name}
+          </Select.Option>
+        ))}
         </Select>
       </Form.Item>
 
