@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Layout } from "antd";
 import AdminAppHeader from "../../components/Admin/AdminHeader";
 import ReportTableMain from "../../components/Report/ReportTableMain/ReportTableMain";
+import "../../components/Report/ReportFilter/ReportFilter.css"
 import ReportFilter from "../../components/Report/ReportFilter/ReportFilter";
 import { fetchAdminReportSummary } from "../../api/reportApi";
 import { adminReportColumns } from "../../components/Report/ReportTableMain/adminColumns";
@@ -41,13 +42,14 @@ const AdminReportPage = () => {
           <h1>목양일지</h1>
         </div>
 
-        <ReportFilter
-          initialValues={{}}
-          onChange={(next) => setFilters(next)}
-        />
+        <div className="report-filter-wrapper">
+          <ReportFilter
+            initialValues={{}}
+            onChange={(next) => setFilters(next)}
+          />
+        </div>
 
         <ReportTableMain
-          // 필터 변경 시 테이블을 새로고침하고 싶다면 key에 의존성 부여
           key={JSON.stringify(filters)}
           fetchFunction={fetchWithFilters}
           columns={adminReportColumns}

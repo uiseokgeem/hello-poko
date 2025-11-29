@@ -1,0 +1,26 @@
+/* 기본: 화면이 넓을 때 – 줄바꿈 허용, 스크롤 없음 */
+.report-filter-wrapper {
+    width: 100%;
+  }
+  
+  .report-filter-form {
+    margin-bottom: 16px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;      /* 기본은 여러 줄 허용 */
+    gap: 8px;
+    justify-content: center;   /* 넓은 화면에서는 가운데 정렬 */
+  }
+  
+  /* 화면이 좁아졌을 때만: 줄바꿈 금지 + 가로 스크롤 */
+  @media (max-width: 1024px) {
+    .report-filter-wrapper {
+      overflow-x: auto;         /* 이때만 가로 스크롤 ON */
+    }
+  
+    .report-filter-form {
+      flex-wrap: nowrap;        /* 줄바꿈 금지, 한 줄 유지 */
+      min-width: 900px;         /* 이 폭보다 좁으면 스크롤 발생 */
+      justify-content: flex-start;  /* 왼쪽부터 보이도록 정렬 */
+    }
+  }
