@@ -96,11 +96,14 @@ export const submitUpdateReport = async (id, formData, nearestSunday) => {
 
 
 // admin에서 현재 등록 된 목양일지 조회를 위한 API
-export const fetchAdminReportSummary = async (year) => {
+export const fetchAdminReportSummary = async (filters = {}) => {
   try {
-    const response = await axiosInstance.get("/admin-management/report/summary/", {
-      params: { year }, 
-    });
+    const response = await axiosInstance.get(
+      "/admin-management/report/summary/",
+      {
+        params: filters,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching report summary:", error);

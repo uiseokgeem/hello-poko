@@ -232,10 +232,38 @@ class AdminReportViewSet(viewsets.ModelViewSet):
     # 목양일지 목록 리스트에 정보 날짜 / 선생님 / 제목 / 작성 상태 API
     @action(detail=False, methods=["get"])
     def summary(self, request):
-        year = request.query_params.get("year")
+        reports = UserCheck.objects.all()
 
-        if year:
-            reports = UserCheck.objects.filter(date__year=year)
+        teacher = request.query_params.get("teacher")
+        if teacher:
+            reports = reports.filter(teacher_id=teacher)
+
+        student = request.query_params.get("student")
+        if student:
+            reports = reports.filter(membercheck__member__name__icontains=student)
+
+        status_param = request.query_params.get("status")
+        if status_param:
+            reports = reports.filter(status=status_param)
+
+        start_date = request.query_params.get("start_date")
+        if start_date:
+            reports = reports.filter(date__gte=start_date)
+
+        end_date = request.query_params.get("end_date")
+        if end_date:
+            reports = reports.filter(date__lte=end_date)
+
+        keyword = request.query_params.get("keyword")
+
+        if keyword:
+            reports = reports.filter(
+                Q(issue__icontains=keyword)
+                | Q(pray__pray_dept__icontains=keyword)
+                | Q(pray__pray_group__icontains=keyword)
+                | Q(pray__pray_teacher__icontains=keyword)
+                | Q(membercheck__care_note__icontains=keyword)
+            ).distinct()
 
         result = [
             {
