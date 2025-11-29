@@ -54,14 +54,7 @@
           layout="inline"
           onFinish={handleFinish}
           initialValues={initialValues}
-          style={{
-            marginBottom: 16,
-            gap: 8,
-            flexWrap: "wrap",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-        }}
+          className="report-filter-form"
         >
           {/* 교사 선택 */}
           <Form.Item name="teacher">
