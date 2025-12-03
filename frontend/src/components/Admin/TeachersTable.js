@@ -37,19 +37,14 @@ const TeachersTable = () => {
 
     const columns = [
         {
-            title: "이름",
-            dataIndex: "full_name",
+            title: "선생님 이름",
+            dataIndex: "full_name",  // CustomUser.full_name
             key: "full_name",
         },
+
         {
-            title: "담당 반",
-            dataIndex: "class_name",
-            key: "class_name",
-            render: (text) => text || "미등록",
-        },
-        {
-            title: "선생님 형태",
-            dataIndex: "role",
+            title: "유형",
+            dataIndex: "role",   // CustomUser.role
             key: "role",
             render: (text) => {
                 const roleMap = {
@@ -60,8 +55,20 @@ const TeachersTable = () => {
             }
         },
         {
+            title: "담당 반",
+            dataIndex: "class_name",    // CustomUser.class_name
+            key: "class_name",
+            render: (text) => text || "미등록",
+        },
+        {
+            title: "참조 선생님",
+            dataIndex: "head_teacher",  // CustomUser.head_teacher(FK)
+            key: "head_teacher",
+            render: (text) => text || "미등록",
+        },
+        {
             title: "이메일",
-            dataIndex: "email",
+            dataIndex: "email", // CustomUser.email
             key: "email",
         },
         {
