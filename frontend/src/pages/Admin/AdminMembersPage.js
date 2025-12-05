@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Layout, Typography, Tabs, Button, Space } from "antd";
 import AdminAppHeader from "../../components/Admin/AdminHeader";
+import CreateStudentModal from "../../components/Attendance/CreateStudentModal";
 import TeachersTable from "../../components/Admin/TeachersTable";
 import GoHomeButton from "../../utils/GoHomeButton";
-import StudentMembersTable from "../../components/Admin/StudentMembersTable"; // 학생 관리 테이블(새로 만들 예정)
+import StudentMembersTable from "../../components/Admin/StudentMembersTable";
 import "./AdminMembersPage.css";
 
 
@@ -12,14 +13,25 @@ const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const AdminMembersPage = () => {
+    const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+    const [mode] = useState("admin");
     
     const handleOpenChangeClassModal = () => {
         // TODO: 반 전체 변경 모달 열기
       };
     
     const handleOpenStudentRegisterModal = () => {
-        // TODO: 학생 등록 모달 열기
+      setIsStudentModalOpen(true);
       };
+
+    const handleCloseStudentRegisterModal = () => {
+        setIsStudentModalOpen(false);
+      };
+
+    const handleStudentAdded = () => {
+        setIsStudentModalOpen(false);
+
+    };
 
     return (
         <Layout>
@@ -56,6 +68,13 @@ const AdminMembersPage = () => {
                 </Space>
                 </div>
                 </div>
+
+                <CreateStudentModal
+                isOpen={isStudentModalOpen}
+                onClose={handleCloseStudentRegisterModal}
+                onStudentAdded={handleStudentAdded}
+                mode={mode}
+                />
             </Content>
         </Layout>
 
