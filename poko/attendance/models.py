@@ -12,6 +12,7 @@ class Member(models.Model):
     name = models.CharField(max_length=5, unique=True)
     grade = models.CharField(max_length=3, null=True, default=None)
     gender = models.CharField(max_length=3, null=True, default=None)
+    birth_date = models.DateField(null=True, blank=True, help_text="학생 생년월일")
     attendance_count = models.IntegerField(default=0)
     absent_count = models.IntegerField(default=0)
 

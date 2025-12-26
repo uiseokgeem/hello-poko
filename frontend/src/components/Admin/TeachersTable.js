@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Table, Button } from "antd";
-import { fetchTeacherList } from "../../api/adminApi";
 import { useHandleEdit, useHandleDelete, useHandleUpdate, useHandleRegister } from "../../hooks/admin/handle";
 import TeacherModal from "./TeacherModal";
 import TeacherDeleteModal from "./TeacherDeleteModal";
+import { fetchTeacherFilter } from "../../api/adminApi";
 import "./TeachersTable.css";
 
-const TeachersTable = () => {
+const TeachersTable = ({ keyword = "" }) => {
     const [teachers, setTeachers] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const loadTeacherList = async () => {
+  
+    const loadTeacherList = useCallback(async () => {
+        setLoading(true);
         try {
-            const data = await fetchTeacherList();
-            setTeachers(data);
-        } catch (error) {
-            console.error("선생님 목록 불러오기 실패:", error);
+          const data = await fetchTeacherFilter(keyword);
+          setTeachers(data);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      }, [keyword]);
+      
+      useEffect(() => {
+        loadTeacherList();
+      }, [loadTeacherList]);
+    
 
     const { selectedTeacher, modalVisible, handleEdit, handleCloseModal } = useHandleEdit();
     const {
@@ -88,16 +92,16 @@ const TeachersTable = () => {
 
     useEffect(() => {
         loadTeacherList();
-    }, []);
+      }, [loadTeacherList]);
 
     return (
         <div className="teachers-table-container">
             <Table
                 className="teachers-table-table"
+                rowKey="id"
                 columns={columns}
                 dataSource={teachers}
                 loading={loading}
-                rowKey="id"
                 pagination={{ pageSize: 10 }}
                 scroll={{ x: 1000 }}
             />

@@ -1,0 +1,50 @@
+.student-delete-modal .ant-modal-content {
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+}
+
+.delete-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.delete-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #212529;
+}
+
+.delete-description {
+    font-size: 14px;
+    color: #757575;
+}
+
+.delete-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.cancel-button {
+    background-color: #EDEDF6;
+    border: none;
+    color: #757575;
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.delete-button {
+    background-color: #FF4D4F;
+    border: none;
+    color: white;
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}

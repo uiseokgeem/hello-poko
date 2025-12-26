@@ -15,6 +15,7 @@ import AdminPage from './pages/Admin/AdminPage';
 import AdminReportPage from './pages/Admin/AdminReportPage';
 import AdminReportDetailPage from './pages/Admin/AdminReportDetailPage';
 import AdminMembersPage from './pages/Admin/AdminMembersPage';
+import AdminClassAssignmentPage from './pages/Admin/AdminClassAssignmentPage'
 // import AdminTeacher from './pages/Admin/AdminTeacher';
 import KakaoRegisterPage from './pages/KakaoRegisterPage';
 import KakaoAuthHandler from './pages/KakaoAuthHandler';
@@ -52,6 +53,7 @@ const App = () => {
         <Route path="/admin/members" element={<AdminMembersPage />} />     {/* 멤버(교사/학생) 관리 */}
         <Route path="/admin/report" element={<AdminReportPage />} />   {/* 목양일지 관리 */}
         <Route path="/admin/report/detail/:id" element={<AdminReportDetailPage />} />
+        <Route path="/admin/class-assignment" element={<AdminClassAssignmentPage />} />
       </Routes>
     </Router>
   );

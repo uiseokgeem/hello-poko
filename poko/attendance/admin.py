@@ -13,6 +13,7 @@ class MemberAdmin(admin.ModelAdmin):
         "gender",
         "attendance_count",
         "absent_count",
+        "birth_date",
     ]
 
     # def __str__(self):

@@ -17,6 +17,13 @@ from .serializer import (
     HeadsSerializer,
     FeedbackWriteSerializer,
     FeedbackReadSerializer,
+    AdminStudentSerializer,
+    SimpleTeacherSerializer,
+    ClassAssignmentRowSerializer,
+    ClassAssignmentSaveItemSerializer,
+    AdminStudentListSerializer,
+    AdminStudentGradeBulkSerializer,
+    AdminStudentAssignHeadSerializer,
 )
 
 from django.db.models import Count, Q, Prefetch
@@ -29,7 +36,18 @@ from .permissions import IsAdminOrReadOnly
 class AdminTeacherViewSet(ViewSet):
     # list
     def list(self, request):
+        q = (request.query_params.get("q") or "").strip()
+
         teachers = CustomUser.objects.all()
+
+        if q:
+            teachers = teachers.filter(
+                Q(full_name__icontains=q)
+                | Q(email__icontains=q)
+                | Q(class_name__icontains=q)
+                | Q(head_teacher__full_name__icontains=q)
+            ).distinct()
+
         serializer = TeacherSerializer(teachers, many=True)
         return Response(serializer.data)
 
@@ -66,6 +84,133 @@ class AdminTeacherViewSet(ViewSet):
         teacher = get_object_or_404(CustomUser, pk=pk)
         teacher.delete()
         return Response({"message": "삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminStudentViewSet(ViewSet):
+    """
+    기존 students 엔드포인트에 2단계/3단계 액션을 추가합니다.
+    - GET  /admin-management/students/                      (기존)
+    - PATCH/DELETE ...                                      (기존)
+    - GET  /admin-management/students/grade-step/           (2단계 조회)
+    - POST /admin-management/students/grade-bulk/           (2단계 저장)
+    - GET  /admin-management/students/placement-step/       (3단계 조회)
+    - POST /admin-management/students/assign-head/          (3단계 저장)
+    """
+
+    @action(detail=False, methods=["get"], url_path="grade-step")
+    def grade_step(self, request):
+        q = (request.query_params.get("q") or "").strip()
+        grade = (request.query_params.get("grade") or "").strip()
+
+        qs = Member.objects.select_related("teacher").all()
+
+        if q:
+            qs = qs.filter(name__icontains=q)
+
+        if grade:
+            qs = qs.filter(grade=grade)
+
+        qs = qs.order_by("name", "id")
+
+        return Response(AdminStudentListSerializer(qs, many=True).data)
+
+    @action(detail=False, methods=["post"], url_path="grade-bulk")
+    def grade_bulk(self, request):
+        serializer = AdminStudentGradeBulkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mode = serializer.validated_data["mode"]
+        student_ids = serializer.validated_data.get("student_ids") or []
+        target_grade = serializer.validated_data.get("target_grade")
+
+        with transaction.atomic():
+            if mode == "selected":
+                Member.objects.filter(id__in=student_ids).update(grade=target_grade)
+
+            elif mode == "promote":
+                # 일괄 승급: 현재 grade 값에 따라 매핑 업데이트
+                # (DB 레벨 CASE로도 가능하지만, 명확하게 Python 루프로 처리)
+                qs = Member.objects.select_for_update().all()
+                for m in qs:
+                    if not m.grade:
+                        continue
+                    new_grade = GRADE_PROMOTION_MAP.get(m.grade)
+                    if new_grade and new_grade != m.grade:
+                        m.grade = new_grade
+                        m.save(update_fields=["grade"])
+
+        return Response({"message": "학년 업데이트가 저장되었습니다."}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"], url_path="placement-step")
+    def placement_step(self, request):
+        q = (request.query_params.get("q") or "").strip()
+        grade = (request.query_params.get("grade") or "").strip()
+
+        qs = Member.objects.select_related("teacher").all()
+
+        if q:
+            qs = qs.filter(name__icontains=q)
+
+        if grade:
+            qs = qs.filter(grade=grade)
+
+        qs = qs.order_by("name", "id")
+
+        return Response(AdminStudentListSerializer(qs, many=True).data)
+
+    @action(detail=False, methods=["post"], url_path="assign-head")
+    def assign_head(self, request):
+        serializer = AdminStudentAssignHeadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        head_id = serializer.validated_data["head_id"]
+        student_ids = serializer.validated_data["student_ids"]
+
+        head = CustomUser.objects.get(id=head_id)  # validate에서 존재/role 확인됨
+
+        with transaction.atomic():
+            updated = Member.objects.filter(id__in=student_ids).update(teacher=head)
+
+        return Response(
+            {"message": "학생 배치가 저장되었습니다.", "updated_count": updated},
+            status=status.HTTP_200_OK,
+        )
+
+    def list(self, request):
+        q = (request.query_params.get("q") or "").strip()
+
+        students = Member.objects.select_related(
+            "teacher", "teacher__head_teacher"
+        ).prefetch_related("teacher__assistance_teacher")
+
+        if q:
+            students = students.filter(
+                Q(name__icontains=q)
+                | Q(grade__icontains=q)
+                | Q(teacher__full_name__icontains=q)
+                | Q(teacher__head_teacher__full_name__icontains=q)
+                | Q(teacher__assistance_teacher__full_name__icontains=q)
+            ).distinct()
+
+        serializer = AdminStudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+    # 학생 부분 수정 (EditStudentModal)
+    def partial_update(self, request, pk=None):
+        student = get_object_or_404(Member, pk=pk)
+        serializer = AdminStudentSerializer(student, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 학생 삭제 (DeleteStudentModal)
+    def destroy(self, request, pk=None):
+        student = get_object_or_404(Member, pk=pk)
+        student.delete()
+        return Response({"message": "학생이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class WeeklyAttendanceViewSet(ModelViewSet):
@@ -391,3 +536,187 @@ class AdminFeedbackViewSet(viewsets.ModelViewSet):
                 UserCheck.objects.filter(pk=uc.pk).update(status=1)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminClassAssignmentViewSet(ViewSet):
+    """
+    GET  /admin-management/class-assignments/        반편성 화면 초기 데이터
+    POST /admin-management/class-assignments/save/   반편성 일괄 저장
+    """
+
+    def list(self, request):
+        class_names = list(
+            CustomUser.objects.exclude(class_name__isnull=True)
+            .exclude(class_name__exact="")
+            .values_list("class_name", flat=True)
+            .distinct()
+            .order_by("class_name")
+        )
+
+        rows = []
+        for cn in class_names:
+            head = (
+                CustomUser.objects.filter(role="HEAD", class_name=cn)
+                .order_by("id")
+                .first()
+            )
+
+            if head:
+                assistant = (
+                    CustomUser.objects.filter(
+                        role="ASSISTANT", class_name=cn, head_teacher=head
+                    )
+                    .order_by("id")
+                    .first()
+                )
+            else:
+                assistant = (
+                    CustomUser.objects.filter(role="ASSISTANT", class_name=cn)
+                    .order_by("id")
+                    .first()
+                )
+
+            rows.append(
+                {
+                    "class_name": cn,
+                    "current_head_id": head.id if head else None,
+                    "current_head_name": head.full_name if head else "",
+                    "current_assistant_id": assistant.id if assistant else None,
+                    "current_assistant_name": assistant.full_name if assistant else "",
+                }
+            )
+
+        heads = CustomUser.objects.filter(role="HEAD").order_by("full_name")
+        assistants = CustomUser.objects.filter(role="ASSISTANT").order_by("full_name")
+
+        return Response(
+            {
+                "rows": ClassAssignmentRowSerializer(rows, many=True).data,
+                "head_candidates": SimpleTeacherSerializer(heads, many=True).data,
+                "assistant_candidates": SimpleTeacherSerializer(
+                    assistants, many=True
+                ).data,
+            }
+        )
+
+    @action(detail=False, methods=["post"], url_path="save")
+    def save(self, request):
+        # payload: [{class_name, head_id, assistant_id?}, ...]
+        serializer = ClassAssignmentSaveItemSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        items = serializer.validated_data
+
+        # 1) 반별 필수/선택 검증 + 동일 반에서 head/assistant 동일인 금지
+        for it in items:
+            if not it.get("head_id"):
+                return Response({"detail": "담당 선생님(HEAD)은 필수입니다."}, status=400)
+
+            if it.get("assistant_id") and it["assistant_id"] == it["head_id"]:
+                return Response(
+                    {"detail": f"{it['class_name']} 반: 담당/보조가 같은 사람입니다."}, status=400
+                )
+
+        # 2) 전체 중복 금지(반 편성 전체에서 동일 teacher 2번 등장 금지)
+        used = {}
+        for it in items:
+            cn = it["class_name"]
+            hid = it["head_id"]
+            aid = it.get("assistant_id")
+
+            for tid in [hid, aid]:
+                if not tid:
+                    continue
+                if tid in used:
+                    return Response(
+                        {
+                            "detail": f"중복 배정: 선생님({tid})이 {used[tid]} 와 {cn} 에 동시에 배정되었습니다."
+                        },
+                        status=400,
+                    )
+                used[tid] = cn
+
+        # 3) role 검증(이 페이지에서 role 변경 금지)
+        head_ids = [it["head_id"] for it in items]
+        assistant_ids = [
+            it.get("assistant_id") for it in items if it.get("assistant_id")
+        ]
+
+        heads_map = {t.id: t for t in CustomUser.objects.filter(id__in=head_ids)}
+        assistants_map = {
+            t.id: t for t in CustomUser.objects.filter(id__in=assistant_ids)
+        }
+
+        for it in items:
+            cn = it["class_name"]
+            head = heads_map.get(it["head_id"])
+            if not head:
+                return Response({"detail": f"{cn} 반: 담당 선생님을 찾을 수 없습니다."}, status=400)
+            if head.role != "HEAD":
+                return Response({"detail": f"{cn} 반: 담당은 HEAD만 선택 가능합니다."}, status=400)
+
+            aid = it.get("assistant_id")
+            if aid:
+                assistant = assistants_map.get(aid)
+                if not assistant:
+                    return Response(
+                        {"detail": f"{cn} 반: 보조 선생님을 찾을 수 없습니다."}, status=400
+                    )
+                if assistant.role != "ASSISTANT":
+                    return Response(
+                        {"detail": f"{cn} 반: 보조는 ASSISTANT만 선택 가능합니다."}, status=400
+                    )
+
+        # 4) 학생 일괄 변경을 위해 저장 전 “기존 반 담당”을 잡아둠
+        old_head_by_class = {}
+        for it in items:
+            cn = it["class_name"]
+            old_head = (
+                CustomUser.objects.filter(role="HEAD", class_name=cn)
+                .order_by("id")
+                .first()
+            )
+            old_head_by_class[cn] = old_head
+
+        # 5) 실제 저장(정책 B: 미배정(null) 허용)
+        with transaction.atomic():
+            # (1) 이번 저장에서 선택된 사람들은 최종적으로 중복이 없으므로,
+            #     먼저: 선택되지 않은 기존 배정자들을 “미배정”으로 정리 (class_name=None)
+            #     - 대상: class_name이 items에 포함된 반들에 속해 있던 모든 선생님 중, 이번에 선택되지 않은 사람
+            target_class_names = [it["class_name"] for it in items]
+            selected_ids = set(used.keys())
+
+            existing_in_scope = CustomUser.objects.filter(
+                class_name__in=target_class_names
+            )
+            for t in existing_in_scope:
+                if t.id not in selected_ids:
+                    t.class_name = None
+                    if t.role == "ASSISTANT":
+                        t.head_teacher = None
+                    # HEAD는 head_teacher가 원래 null이어야 자연스럽지만, 혹시 값이 있으면 null로 정리
+                    if t.role == "HEAD":
+                        t.head_teacher = None
+                    t.save(update_fields=["class_name", "head_teacher"])
+
+            # (2) 각 반의 head/assistant를 배정
+            for it in items:
+                cn = it["class_name"]
+                head = heads_map[it["head_id"]]
+                head.class_name = cn
+                head.head_teacher = None
+                head.save(update_fields=["class_name", "head_teacher"])
+
+                aid = it.get("assistant_id")
+                if aid:
+                    assistant = assistants_map[aid]
+                    assistant.class_name = cn
+                    # 정책 A: 보조 head_teacher 강제 연결
+                    assistant.head_teacher = head
+                    assistant.save(update_fields=["class_name", "head_teacher"])
+
+                # (3) 학생 일괄 변경
+                old_head = old_head_by_class.get(cn)
+                if old_head and old_head.id != head.id:
+                    Member.objects.filter(teacher_id=old_head.id).update(teacher=head)
+
+        return Response({"message": "반 편성이 저장되었습니다."}, status=status.HTTP_200_OK)

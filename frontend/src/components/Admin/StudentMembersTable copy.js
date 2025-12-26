@@ -1,45 +1,31 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Table } from "antd";
 import EditStudentModal from "./EditStudentModal";
 import DeleteStudentModal from "./DeleteStudentModal";
-import { fetchStudentFilter, deleteStudent } from "../../api/adminApi";
+import { deleteStudent } from "../../api/adminApi";
 
-const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+const StudentMembersTable = ({ students, setStudents, refreshStudents }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
 
-  const refreshStudents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchStudentFilter(keyword);
-      setStudents(data);
-    } finally {
-      setLoading(false);
-    }
-  }, [keyword]);
-  
-  useEffect(() => {
-    refreshStudents();
-  }, [refreshStudents, refreshKey]);
-
-
   const openEditModal = (record) => {
     setSelectedStudent(record);
     setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedStudent(null);
   };
 
   const handleStudentUpdate = (updatedStudent) => {
     setStudents((prev) =>
       prev.map((s) => (s.id === updatedStudent.id ? updatedStudent : s))
     );
-    setIsEditModalOpen(false);
-    setSelectedStudent(null);
+    closeEditModal();
   };
 
   const openDeleteModal = (record) => {
@@ -47,17 +33,21 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
     setIsDeleteModalOpen(true);
   };
 
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setStudentToDelete(null);
+  };
+
   const handleConfirmDelete = async () => {
     await deleteStudent(studentToDelete.id);
     setStudents((prev) => prev.filter((s) => s.id !== studentToDelete.id));
-    setIsDeleteModalOpen(false);
-    setStudentToDelete(null);
+    closeDeleteModal();
   };
 
   const columns = [
     { title: "학생명", dataIndex: "name", key: "name" },
     { title: "생년월일", dataIndex: "birth_date", key: "birth_date" },
-    { title: "학년", dataIndex: "grade", key: "grade" },
+    { title: "담당반", dataIndex: "grade", key: "grade" },
     { title: "담당 선생님", dataIndex: "teacher", key: "teacher", render: (t) => t || "미등록" },
     {
       title: "보기",
@@ -75,19 +65,13 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
     },
   ];
 
-
   return (
     <>
-      <Table 
-      rowKey="id" 
-      columns={columns}  
-      dataSource={[...students].sort((a, b) => a.name.localeCompare(b.name, "ko"))} 
-      loading={loading}
-      pagination={false} />
+      <Table rowKey="id" columns={columns}  dataSource={[...students].sort((a, b) => a.name.localeCompare(b.name, "ko"))} pagination={false} />
 
       <EditStudentModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={closeEditModal}
         onStudentUpdate={handleStudentUpdate}
         mode="admin"
         student={selectedStudent}
@@ -95,7 +79,7 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
 
       <DeleteStudentModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={closeDeleteModal}
         onConfirm={handleConfirmDelete}
         student={studentToDelete}
       />
