@@ -107,12 +107,12 @@ class Pray(models.Model):
         blank=True,
         on_delete=models.CASCADE,
     )
-    # 청소년부를 위한 기도
-    pray_dept = models.CharField(max_length=300, null=True, default=None)
+    # 청소년부를 위한 기도제목
+    pray_dept = models.TextField(null=True, default=None)
     # 반 모임을 위한 기도
-    pray_group = models.CharField(max_length=300, null=True, default=None)
+    pray_group = models.TextField(null=True, default=None)
     # 사용자에 대한 기도
-    pray_teacher = models.CharField(max_length=300, null=True, default=None)
+    pray_teacher = models.TextField(null=True, default=None)
 
 
 class MemberCheck(models.Model):
