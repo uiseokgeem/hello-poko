@@ -8,6 +8,8 @@ from .api import (
     AdminTeacherViewSet,
     AdminReportViewSet,
     AdminFeedbackViewSet,
+    AdminStudentViewSet,
+    AdminClassAssignmentViewSet,
 )
 
 app_name = "admin_management"
@@ -27,6 +29,17 @@ router.register(
     r"member-attendance",
     MemberAttendanceViewSet,
     basename="member-attendance",
+)
+
+router.register(
+    r"students",
+    AdminStudentViewSet,
+    basename="admin-students",
+)
+router.register(
+    r"class-assignments",
+    AdminClassAssignmentViewSet,
+    basename="admin-class-assignments",
 )
 
 router.register(r"teachers", AdminTeacherViewSet, basename="admin-teachers")

@@ -1,51 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Button, Select, message, Radio } from "antd";
-import { fetchAllTeachers,
- } from "../../api/attendanceApi";
+import { fetchAllTeachers, createStudent } from "../../api/attendanceApi";
 import "./CreateStudentModal.css";
 import { getNearestSunday } from "../../utils/dateUtils";
-import { createStudent } from "../../api/attendanceApi";
 
 const { Option } = Select;
+
+const pad2 = (n) => String(n).padStart(2, "0");
 
 const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [allTeachers, setAllTeachers] = useState([]);
 
-  // 모든 선생님 리스트 가져오기
   useEffect(() => {
     const fetchTeachersData = async () => {
       if (mode === "admin") {
-        // Admin 모드: 모든 선생님 데이터 가져오기
         try {
           const data = await fetchAllTeachers();
-          console.log("Admin mode: all teachers", data);
-          setAllTeachers(data); // 모든 선생님 저장
+          setAllTeachers(data);
         } catch (error) {
           console.error("Error fetching all teachers:", error);
           setAllTeachers([]);
         }
       } else if (mode === "attendance") {
-        console.log("Attendance mode: teacher", teachers);
-        setAllTeachers(teachers); // 전달된 teachers를 바로 사용
+        setAllTeachers(teachers || []);
       }
     };
-  
+
     fetchTeachersData();
   }, [mode, teachers]);
 
-  // UI 표시를 위한
   const teacherName =
     mode === "attendance" && allTeachers.length > 0
-      ? allTeachers[0]?.name || "Unknown"
+      ? allTeachers[0]?.name || allTeachers[0]?.full_name || "Unknown"
       : "";
+
+  // 생년월일 옵션
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 20 }, (_, i) => String(currentYear - i)); // 필요하면 60으로 늘리기
+  const monthOptions = Array.from({ length: 12 }, (_, i) => pad2(i + 1));
+  const dayOptions = Array.from({ length: 31 }, (_, i) => pad2(i + 1));
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+
+      const birth_date =
+        values.birth_year && values.birth_month && values.birth_day
+          ? `${values.birth_year}-${values.birth_month}-${values.birth_day}`
+          : null;
+
       const studentData = {
-        ...values,
+        name: values.name,
+        grade: values.grade,
+        gender: values.gender,
+        birth_date,
         attendance_count: 0,
         absent_count: 0,
         initial_attendance_date: getNearestSunday(),
@@ -53,11 +63,14 @@ const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers })
       };
 
       setLoading(true);
-      await createStudent(studentData);
+
+      const createdStudent = await createStudent(studentData);
+
       message.success("학생이 성공적으로 추가되었습니다!");
       form.resetFields();
+
+      onStudentAdded && onStudentAdded(createdStudent);
       onClose();
-      onStudentAdded && onStudentAdded();
     } catch (error) {
       message.error("학생 추가 중 오류가 발생했습니다.");
     } finally {
@@ -83,6 +96,39 @@ const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers })
         >
           <Input placeholder="이름 입력" />
         </Form.Item>
+
+        <div className="birth-select-row">
+          <Form.Item label="생년월일(선택)" name="birth_year">
+            <Select placeholder="YYYY" allowClear>
+              {yearOptions.map((y) => (
+                <Option key={y} value={y}>
+                  {y}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item label=" " name="birth_month">
+            <Select placeholder="MM" allowClear>
+              {monthOptions.map((m) => (
+                <Option key={m} value={m}>
+                  {m}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item label=" " name="birth_day">
+            <Select placeholder="DD" allowClear>
+              {dayOptions.map((d) => (
+                <Option key={d} value={d}>
+                  {d}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
+
         <Form.Item
           label="학년"
           name="grade"
@@ -96,6 +142,7 @@ const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers })
             ))}
           </Select>
         </Form.Item>
+
         <Form.Item
           label="성별"
           name="gender"
@@ -106,13 +153,12 @@ const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers })
             <Radio value="여">여</Radio>
           </Radio.Group>
         </Form.Item>
+
         {mode === "attendance" ? (
-          // Attendance 모드에서는 단순히 이름만 출력
           <div>
-            <strong>담당 :</strong> {teacherName} 선생님
+            담당 : {teacherName} 선생님
           </div>
         ) : (
-          // admin 모드에서는 Select로 선택 가능
           <Form.Item
             label="담당 선생님"
             name="teacher"
@@ -121,12 +167,13 @@ const CreateStudentModal = ({ isOpen, onClose, onStudentAdded, mode, teachers })
             <Select placeholder="선생님 선택">
               {allTeachers.map((teacher) => (
                 <Option key={teacher.id} value={teacher.id}>
-                  {teacher.name}
+                  {teacher.full_name || teacher.name}
                 </Option>
               ))}
             </Select>
           </Form.Item>
         )}
+
         <div className="modal-footer">
           <Button onClick={onClose} className="cancel-btn">
             취소
