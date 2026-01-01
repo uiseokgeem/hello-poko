@@ -6,7 +6,9 @@ class Member(models.Model):
     # to_field : 외래키로 지정된 모델의 특정 필드값을 참조할 수 있게함.
     teacher = models.ForeignKey(
         CustomUser,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="members",
     )
     name = models.CharField(max_length=5, unique=True)

@@ -12,7 +12,7 @@ const AdminAppHeader = () => {
     // { label: "홈", path: "/" },
     { label: "출석", path: "/admin" },
     { label: "목양일지", path: "/admin/report" },
-    { label: "선생님", path: "/admin/members" },
+    { label: "멤버", path: "/admin/members" },
   ];
 
   return (

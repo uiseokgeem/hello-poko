@@ -1,3 +1,4 @@
+// src/components/Admin/StudentMembersTable.js
 import React, { useCallback, useState, useEffect } from "react";
 import { Table } from "antd";
 import EditStudentModal from "./EditStudentModal";
@@ -23,11 +24,10 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
       setLoading(false);
     }
   }, [keyword]);
-  
+
   useEffect(() => {
     refreshStudents();
   }, [refreshStudents, refreshKey]);
-
 
   const openEditModal = (record) => {
     setSelectedStudent(record);
@@ -54,20 +54,56 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
     setStudentToDelete(null);
   };
 
+  // 비율(100 기준): 학생 20 / 학년 20 / 담당 20 / 생년월일 10 / 보기 30
+  // 실제 픽셀 폭은 "테이블이 차지하는 전체 폭"에 따라 달라지므로,
+  // 비율을 유지하려면 각 컬럼에 percentage width + tableLayout="fixed" 조합이 가장 안정적입니다.
   const columns = [
-    { title: "학생명", dataIndex: "name", key: "name" },
-    { title: "생년월일", dataIndex: "birth_date", key: "birth_date" },
-    { title: "학년", dataIndex: "grade", key: "grade" },
-    { title: "담당 선생님", dataIndex: "teacher", key: "teacher", render: (t) => t || "미등록" },
+    {
+      title: "학생명",
+      dataIndex: "name",
+      key: "name",
+      width: "20%",
+      ellipsis: true,
+    },
+    {
+      title: "학년",
+      dataIndex: "grade",
+      key: "grade",
+      width: "20%",
+      ellipsis: true,
+    },
+    {
+      title: "담당 선생님",
+      dataIndex: "teacher",
+      key: "teacher",
+      width: "20%",
+      ellipsis: true,
+      render: (t) => t || "미등록",
+    },
+    {
+      title: "생년월일",
+      dataIndex: "birth_date",
+      key: "birth_date",
+      width: "10%",
+      ellipsis: true,
+    },
     {
       title: "보기",
       key: "actions",
+      width: "30%",
+      align: "center",
       render: (_, record) => (
         <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-          <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={() => openEditModal(record)}>
+          <span
+            style={{ color: "#1890ff", cursor: "pointer" }}
+            onClick={() => openEditModal(record)}
+          >
             수정
           </span>
-          <span style={{ color: "red", cursor: "pointer" }} onClick={() => openDeleteModal(record)}>
+          <span
+            style={{ color: "red", cursor: "pointer" }}
+            onClick={() => openDeleteModal(record)}
+          >
             삭제
           </span>
         </div>
@@ -75,15 +111,16 @@ const StudentMembersTable = ({ keyword = "", refreshKey = 0 }) => {
     },
   ];
 
-
   return (
     <>
-      <Table 
-      rowKey="id" 
-      columns={columns}  
-      dataSource={[...students].sort((a, b) => a.name.localeCompare(b.name, "ko"))} 
-      loading={loading}
-      pagination={false} />
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={[...students].sort((a, b) => a.name.localeCompare(b.name, "ko"))}
+        loading={loading}
+        pagination={false}
+        tableLayout="fixed"
+      />
 
       <EditStudentModal
         isOpen={isEditModalOpen}

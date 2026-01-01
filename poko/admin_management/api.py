@@ -26,7 +26,7 @@ from .serializer import (
     AdminStudentAssignHeadSerializer,
 )
 
-from django.db.models import Count, Q, Prefetch
+from django.db.models import Count, Q, Prefetch, Case, When, IntegerField
 from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -47,6 +47,16 @@ class AdminTeacherViewSet(ViewSet):
                 | Q(class_name__icontains=q)
                 | Q(head_teacher__full_name__icontains=q)
             ).distinct()
+
+            # 1순위: role 정렬용 가상 필드
+        teachers = teachers.annotate(
+            role_order=Case(
+                When(role="HEAD", then=0),
+                When(role="ASSISTANT", then=1),
+                default=99,
+                output_field=IntegerField(),
+            )
+        ).order_by("role_order", "full_name")
 
         serializer = TeacherSerializer(teachers, many=True)
         return Response(serializer.data)
@@ -119,34 +129,31 @@ class AdminStudentViewSet(ViewSet):
         serializer = AdminStudentGradeBulkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        mode = serializer.validated_data["mode"]
-        student_ids = serializer.validated_data.get("student_ids") or []
-        target_grade = serializer.validated_data.get("target_grade")
+        student_ids = serializer.validated_data["student_ids"]
+        target_grade = serializer.validated_data["target_grade"]
+
+        qs = Member.objects.filter(id__in=student_ids)
 
         with transaction.atomic():
-            if mode == "selected":
-                Member.objects.filter(id__in=student_ids).update(grade=target_grade)
+            if target_grade == "졸업":
+                qs.update(
+                    grade="졸업",
+                    teacher=None,
+                )
+            else:
+                qs.update(grade=target_grade)
 
-            elif mode == "promote":
-                # 일괄 승급: 현재 grade 값에 따라 매핑 업데이트
-                # (DB 레벨 CASE로도 가능하지만, 명확하게 Python 루프로 처리)
-                qs = Member.objects.select_for_update().all()
-                for m in qs:
-                    if not m.grade:
-                        continue
-                    new_grade = GRADE_PROMOTION_MAP.get(m.grade)
-                    if new_grade and new_grade != m.grade:
-                        m.grade = new_grade
-                        m.save(update_fields=["grade"])
-
-        return Response({"message": "학년 업데이트가 저장되었습니다."}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "학년 업데이트가 저장되었습니다."},
+            status=status.HTTP_200_OK,
+        )
 
     @action(detail=False, methods=["get"], url_path="placement-step")
     def placement_step(self, request):
         q = (request.query_params.get("q") or "").strip()
         grade = (request.query_params.get("grade") or "").strip()
 
-        qs = Member.objects.select_related("teacher").all()
+        qs = Member.objects.select_related("teacher").all().exclude(grade="졸업")
 
         if q:
             qs = qs.filter(name__icontains=q)
@@ -179,9 +186,11 @@ class AdminStudentViewSet(ViewSet):
     def list(self, request):
         q = (request.query_params.get("q") or "").strip()
 
-        students = Member.objects.select_related(
-            "teacher", "teacher__head_teacher"
-        ).prefetch_related("teacher__assistance_teacher")
+        students = (
+            Member.objects.select_related("teacher", "teacher__head_teacher")
+            .prefetch_related("teacher__assistance_teacher")
+            .exclude(grade="졸업")
+        )
 
         if q:
             students = students.filter(

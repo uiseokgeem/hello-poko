@@ -1,15 +1,16 @@
 // src/components/Admin/ClassManagement/AdminStudentPlacementStep3.js
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { Table, Button, Space, message, Select, Input } from "antd";
+import { Table, message, Select, Input, Button } from "antd";
 import {
   fetchStudentsForPlacementStep,
   fetchHeadTeacherCandidates,
   assignStudentsToHead,
 } from "../../../api/adminApi";
+import { ClassManagementButtonGroup } from "./ClassManagementButtons";
 
 const { Option } = Select;
 
-const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
+const AdminStudentPlacementStep3 = ({ refreshKey, onSaved, gradeOptions = [] }) => {
   const [loading, setLoading] = useState(false);
 
   const [students, setStudents] = useState([]);
@@ -37,7 +38,6 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
     }
   }, [keyword, gradeFilter]);
 
-  // 새 구조 핵심: refreshKey 변경 시(다른 탭 저장 포함) Step3도 자동 최신화
   useEffect(() => {
     load();
   }, [load, refreshKey]);
@@ -54,24 +54,14 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
     return [
       { title: "학생명", dataIndex: "name", key: "name" },
       { title: "학년", dataIndex: "grade", key: "grade", render: (t) => t || "-" },
-      {
-        title: "성별",
-        dataIndex: "gender",
-        key: "gender",
-        render: (t) => t || "-",
-      },
+      { title: "성별", dataIndex: "gender", key: "gender", render: (t) => t || "-" },
       {
         title: "현재 담당",
         dataIndex: "teacher_name",
         key: "teacher_name",
         render: (t) => t || "미배정",
       },
-      {
-        title: "현재 반",
-        dataIndex: "class_name",
-        key: "class_name",
-        render: (t) => t || "-",
-      },
+      { title: "현재 반", dataIndex: "class_name", key: "class_name", render: (t) => t || "-" },
     ];
   }, []);
 
@@ -97,10 +87,7 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
       setSelectedRowKeys([]);
       setTargetHeadId(null);
 
-      // 본인 탭 최신화
       await load();
-
-      // 새 구조 핵심: 부모 refreshKey 증가 -> 1/2 탭도 자동 재조회
       onSaved && onSaved();
     } catch (e) {
       message.error("저장 중 오류가 발생했습니다.");
@@ -121,20 +108,28 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
         <div style={{ flex: 1 }}>
           <div style={{ marginBottom: 12, display: "flex", gap: 12 }}>
             <Input
-              placeholder="학생 이름 검색"
+              placeholder="학생 이름"
               allowClear
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               style={{ width: 260 }}
             />
 
-            <Input
-              placeholder="학년 필터(예: 고2)"
+            <Select
+              placeholder="학년 필터"
               allowClear
-              value={gradeFilter}
-              onChange={(e) => setGradeFilter(e.target.value)}
+              value={gradeFilter || undefined}
+              onChange={(v) => setGradeFilter(v || "")}
               style={{ width: 160 }}
-            />
+              showSearch
+              optionFilterProp="children"
+            >
+              {gradeOptions.map((g) => (
+                <Option key={g} value={g}>
+                  {g}
+                </Option>
+              ))}
+            </Select>
 
             <Button onClick={load} disabled={loading}>
               조회
@@ -152,13 +147,13 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
         </div>
 
         <div style={{ width: 360 }}>
-          <div style={{ marginBottom: 12 }}>선택 학생 배치</div>
+          <div style={{ marginBottom: 12 }}>선택 학생 배정</div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div>선택된 학생 수: {selectedRowKeys.length}</div>
 
             <Select
-              placeholder="배치할 담당 선생님(HEAD) 선택"
+              placeholder="배정할 담당 선생님 선택"
               value={targetHeadId || undefined}
               onChange={(v) => setTargetHeadId(v)}
             >
@@ -168,20 +163,14 @@ const AdminStudentPlacementStep3 = ({ refreshKey, onSaved }) => {
                 </Option>
               ))}
             </Select>
-
-            <div>적용 결과: 선택된 학생들의 teacher = 선택한 HEAD</div>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
-            <Space>
-              <Button onClick={handleCancel} disabled={loading}>
-                취소
-              </Button>
-              <Button type="primary" onClick={handleSave} loading={loading}>
-                저장하기
-              </Button>
-            </Space>
-          </div>
+          <ClassManagementButtonGroup
+            onCancel={handleCancel}
+            onSave={handleSave}
+            loading={loading}
+            align="right"
+          />
         </div>
       </div>
     </div>

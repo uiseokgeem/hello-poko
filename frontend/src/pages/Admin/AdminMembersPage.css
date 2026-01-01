@@ -1,39 +1,62 @@
+/* src/pages/Admin/AdminMembersPage.css */
 .admin-members-container {
-    min-height: 100vh;
-    background-color: #ffffff;
-  }
-  
-  .admin-members-content {
-    padding: 24px 80px;
-  }
-  
-  .admin-members-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  
-  .admin-members-title-area {
-    flex: 1;
-  }
-  
-  .admin-members-title {
-    margin-bottom: 16px;
-  }
-  
-  .admin-members-tabs .ant-tabs-nav {
-    margin-bottom: 16px;
-  }
-  
-  .admin-members-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-  }
-  
-  .admin-members-action-buttons {
-    margin-top: 8px;
-  }
+  min-height: 100vh;
+  background-color: #ffffff;
+}
 
-  
+.admin-members-content {
+  padding: 24px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+/* 화면이 좁아지면 가로 스크롤 */
+.admin-members-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 스크롤이 안정적으로 생기도록 최소 너비 기준을 잡아줌 */
+.admin-members-header-row,
+.admin-members-tabs {
+  min-width: 980px; /* 필요 시 900~1100 사이로 조절 */
+}
+
+.admin-members-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.admin-members-title-area {
+  flex: 1;
+}
+
+.admin-members-title {
+  margin-bottom: 16px;
+}
+
+.admin-members-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+/* 우측 액션 영역이 찌그러지지 않게 고정 */
+.admin-members-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.admin-members-action-buttons {
+  margin-top: 8px;
+  flex: 0 0 auto;
+}
+
+/* antd Input은 wrapper 폭을 잡아주는 게 안전 */
+.admin-members-actions .ant-input-affix-wrapper {
+  width: 320px;
+  max-width: 320px;
+}

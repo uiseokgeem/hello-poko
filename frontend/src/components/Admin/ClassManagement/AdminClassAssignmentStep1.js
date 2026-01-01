@@ -1,7 +1,8 @@
 // src/components/Admin/ClassManagement/AdminClassAssignmentStep1.js
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { Table, Select, Button, message, Space } from "antd";
+import { Table, Select, message } from "antd";
 import { fetchClassAssignments, saveClassAssignments } from "../../../api/adminApi";
+import { ClassManagementButtonGroup } from "./ClassManagementButtons";
 
 const { Option } = Select;
 
@@ -15,7 +16,6 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
   const [headCandidates, setHeadCandidates] = useState([]);
   const [assistantCandidates, setAssistantCandidates] = useState([]);
 
-  // { [class_name]: { head_id, assistant_id } }
   const [changes, setChanges] = useState({});
 
   const load = useCallback(async () => {
@@ -43,7 +43,6 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
     }
   }, []);
 
-  // 새 구조 핵심: refreshKey가 바뀌면(다른 탭 저장 포함) 여기 Step1도 자동 최신화
   useEffect(() => {
     load();
   }, [load, refreshKey]);
@@ -59,7 +58,7 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
   }, []);
 
   const validateBeforeSave = useCallback(() => {
-    const used = new Map(); // teacherId -> className
+    const used = new Map();
 
     for (const r of rows) {
       const cn = r.class_name;
@@ -67,16 +66,15 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
       const assistantId = changes?.[cn]?.assistant_id;
 
       if (!headId) return `${cn} 반: 담당 선생님은 필수입니다.`;
-      if (assistantId && assistantId === headId)
-        return `${cn} 반: 담당/보조가 같은 사람입니다.`;
+      if (assistantId && assistantId === headId) return `${cn} 반: 담당/보조가 같은 사람입니다.`;
 
       for (const tid of [headId, assistantId]) {
         if (!tid) continue;
-        if (used.has(tid))
-          return `중복 배정: ${used.get(tid)} / ${cn} 에 같은 선생님이 선택되었습니다.`;
+        if (used.has(tid)) return `중복 배정: ${used.get(tid)} / ${cn} 에 같은 선생님이 선택되었습니다.`;
         used.set(tid, cn);
       }
     }
+
     return null;
   }, [rows, changes]);
 
@@ -101,10 +99,7 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
       await saveClassAssignments(payload);
       message.success("저장되었습니다.");
 
-      // 본인 탭 최신화
       await load();
-
-      // 새 구조 핵심: 부모 refreshKey 증가 -> 2/3 탭도 자동 재조회
       onSaved && onSaved();
     } catch (e) {
       message.error("저장 중 오류가 발생했습니다.");
@@ -113,19 +108,25 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
     }
   }, [rows, changes, validateBeforeSave, load, onSaved]);
 
+  const handleCancel = useCallback(() => {
+    load();
+  }, [load]);
+
   const currentTableColumns = useMemo(
     () => [
-      { title: "담당 반", dataIndex: "class_name", key: "class_name" },
+      { title: "담당 반", dataIndex: "class_name", key: "class_name",  width: 120, },
       {
         title: "현재 담당 선생님",
         dataIndex: "current_head_name",
         key: "current_head_name",
+        width: 180,
         render: (t) => t || "미등록",
       },
       {
         title: "현재 보조 선생님",
         dataIndex: "current_assistant_name",
         key: "current_assistant_name",
+        width: 180,
         render: (t) => t || "없음",
       },
     ],
@@ -134,10 +135,11 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
 
   const changeTableColumns = useMemo(() => {
     return [
-      { title: "담당 반", dataIndex: "class_name", key: "class_name" },
+      { title: "담당 반", dataIndex: "class_name", key: "class_name",  width: 120, },
       {
         title: "변경할 담당 선생님",
         key: "new_head",
+        width: 140,
         render: (_, record) => {
           const cn = record.class_name;
           const value = changes?.[cn]?.head_id ?? null;
@@ -146,7 +148,7 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
             <Select
               placeholder={record.current_head_name || "선생님 선택"}
               value={value}
-              style={{ width: 220 }}
+              style={{ width: "100%" }}
               onChange={(headId) => updateChange(cn, { head_id: headId })}
             >
               {headCandidates.map((t) => (
@@ -161,6 +163,7 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
       {
         title: "변경할 보조 선생님",
         key: "new_assistant",
+        width: 120,
         render: (_, record) => {
           const cn = record.class_name;
           const value = changes?.[cn]?.assistant_id ?? null;
@@ -170,10 +173,8 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
               allowClear
               placeholder={record.current_assistant_name || "선생님 선택"}
               value={value}
-              style={{ width: 220 }}
-              onChange={(assistantId) =>
-                updateChange(cn, { assistant_id: assistantId ?? null })
-              }
+              style={{ width: "100%" }}
+              onChange={(assistantId) => updateChange(cn, { assistant_id: assistantId ?? null })}
             >
               {assistantCandidates.map((t) => (
                 <Option key={t.id} value={t.id}>
@@ -186,10 +187,6 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
       },
     ];
   }, [changes, headCandidates, assistantCandidates, updateChange]);
-
-  const handleCancel = useCallback(() => {
-    load();
-  }, [load]);
 
   return (
     <div style={{ padding: 24 }}>
@@ -213,20 +210,17 @@ const AdminClassAssignmentStep1 = ({ refreshKey, onSaved }) => {
             dataSource={rows}
             pagination={false}
             loading={loading}
+            tableLayout="fixed" 
           />
         </div>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
-        <Space>
-          <Button onClick={handleCancel} disabled={loading}>
-            취소
-          </Button>
-          <Button type="primary" onClick={handleSave} loading={loading}>
-            저장하기
-          </Button>
-        </Space>
-      </div>
+      <ClassManagementButtonGroup
+        onCancel={handleCancel}
+        onSave={handleSave}
+        loading={loading}
+        align="right"
+      />
     </div>
   );
 };

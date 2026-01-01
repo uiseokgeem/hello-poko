@@ -219,7 +219,7 @@ class ClassAssignmentSaveItemSerializer(serializers.Serializer):
     assistant_id = serializers.IntegerField(required=False, allow_null=True)
 
 
-GRADE_CHOICES = ["중1", "중2", "중3", "고1", "고2", "고3"]
+GRADE_CHOICES = ["중1", "중2", "중3", "고1", "고2", "고3", "졸업"]
 
 
 class AdminStudentListSerializer(serializers.ModelSerializer):
@@ -232,23 +232,24 @@ class AdminStudentListSerializer(serializers.ModelSerializer):
 
 
 class AdminStudentGradeBulkSerializer(serializers.Serializer):
-    mode = serializers.ChoiceField(choices=["selected", "promote"])
     student_ids = serializers.ListField(
-        child=serializers.IntegerField(), required=False, allow_empty=True
+        child=serializers.IntegerField(),
+        required=True,
+        allow_empty=False,
     )
     target_grade = serializers.ChoiceField(
-        choices=GRADE_CHOICES, required=False, allow_null=True
+        choices=GRADE_CHOICES,
+        required=True,
+        allow_null=False,
     )
 
     def validate(self, attrs):
-        mode = attrs.get("mode")
+        ids = attrs.get("student_ids") or []
+        if not ids:
+            raise serializers.ValidationError({"student_ids": "학생을 선택하세요."})
 
-        if mode == "selected":
-            ids = attrs.get("student_ids") or []
-            if not ids:
-                raise serializers.ValidationError({"student_ids": "학생을 선택하세요."})
-            if not attrs.get("target_grade"):
-                raise serializers.ValidationError({"target_grade": "변경할 학년을 선택하세요."})
+        if not attrs.get("target_grade"):
+            raise serializers.ValidationError({"target_grade": "변경할 학년을 선택하세요."})
 
         return attrs
 
