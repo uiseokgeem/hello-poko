@@ -28,12 +28,20 @@ class Attendance(models.Model):
         on_delete=models.CASCADE,
         related_name="attendance",
     )
-    attendance = models.BooleanField()
-    date = models.DateField()  # 기본 YYYY-MM-DD 형식으로만 저장
+    attendance = models.BooleanField(null=True, default=None)
+    date = models.DateField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "date"],
+                name="uniq_attendance_member_date",
+            )
+        ]
+        ordering = ["date"]
 
     def __str__(self):
         return self.name.name
-        # return self.name 시 오류
 
 
 # class GetImage(models.Model):
