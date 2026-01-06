@@ -10,7 +10,7 @@ const WeeklyAttendanceTab = ({ weeklyAttendanceData, selectedYear, setSelectedYe
     <>
       <div className="filters">
         <Select defaultValue={selectedYear} onChange={setSelectedYear} style={{ width: 120, marginRight: "16px" }}>
-          {[2023, 2024, 2025].map((year) => (
+          {[2025, 2026].map((year) => (
             <Option key={year} value={year}>{year}</Option>
           ))}
         </Select>

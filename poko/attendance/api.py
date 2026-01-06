@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta, date  # date를 import
 
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
+from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import action
@@ -93,37 +94,41 @@ class MembersViewSet(ModelViewSet):
         return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
-        student_data = request.data
-        nearest_sunday_str = student_data.pop("initial_attendance_date", None)
+        student_data = request.data.copy()
 
-        if nearest_sunday_str:
-            nearest_sunday = datetime.strptime(
-                nearest_sunday_str, "%Y-%m-%d"
-            ).date()  # `date` 타입으로 변환
-        else:
+        # 프론트에서 보내는 "이번에 체크할 주일" 1개만 사용
+        nearest_sunday_str = student_data.pop("initial_attendance_date", None)
+        if not nearest_sunday_str:
             return Response(
                 {"error": "initial_attendance_date is required"}, status=400
             )
 
-        # 학생 생성
-        serializer = self.get_serializer(data=student_data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        try:
+            nearest_sunday = datetime.strptime(nearest_sunday_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"error": "initial_attendance_date must be YYYY-MM-DD"}, status=400
+            )
 
-        # Attendance 모델에 기본 출석 데이터 생성
-        member_instance = serializer.instance
+        # (선택) 일요일 검증
+        if nearest_sunday.weekday() != 6:
+            return Response(
+                {"error": "initial_attendance_date must be a Sunday"}, status=400
+            )
 
-        # 해당 연도의 첫 일요일부터 nearest_sunday 이전의 모든 일요일 리스트 생성
-        year = nearest_sunday.year
-        sundays = get_sundays_for_year(year, end_date=nearest_sunday)
+        with transaction.atomic():
+            # 1) 학생 생성
+            serializer = self.get_serializer(data=student_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            member_instance = serializer.instance
 
-        # Attendance에 기본 출석 데이터 저장
-        Attendance.objects.bulk_create(
-            [
-                Attendance(name=member_instance, attendance=False, date=sunday)
-                for sunday in sundays
-            ]
-        )
+            # 2) 출석 레코드: "그 주 1개"만 기본 결석(false)
+            Attendance.objects.get_or_create(
+                name=member_instance,
+                date=nearest_sunday,
+                defaults={"attendance": False},
+            )
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=201, headers=headers)
