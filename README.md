@@ -18,22 +18,11 @@ Docker を用いて開発・デプロイ環境を統一しています。
 ---
 ## Features
 - **User Authentication**: JWT-based authentication for secure login and role-based access control
-
-
 - **Social Login (Kakao)**: Kakao OAuth integration with JWT-based authentication flow
-
-
 - **Student Management**: Attendance tracking and pastoral / child care report management
-
-
 - **Admin Dashboard**: Centralized dashboard for administrators to monitor and manage data
-
-
 - **RESTful API**: RESTful API design and implementation using Django REST Framework
-
-
 - **Dockerized Environment**: Containerized development and deployment using Docker on AWS Lightsail
-
 ---
 
 ## Tech Stack
@@ -81,6 +70,15 @@ Docker を用いて開発・デプロイ環境を統一しています。
 
 ---
 
+## Database Design (ERD)
+
+The database is designed around weekly reports and student records.
+- User (Teacher) → UserCheck (Weekly Report) → MemberCheck (Per Student Report)
+- Member → Attendance (History)
+
+<img src="images/poko_erd.png" alt="poko_erd" width="900">
+
+
 ## Related Links
 - Velog  
-  https://velog.io/@uiseoo/series
+  https://velog.io/@uiseoo/series/Hello-Poko-Ver.3
