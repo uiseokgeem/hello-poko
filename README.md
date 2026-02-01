@@ -1,39 +1,86 @@
 # <img src="images/poko_logo.png" alt="poko_logo" width="250">
 
-poko is a web application project that includes a frontend built with React and a backend built with Django. This project is organized to be easily deployable using Docker.
+## Overview
 
+poko is a web application project built with a React-based frontend and a Django-based backend.  
+It was designed to solve problems related to attendance management and pastoral / child care reporting.  
+The project adopts a Docker-based environment to ensure consistency across development and deployment.
+
+---
+
+## 概要
+
+poko は、React を用いたフロントエンドと Django を用いたバックエンドで構成された
+Web アプリケーションです。
+出席管理および育成・記録業務の課題を解決することを目的として設計されており、
+Docker を用いて開発・デプロイ環境を統一しています。
+
+---
 ## Features
+- **User Authentication**: JWT-based authentication for secure login and role-based access control
 
-- **User Authentication**: Secure login and registration functionality with JWT-based authentication.
-- **Report For Child Management**: Create and manage report for tracking and managing childcare
-- **Attendance Management**: Track and manage attendance records efficiently.
-- **Data Visualization**: 
-- **Responsive Design**: 
-- **Database Backup and Restore**: 
-- **Admin Dashboard**: 
-- **RESTful API**:
+
+- **Social Login (Kakao)**: Kakao OAuth integration with JWT-based authentication flow
+
+
+- **Student Management**: Attendance tracking and pastoral / child care report management
+
+
+- **Admin Dashboard**: Centralized dashboard for administrators to monitor and manage data
+
+
+- **RESTful API**: RESTful API design and implementation using Django REST Framework
+
+
+- **Dockerized Environment**: Containerized development and deployment using Docker on AWS Lightsail
+
+---
 
 ## Tech Stack
 
-**Frontend**:
-- [React](https://reactjs.org/)
-- [Axios](https://axios-http.com/) for HTTP requests
+### Frontend
+- React
+- JavaScript
+- Axios
 
-**Backend**:
-- [Django](https://www.djangoproject.com/)
-- [Django REST Framework](https://www.django-rest-framework.org/)
+### Backend
+- Python
+- Django
+- Django REST Framework
 
-**Database**:
-- [PostgreSQL](https://www.postgresql.org/)
+### DB / Cache
+- PostgreSQL
 
-**DevOps**:
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
+### Server / Deployment
+- Docker
+- Docker Compose
+- Nginx
+- AWS Lightsail
 
-**Others**:
-- [Git](https://git-scm.com/)
-- [GitBook](https://www.gitbook.com/)
-- [Nginx](https://www.nginx.com/)
-  
+### OS
+- Linux (Ubuntu)
+
+### Tools / Test / Productivity
+- Pycharm
+- Visual Studio Code
+- Git
+
+### Collaborations
+- Git
+- Notion
+
+---
+
+## Project Structure
+
+- frontend : React-based frontend application and user interface
+
+- backend : Django-based backend API server and business logic
+
+- docker : Docker and Docker Compose configuration for development and deployment
+
+---
+
 ## Related Links
-- [Velog](https://velog.io/@uiseoo/series)
+- Velog  
+  https://velog.io/@uiseoo/series
