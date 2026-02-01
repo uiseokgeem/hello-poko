@@ -94,9 +94,6 @@ Detailed database design and field-level descriptions are documented below.
 出席情報は、生徒単位の履歴データとして管理されています。
 
 ---
-## System Architecture
-
----
 
 ## Related Links
 - Velog  
