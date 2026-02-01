@@ -6,9 +6,7 @@ poko is a web application project built with a React-based frontend and a Django
 It was designed to solve problems related to attendance management and pastoral / child care reporting.  
 The project adopts a Docker-based environment to ensure consistency across development and deployment.
 
----
-
-## 概要
+### 概要
 
 poko は、React を用いたフロントエンドと Django を用いたバックエンドで構成された
 Web アプリケーションです。
@@ -70,14 +68,35 @@ Docker を用いて開発・デプロイ環境を統一しています。
 
 ---
 
+## System Architecture
+
+---
+
+## API 
+
+---
+
 ## Database Design (ERD)
 
 The database is designed around weekly reports and student records.
 - User (Teacher) → UserCheck (Weekly Report) → MemberCheck (Per Student Report)
 - Member → Attendance (History)
 
-<img src="images/poko_erd.png" alt="poko_erd" width="900">
+Detailed database design and field-level descriptions are documented below.
 
+- Database Manual (Korean):  
+  https://velog.io/@uiseoo/poko-DB-Manual
+
+### データベース設計概要
+
+本システムのデータベースは、教員が作成する「週次レポート」と 生徒ごとの記録を中心に設計されています。
+教員（User）が週単位のレポート（UserCheck）を作成し、 その中に生徒別の記録（MemberCheck）が紐づく構造です。 
+出席情報は、生徒単位の履歴データとして管理されています。
+
+---
+## System Architecture
+
+---
 
 ## Related Links
 - Velog  
