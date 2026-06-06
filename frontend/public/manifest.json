@@ -19,7 +19,7 @@
     }
   ],
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/login",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#2B7BE9",

@@ -12,15 +12,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Network-first: 실패 시 캐시, 캐시도 없으면 그대로 실패 전파
+// Network-first: 실패 시 캐시, 캐시도 없으면 네트워크 재시도
 self.addEventListener('fetch', (event) => {
   // 브라우저 확장 / non-http 요청 무시
   if (!event.request.url.startsWith('http')) return;
 
+  // 페이지 네비게이션은 브라우저에 위임 (iOS WebKit standalone 호환)
+  if (event.request.mode === 'navigate') return;
+
   // API 요청은 캐시하지 않고 네트워크 직행
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
+  if (event.request.url.includes('/api/')) return;
 
   event.respondWith(
     fetch(event.request)
@@ -32,7 +33,9 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() =>
+        caches.match(event.request).then((cached) => cached || fetch(event.request))
+      )
   );
 });
 
